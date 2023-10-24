@@ -1,0 +1,24 @@
+{% extends 'sendemail/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+ <h1>Add Trip</h1>
+
+ <form method="post" action="{% url 'trip_form' %}">
+    {% csrf_token %}
+        <div class="linkholder">
+              <div class="form1 ml-3"> {{form.number|as_crispy_field}}  </div>
+            <div class="form1 ml-3"> {{form.start|as_crispy_field}}  </div>
+            <div class="form1 ml-3"> {{form.end|as_crispy_field}}  </div>
+            <div class="form1 ml-3"> {{form.hours|as_crispy_field}}  </div>
+
+
+            <button class="ourbutton"type="submit"> Add Trip</button>
+        </div>
+    </form>
+
+
+
+
+
+{% endblock %}

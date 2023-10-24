@@ -1,8 +1,12 @@
 {% extends 'cagliaritour/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
 {% block content %}
 
 <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 
 
@@ -24,7 +28,24 @@
 
         map = new google.maps.Map(document.getElementById("map"),{
             center: { lat: firstLocation.lat, lng: firstLocation.lng },
-            zoom: 9,
+            zoom: 6,
+mapTypeControl: true,
+    mapTypeControlOptions: {
+      style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+      position: google.maps.ControlPosition.BOTTOM_CENTER,
+
+    },
+    zoomControl: true,
+    zoomControlOptions: {
+      position: google.maps.ControlPosition.RIGHT_CENTER,
+    },
+    scaleControl: true,
+    streetViewControl: true,
+    streetViewControlOptions: {
+      position: google.maps.ControlPosition.BOTTOM_CENTER,
+    },
+
+    fullscreenControl: true,
 
         }
         );
@@ -65,11 +86,10 @@
 const transitLayer = new google.maps.TransitLayer();
 
   transitLayer.setMap(map)
-        drawLine (firstLocation , secondLocation);
-drawRoute("64CG+X8 Cagliari, Metropolitan City of Cagliari", "V.le Regina Margherita, 33, 09124 Cagliari CA",'DRIVING','red');
-drawRoute("64CG+X8 Cagliari, Metropolitan City of Cagliari", "V.le Regina Margherita, 33, 09124 Cagliari CA",'WALKING','blue');
+        {#drawLine (firstLocation , secondLocation);#}
+{#drawRoute("64CG+X8 Cagliari, Metropolitan City of Cagliari", "V.le Regina Margherita, 33, 09124 Cagliari CA",'DRIVING','red');#}
+{#drawRoute("64CG+X8 Cagliari, Metropolitan City of Cagliari", "V.le Regina Margherita, 33, 09124 Cagliari CA",'WALKING','blue');#}
 
-  drawRoute("unica,Dipartimento di Ingegneria Strutturale cagliari" , "Piazza Giacomo Matteotti Cagliari",'transit','red');
 
     }
 
@@ -83,7 +103,7 @@ drawRoute("64CG+X8 Cagliari, Metropolitan City of Cagliari", "V.le Regina Marghe
     var line = new google.maps.Polyline({
         path: [origin, destination],
         geodesic: true,
-        strokeColor: '#FF0000',
+        strokeColor: '#aa03e8',
         strokeOpacity: 1.0,
         strokeWeight: 2
     });
@@ -140,39 +160,95 @@ drawRoute("64CG+X8 Cagliari, Metropolitan City of Cagliari", "V.le Regina Marghe
     window.initMap = initMap
 
 </script>
+<style>
 
-<div class="pageholder">
-    <div class="titleholder">
+    .container-fluid,
+    .row,
+    .col-md-3,
+    .col-md-9 {
+        height: 100vh;
+    }
 
-        <div class="title"> Google Maps API Displaying Markers on the Map  </div>
-
-    </div>
-
-
-    <div class="linkholder">
-        <div class="mapholder">
-            <div id="map"> </div>
-
-            <script async
-                src="https://maps.googleapis.com/maps/api/js?key={{key}}&callback=initMap">
-            </script>
+    #sidebar,
+    main {
+        overflow-y: auto;
+    }
+</style>
 
 
+<div class="container-fluid">
 
+
+<main>
+    <div class="linkholder mt-3">
+        <div class="mapholder position-relative">
+            <div id="map" ></div>
+            <!-- Overlay Buttons -->
+            <div class="position-absolute top-0 start-0 mt-7 ms-7">
+                <button class="btn btn-light" data-toggle="collapse" data-target="#form"> <b>Get your<br> Guide </b><img src="{% static 'images/clickme.webp' %}" alt="Example Image" height="35" width="20">
+  </button>
+
+<div class="collapse show" id="form">
+  <div class="row">
+    <div >
+      <div class="card" style="max-width: 400px; margin: 0">
+        <div class="card-body">
+          <div class="form-group">
+            <label for="id_departure_date">What is your departure day?</label>
+            <input type="date" class="form-control" id="id_departure_date" name="departure_date">
+          </div>
+
+          <div class="form-group">
+            <label for="id_departure_time">What is your departure time?</label>
+            <input type="time" class="form-control" id="id_departure_date" name="departure_date">
+
+          </div>
+
+          <div class="form-group">
+            <label for="id_moving_preference">How do you mainly prefer moving around?</label>
+            <select class="form-control" id="id_moving_preference" name="moving_preference">
+              <!-- Options for moving preference go here -->
+                <option value="car">Car</option>
+              <option value="bus">Bus</option>
+              <option value="train">Train</option>
+               <option value="bike">Bike</option>
+              <option value="walking">Walking</option>
+
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="id_main_interests">What are your main interests?</label>
+            <select multiple class="form-control" id="id_main_interests" name="main_interests[]">
+             <option value="nature">Nature and Outdoor Activities</option>
+              <option value="culture">Cultural Experiences</option>
+              <option value="adventure">Adventure Sports</option>
+              <option value="food">Food and Culinary</option>
+              <option value="history">Historical Sites</option>
+              <option value="shopping">Shopping</option>
+              <option value="other">Other</option>   </select>
+          </div>
+
+          <button type="button" class="btn btn-primary">Submit</button>
         </div>
-
-     </div>
-
-
-    <div class="linkholder">
-        <a href="{% url 'my_home_view' %}"> Go to our homepage</a>
-
+      </div>
     </div>
+  </div>
+</div>
 
+
+            </div>
+            <div class="position-absolute top-0 end-0 mt-3 me-3">
+                <button class="btn btn-outline-dark">Button 2</button>
+            </div>
+            <!-- End Overlay Buttons -->
+        </div>
+    </div>
+</main>
+
+<script async src="https://maps.googleapis.com/maps/api/js?key={{key}}&callback=initMap"></script>
 
 
 </div>
 
-
 {% endblock %}
-

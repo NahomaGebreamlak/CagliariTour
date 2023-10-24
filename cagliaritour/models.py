@@ -26,3 +26,29 @@ class Distances (models.Model):
     duration_traffic_mins = models.DecimalField(max_digits=10, decimal_places=2,blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True,blank=True, null=True)
     edited_at = models.DateTimeField(auto_now=True)
+from django.db import models
+
+class TravelPreference(models.Model):
+    departure_date = models.DateField()
+    departure_time = models.CharField(max_length=5)  # Assuming the format HH:MM AM/PM, e.g., '10:30 AM'
+    moving_preference = models.CharField(max_length=20, choices=[
+        ('car', 'Car'),
+        ('bus', 'Bus'),
+        ('train', 'Train'),
+        ('plane', 'Plane'),
+        ('bike', 'Bike'),
+        ('walking', 'Walking'),
+        ('other', 'Other')
+    ])
+    main_interests = models.CharField(max_length=50, choices=[
+        ('nature', 'Nature and Outdoor Activities'),
+        ('culture', 'Cultural Experiences'),
+        ('adventure', 'Adventure Sports'),
+        ('food', 'Food and Culinary'),
+        ('history', 'Historical Sites'),
+        ('shopping', 'Shopping'),
+        ('other', 'Other')
+    ])
+
+    def __str__(self):
+        return f"Travel Preference #{self.id}"

@@ -1,0 +1,26 @@
+
+<script>
+  // Get the crowd level data for the restaurant
+  var crowdLevelData = await fetch('/crowd_level_barchart/?latitude=40.714353&longitude=-74.005973');
+
+  // Convert the crowd level data to JSON
+  var crowdLevelChartData = await crowdLevelData.json();
+
+  // Create a new Chart.js chart
+  var crowdLevelChart = new Chart(document.getElementById('crowd-level-chart'), {
+    type: 'bar',
+    data: crowdLevelChartData,
+    options: {
+      title: {
+        display: true,
+        text: 'Crowd level at 40.714353, -74.005973'
+      }
+    }
+  });
+</script>
+
+
+<!-- In your Django template -->
+<div style="width: 80%; margin: 0 auto;">
+    <canvas id="crowd-level-chart"></canvas>
+</div>
