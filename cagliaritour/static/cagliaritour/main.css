@@ -6,6 +6,7 @@
 
 #map{
       height: 100vh; /* Full height of the viewport */
+width: 100vw;
 
 
 }
@@ -167,4 +168,17 @@ form{
     }
     #form {
       transition-duration: 0.1ms; /* Set your desired duration in seconds */
+    }
+
+     .card-title {
+        white-space: nowrap; /* Prevent text from wrapping */
+        overflow: hidden; /* Hide overflowed text */
+        text-overflow: ellipsis; /* Display ellipsis (...) for overflowed text */
+        position: relative; /* Enable positioning for the cancel button */
+    }
+
+    .cancel-button {
+        position: absolute;
+        top: 0;
+        right: 0;
     }

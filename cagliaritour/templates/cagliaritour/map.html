@@ -2,206 +2,103 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <script id="locationData" src="{% static 'cagliaritour/javascript_map.js' %}"> {{ locations|safe }} </script>
-    <!-- FontAwesome CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-
-
+    <script>jQuery.noConflict();
+    </script>
 
     <div class="container-fluid">
-{#        <a href="{% url 'crowd_level' %}">#}
-{#            <button>Check Crowd Level</button>#}
-{#        </a>#}
-
         <main>
             <div class="linkholder mt-3">
                 <div class="mapholder position-relative">
-                    <div id="map">
-
-                    </div>
+                    <div id="map"></div>
                     <!-- Overlay Buttons -->
-
-                    <div class="position-absolute top-0 start-0 mt-7 ms-7">
-                        <button class="btn btn-light btn-lg" data-toggle="collapse" data-target="#form"
-                                id="collapseButton"><b>Get
-                            your<br> Guide </b><img src="{% static 'images/clickme.webp' %}" alt="Tour Guide Button"
-                                                    height="35" width="20">
-                        </button>
+                    <div class="position-absolute top-0 start-0 mt-7 ms-7" style="padding: 10px;">
+                        <div class="btn btn-light btn-lg"
+                             id="collapseButton" onclick="showForm(true)">
+                            <b>Get your<br> Guide </b><img src="{% static 'images/clickme.webp' %}"
+                                                           alt="Tour Guide Button"
+                                                           height="35" width="20">
+                        </div>
                         <!-- Overlay Form -->
                         <form method="post">
                             {% csrf_token %}
-                            <div class="collapse out" id="form">
-                                <div class="row">
-
-                                    <div>
-
-                                        <div class="card" style="max-width: 400px; margin: 0">
-
-                                            <button type="button" class="btn btn-light dropdown-toggle"
-                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                                    id="hideFormButton">
-                                                <strong style="font-size: 20px;"> Get Your Guide</strong>
-                                            </button>
-                                            <div class="card-body">
-                                                <div class="form-group">
-                                                    <label for="id_departure_date">What is your departure day?</label>
-                                                    <input type="date" class="form-control" id="id_departure_date"
-                                                           name="departure_date">
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label for="id_departure_time">What is your departure time?</label>
-                                                    <input type="time" class="form-control" id="id_departure_date"
-                                                           name="departure_date">
-
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label for="id_moving_preference">How do you mainly prefer moving
-                                                        around?</label>
-                                                    <select class="form-control" id="id_moving_preference"
-                                                            name="moving_preference">
-                                                        <!-- Options for moving preference go here -->
-                                                        <option value="car">Car</option>
-                                                        <option value="bus">Bus</option>
-                                                        <option value="train">Train</option>
-                                                        <option value="bike">Bike</option>
-                                                        <option value="walking">Walking</option>
-
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label for="id_main_interests">What are your main interests?</label>
-                                                    <select multiple class="form-control" id="id_main_interests"
-                                                            name="main_interests[]">
-                                                        <option value="nature">Nature and Outdoor Activities</option>
-                                                        <option value="culture">Cultural Experiences</option>
-                                                        <option value="adventure">Adventure Sports</option>
-                                                        <option value="food">Food and Culinary</option>
-                                                        <option value="history">Historical Sites</option>
-                                                        <option value="shopping">Shopping</option>
-                                                        <option value="other">Other</option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group text-center mt-4 mb-4">
-                                                    <button type="submit" class="btn btn-primary btn-lg">Start</button>
-                                                </div>
-
-                                            </div>
+                            <div class="accordion-body collapse" id="form">
+                                <div class="card" style="height: 460px; width: 350px; margin: 0">
+                                    <button type="button" class="btn btn-light"
+                                             id="hideFormButton" onclick="showForm(false)">
+                                        <strong style="font-size: 20px;">Get Your Guide</strong>
+                                    </button>
+                                    <div class="card-body">
+                                        <!-- Form fields  -->
+                                        <div class="form-group">
+                                            <label for="id_departure_date">What is your departure day?</label>
+                                            <input type="date" class="form-control" id="id_departure_date"
+                                                   name="departure_date">
                                         </div>
+
+                                        <div class="form-group">
+                                            <label for="id_departure_time">What is your departure time?</label>
+                                            <input type="time" class="form-control" id="id_departure_date"
+                                                   name="departure_date">
+
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="id_moving_preference">How do you mainly prefer moving
+                                                around?</label>
+                                            <select class="form-control" id="id_moving_preference"
+                                                    name="moving_preference">
+                                                <!-- Options for moving preference go here -->
+                                                <option value="car">Car</option>
+                                                <option value="bus">Bus</option>
+                                                <option value="train">Train</option>
+                                                <option value="bike">Bike</option>
+                                                <option value="walking">Walking</option>
+
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="id_main_interests">What are your main interests?</label>
+                                            <select multiple class="form-control" id="id_main_interests"
+                                                    name="main_interests[]">
+                                                <option value="nature">Nature and Outdoor Activities</option>
+                                                <option value="culture">Cultural Experiences</option>
+                                                <option value="adventure">Adventure Sports</option>
+                                                <option value="food">Food and Culinary</option>
+                                                <option value="history">Historical Sites</option>
+                                                <option value="shopping">Shopping</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group text-center mt-4 mb-4">
+                                            <button type="submit" class="btn btn-primary btn-lg">Start</button>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
                         </form>
-
                     </div>
-
-                    <!-- End First Buttons -->
 
                     <!-- Information button -->
-
-                    <div class="position-absolute top-0 end-0 mt-7 me-7">
-
-                        <button style="width: 300px; border-radius: 15px;" class="btn btn-light" class="btn btn-light"
-                                data-toggle="collapse"
-                                data-target="#infoWindowBox"
-                                id="collapseButtonInfo"
-                                aria-controls="infoWindowBox"
-                        >
-                            <b>Weather <i class="fas fa-angle-down"></i> </b></button>
-
+                    <div class="position-absolute top-0 end-0 mt-7 me-7" style="padding: 10px;">
+                        <button style="width: 300px; border-radius: 15px;" class="btn btn-light" onclick="showWeatherCard()" id="collapseButtonInfo">
+                            <b>Weather <i class="fas fa-angle-down"></i> </b>
+                        </button>
                         <div class="container bg-light" id="infoWindowBox"
-                             style="max-height: 300px; width: 300px; border-radius: 15px;" onclick="loadWeatherCard()">
-                            <p id="hideBoxButton" class="text-center font-weight-bold"
-                               style="font-size: 20px;">{{ weather.city }} <i
-                                    class="fas fa-angle-up"></i></p>
-
-                            <div class="col m-0 p-0">
-                                <span class="text-start font-weight-normal" style="font-size: 18px;" id="time"> </span>
-                                <br/>
-                                <span class="text-start font-weight-normal" style="font-size: 18px;" id="date"></span>
-                            </div>
+                             style="height: 350px; width: 300px; border-radius: 15px;">
 
 
-                            <div class="row align-content-start ">
-                                <div class="col col-6">
-                                    <div class="table-borderless">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <span class="font-weight-bold"
-                                                          style="font-size: 25px;"> {{ weather.temperature }}&deg;C </span>
-                                                </td>
-                                                <td>
-                                                    <img src="http://openweathermap.org/img/w/{{ weather.icon }}.png"
-                                                         alt="weather icon" height="80px" width="80px"/>
-
-                                                </td>
-                                            </tr>
-
-                                        </table>
-
-                                    </div>
-                                </div>
-
-                                <div class="col col-6 text-center align-items-center d-flex">
-                                    <div class="flex-grow-1" style="font-size: 15px;">
-                                        <div><i class="fas fa-wind fa-fw" style="color: blue;"></i> <span
-                                                class="ms-1"> {{ weather.wind_speed }} m/s  </span></div>
-                                        <div><i class="fas fa-tint fa-fw" style="color:blue;"></i> <span
-                                                class="ms-1"> {{ weather.wind_direction }}&deg;</span></div>
-                                    </div>
-                                </div>
-                                <span style="font-size: 20px;">{{ weather.description }}</span> <br/><br/>
-
-
-                                <div class="row align-content-start">
-                                    <div class="col col-6 text-center align-items-center d-flex">
-                                        <div class="flex-grow-1" style="font-size: 15px;">
-                                            <div><i class="fas fa-tint" style="color: blue;"></i> Humidity <span
-                                                    class="ms-1"> </span> <br/> {{ weather.humidity }}%
-                                            </div>
-                                            <div><i class="fas fa-sun" style="color: blue;"></i> Sunrise <span
-                                                    class="ms-1"> </span> <br/> {{ weather.sunrise }}</div>
-                                        </div>
-                                    </div>
-                                    <div class="col col-6 text-center align-items-center d-flex">
-                                        <div class="flex-grow-1" style="font-size: 15px;">
-                                            <div><i class="fas fa-thermometer-half" style="color: blue;"></i> Uv index
-                                                <span
-                                                        class="ms-1"> </span> <br/> 5 of 11
-                                            </div>
-                                            <div><i class="fas fa-cloud-sun" style="color: blue;"></i> Sunset <span
-                                                    class="ms-1"> </span> <br/> {{ weather.sunset }} </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-
+                            <!-- weather info ends -->
                         </div>
-
                     </div>
-
                 </div>
             </div>
         </main>
-        <!-- End Overlay Buttons -->
     </div>
-    </div>
-    </main>
-
     <script async src="https://maps.googleapis.com/maps/api/js?key={{ key }}&callback=initMap"></script>
-
-
-    </div>
 
 
 
@@ -222,8 +119,18 @@
             const formattedTime = `${hours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`;
 
 // Display the formatted date and time in the respective elements
-            document.getElementById('date').textContent = formattedDate;
-            document.getElementById('time').textContent = formattedTime;
+            // Check if the element with ID 'date' exists
+            var dateElement = document.getElementById('date');
+            if (dateElement) {
+                dateElement.textContent = formattedDate;
+            }
+
+// Check if the element with ID 'time' exists before setting its
+            var timeElement = document.getElementById('time');
+            if (timeElement) {
+                timeElement.textContent = formattedTime;
+            }
+
 
         }
 
@@ -243,80 +150,79 @@
         function loadWeatherCard() {
 
 
- var cardContent = `        <p id="hideBoxButton" class="text-center font-weight-bold"
-                               style="font-size: 20px;">{{ weather.city }} <i
-                                    class="fas fa-angle-up"></i></p>
+            var cardContent = `            <!-- Weather information  -->
 
-                            <div class="col m-0 p-0">
-                                <span class="text-start font-weight-normal" style="font-size: 18px;" id="time"> </span>
-                                <br/>
-                                <span class="text-start font-weight-normal" style="font-size: 18px;" id="date"></span>
-                            </div>
+     <p onclick="infoCloser()"  id="hideBoxButton" class="text-center font-weight-bold" style="font-size: 20px;">
+         {{weather.city }} <i class="fas fa-angle-up"></i></p>
 
-
-                            <div class="row align-content-start ">
-                                <div class="col col-6">
-                                    <div class="table-borderless">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <span class="font-weight-bold"
-                                                          style="font-size: 25px;"> {{ weather.temperature }}&deg;C </span>
-                                                </td>
-                                                <td>
-                                                    <img src="http://openweathermap.org/img/w/{{ weather.icon }}.png"
-                                                         alt="weather icon" height="80px" width="80px"/>
-
-                                                </td>
-                                            </tr>
-
-                                        </table>
-
-                                    </div>
-                                </div>
-
-                                <div class="col col-6 text-center align-items-center d-flex">
-                                    <div class="flex-grow-1" style="font-size: 15px;">
-                                        <div><i class="fas fa-wind fa-fw" style="color: blue;"></i> <span
-                                                class="ms-1"> {{ weather.wind_speed }} m/s  </span></div>
-                                        <div><i class="fas fa-tint fa-fw" style="color:blue;"></i> <span
-                                                class="ms-1"> {{ weather.wind_direction }}&deg;</span></div>
-                                    </div>
-                                </div>
-                                <span style="font-size: 20px;">{{ weather.description }}</span> <br/><br/>
-
-
-                                <div class="row align-content-start">
-                                    <div class="col col-6 text-center align-items-center d-flex">
-                                        <div class="flex-grow-1" style="font-size: 15px;">
-                                            <div><i class="fas fa-tint" style="color: blue;"></i> Humidity <span
-                                                    class="ms-1"> </span> <br/> {{ weather.humidity }}%
-                                            </div>
-                                            <div><i class="fas fa-sun" style="color: blue;"></i> Sunrise <span
-                                                    class="ms-1"> </span> <br/> {{ weather.sunrise }}</div>
-                                        </div>
-                                    </div>
-                                    <div class="col col-6 text-center align-items-center d-flex">
-                                        <div class="flex-grow-1" style="font-size: 15px;">
-                                            <div><i class="fas fa-thermometer-half" style="color: blue;"></i> Uv index
-                                                <span
-                                                        class="ms-1"> </span> <br/> 5 of 11
-                                            </div>
-                                            <div><i class="fas fa-cloud-sun" style="color: blue;"></i> Sunset <span
-                                                    class="ms-1"> </span> <br/> {{ weather.sunset }} </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-
+                        <div class="col m-0 p-0">
+                            <span class="text-start font-weight-normal" style="font-size: 18px;" id="time"> </span>
+                            <br />
+                            <span class="text-start font-weight-normal" style="font-size: 18px;" id="date"></span>
                         </div>
 
+
+                        <div class="row align-content-start ">
+                            <div class="col col-6">
+                                <div class="table-borderless">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <span class="font-weight-bold" style="font-size: 25px;">
+                                                    {{weather.temperature }}&deg;C </span>
+                                            </td>
+                                            <td>
+                                                <img src="http://openweathermap.org/img/w/{{ weather.icon }}.png"
+                                                    alt="weather icon" height="80px" width="80px" />
+
+                                            </td>
+                                        </tr>
+
+                                    </table>
+
+                                </div>
+                            </div>
+
+                            <div class="col col-6 text-center align-items-center d-flex">
+                                <div class="flex-grow-1" style="font-size: 15px;">
+                                    <div><i class="fas fa-wind fa-fw" style="color: blue;"></i> <span class="ms-1">
+                                        {{weather.wind_speed }} m/s </span></div>
+                                    <div><i class="fas fa-tint fa-fw" style="color:blue;"></i> <span class="ms-1"> {{weather.wind_direction }}&deg;</span></div>
+                                </div>
+                            </div>
+                            <span style="font-size: 20px;">{{ weather.description }}</span> <br /><br />
+
+
+                            <div class="row align-content-start">
+                                <div class="col col-6 text-center align-items-center d-flex">
+                                    <div class="flex-grow-1" style="font-size: 15px;">
+                                        <div><i class="fas fa-tint" style="color: blue;"></i> Humidity <span
+                                                class="ms-1"> </span> <br /> {{ weather.humidity }}%
+                                        </div>
+                                        <div><i class="fas fa-sun" style="color: blue;"></i> Sunrise <span class="ms-1">
+                                            </span> <br /> {{ weather.sunrise }}</div>
+                                    </div>
+                                </div>
+                                <div class="col col-6 text-center align-items-center d-flex">
+                                    <div class="flex-grow-1" style="font-size: 15px;">
+                                        <div><i class="fas fa-thermometer-half" style="color: blue;"></i> Uv index
+                                            <span class="ms-1"> </span> <br /> 5 of 11
+                                        </div>
+                                        <div><i class="fas fa-cloud-sun" style="color: blue;"></i> Sunset <span
+                                                class="ms-1"> </span> <br /> {{ weather.sunset }} </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
                     `;
-    $('#infoWindowBox').html(cardContent);
+
+            jQuery('#infoWindowBox').html(cardContent);
         }
 
+
     </script>
+
 
 
 

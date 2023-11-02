@@ -1,6 +1,7 @@
 import json
 import datetime
 
+import livepopulartimes
 from django.http import HttpResponse
 from django.views.generic import ListView
 from django.views import View
@@ -10,6 +11,7 @@ import googlemaps
 from django.conf import settings
 from .forms import *
 import requests
+
 
 class HomeView(ListView):
     template_name = "cagliaritour/home.html"
@@ -22,18 +24,19 @@ def get_temperature(city):
     print(city)
     url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid=' + settings.WEATHER_API_KEY
 
-    city_weather = requests.get(url.format(city)).json()  # request the API data and convert the JSON to Python data types
+    city_weather = requests.get(
+        url.format(city)).json()  # request the API data and convert the JSON to Python data types
     json_city_weather = json.dumps(city_weather, separators=(',', ':'), ensure_ascii=True)
     # print(json_city_weather)
     weather = {
         "city": city_weather['name'],
         "temperature": round(city_weather['main']['temp']),
-        "humidity":city_weather['main']['humidity'],
-        "sunrise":convert_unix_timestamp(city_weather['sys']['sunrise']),
+        "humidity": city_weather['main']['humidity'],
+        "sunrise": convert_unix_timestamp(city_weather['sys']['sunrise']),
         "sunset": convert_unix_timestamp(city_weather['sys']['sunset']),
         "description": city_weather['weather'][0]['description'],
         "icon": city_weather['weather'][0]['icon'],
-        "wind_speed":city_weather['wind']['speed'],
+        "wind_speed": city_weather['wind']['speed'],
         "wind_direction": city_weather['wind']['deg'],
 
     }
@@ -49,24 +52,27 @@ def convert_unix_timestamp(unix_timestamp):
     human_readable_time = dt_object.strftime('%H:%M:%S')
 
     return human_readable_time
+
+
 class MapView(View):
     template_name = "cagliaritour/map.html"
 
     def get(self, request):
         key = settings.GOOGLE_MAP_API_KEY
-        eligable_locations = Locations.objects.filter(place_id__isnull=False)
+        eligable_locations = Locations.objects.all()
         locations = []
         form = TravelPreferenceForm
         for a in eligable_locations:
             data = {
                 "lat": float(a.lat),
                 "lng": float(a.lng),
-                "name": a.name
+                "name": a.name,
+                "icon": a.icon_image
 
             }
 
             locations.append(data)
-        json_locations = json.dumps(locations, separators=(',', ':'),ensure_ascii=True)
+        json_locations = json.dumps(locations, separators=(',', ':'), ensure_ascii=True)
 
         # print(json_locations)
         context = {
@@ -196,9 +202,11 @@ def get_average_crowd_level(api_key, place_id):
     url = f"https://maps.googleapis.com/maps/api/place/details/json?placeid={place_id}&key={api_key}"
     response = requests.get(url)
     data = response.json()
-    print(data)
+
 
     return data
+
+
 def crowd_level_view(request):
     api_key = settings.GOOGLE_MAP_API_KEY
     place_id = "ChIJ_-a_NJsz5xIR56i_kxzifnE"
@@ -219,27 +227,53 @@ def crowd_level_view(request):
     # Render the HTML template with crowd level data
     return render(request, 'cagliaritour/crowd_level.html', {'crowd_level_data': crowd_level_data})
 
+
 def crowd_level_barchart(request):
-  latitude = request.GET.get('latitude')
-  longitude = request.GET.get('longitude')
+    latitude = request.GET.get('latitude')
+    longitude = request.GET.get('longitude')
 
-  # Create a Google Maps client
-  gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+    # Create a Google Maps client
+    gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
 
-  # Get the crowd level at the specified location
-  crowd_level = gmaps.places_nearby(location=(latitude, longitude), radius=500, type='restaurant')['results'][0]['place_data']['business_status']
+    # Get the crowd level at the specified location
+    crowd_level = \
+    gmaps.places_nearby(location=(latitude, longitude), radius=500, type='restaurant')['results'][0]['place_data'][
+        'business_status']
 
-  # Generate a barchart data set
-  crowd_level_chart_data = {
-    'labels': ['Very low', 'Low', 'Medium', 'High', 'Very high'],
-    'datasets': [{
-      'data': [0, 0, 0, 0, 0],
-      'backgroundColor': ['#008000', '#FFFF00', '#FFA500', '#FF0000', '#800000']
-    }]
-  }
+    # Generate a barchart data set
+    crowd_level_chart_data = {
+        'labels': ['Very low', 'Low', 'Medium', 'High', 'Very high'],
+        'datasets': [{
+            'data': [0, 0, 0, 0, 0],
+            'backgroundColor': ['#008000', '#FFFF00', '#FFA500', '#FF0000', '#800000']
+        }]
+    }
 
-  # Set the crowd level data point
-  crowd_level_chart_data['datasets'][0]['data'][crowd_level] = 1
+    # Set the crowd level data point
+    crowd_level_chart_data['datasets'][0]['data'][crowd_level] = 1
 
-  # Return the barchart data as a JSON object
-  return HttpResponse(json.dumps(crowd_level_chart_data), content_type='application/json')
+    # Return the barchart data as a JSON object
+    return HttpResponse(json.dumps(crowd_level_chart_data), content_type='application/json')
+
+
+def get_popular_times(request):
+    # gmaps = googlemaps.Client(key=settings.GOOGLE_MAP_API_KEY)
+    # business_id = "ChIJF34OGQ405xIRMTCrO2y0ifg"
+    #
+    # result = gmaps.geocode("cagliari museum")[0]
+    # print(result)
+    # place_id = result.get('place_id', {})
+    # print(place_id)
+    # place = gmaps.place(place_id, fields=['user_ratings_total', 'reviews', 'name'])
+    #
+    # if 'user_ratings_total' in place:
+    #     popular_times_data = place['user_ratings_total']
+    #     # Process and use popular_times_data as needed
+    # else:
+    #     popular_times_data = None
+    #     # Handle the case where popular times data is not available
+    popular_times_data = livepopulartimes.get_populartimes_by_PlaceID(settings.GOOGLE_MAP_API_KEY,
+                                                                      "ChIJtW0qSJp0hlQRj22fXuPh7s4")
+    popular_times_data=popular_times_data['populartimes']
+    json_places = json.dumps(popular_times_data, separators=(',', ':'), ensure_ascii=True)
+    return render(request, 'cagliaritour/crowd_level.html', {'popular_times_data': json_places})

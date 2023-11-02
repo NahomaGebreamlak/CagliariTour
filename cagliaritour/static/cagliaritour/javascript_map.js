@@ -8,11 +8,18 @@ function initMap() {
     var infoWindow = [];
 
     map = new google.maps.Map(document.getElementById("map"), {
-        center: {lat: firstLocation.lat, lng: firstLocation.lng},
+        // address of cagliari
+        center: {lat: 39.224865143130586,  lng: 9.122197204531535},
         zoom: 14,
+        styles: [{
+            featureType: 'poi',
+            stylers: [{ visibility: 'off' }] // Hide points of interest
+        }],
         mapTypeControl: true,
+        // change position of map buttons
         mapTypeControlOptions: {
-            style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR, position: google.maps.ControlPosition.BOTTOM_CENTER,
+            style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+            position: google.maps.ControlPosition.BOTTOM_CENTER,
 
         },
         zoomControl: true,
@@ -28,21 +35,17 @@ function initMap() {
         fullscreenControl: true,
 
     });
-    const icons = {
-        cathedral: {
-            icon: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.rawpixel.com%2Fsearch%2Ftown&psig=AOvVaw0ek0W_WauXbSZJWWMwmb74&ust=1698140014850000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCIDb8tfui4IDFQAAAAAdAAAAABAF",
-        }, stadium: {
-            icon: "https://maps.google.com/mapfiles/kml/pal2/icon49.png",
-        }, info: {
-            icon: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.rawpixel.com%2Fsearch%2Ftown&psig=AOvVaw0ek0W_WauXbSZJWWMwmb74&ust=1698140014850000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCIDb8tfui4IDFQAAAAAdAAAAABAF",
-        },
-    };
-    locations.forEach(function (location) {
+        locations.forEach(function (location) {
+
         var marker = new google.maps.Marker({
             position: {lat: location.lat, lng: location.lng},
             map: map,
+            animation: google.maps.Animation.DROP,
+
             title: location.name,
-            icon: icons["stadium"].icon
+            icon: "http://127.0.0.1:8000/static/images/"+location.icon,
+            label: { color: '#000000', fontWeight: 'bold', fontSize: '14px', text: location.name },
+            optimized: true,
         });
 
         var infowindow = new google.maps.InfoWindow({
@@ -55,7 +58,9 @@ function initMap() {
             infoWindow.forEach(function (iw) {
                 iw.close();
             });
+
             setContentForDiv(location.name);
+            draw_popular_time_chart();
 
             infowindow.open(map, marker)
             //  alert("this is me" + location.name);
@@ -77,13 +82,30 @@ function setContentForDiv(placename) {
 
 // Change content of a div element using jQuery
     // Change content of a Bootstrap card using jQuery
-
+showWeatherCard()
     var cardContent = `<div class="card-body">
-                    <h5 class="card-title">${placename}</h5>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Duomo_di_Cagliari_Sardegna.jpg" class="card-img-top" alt="Image Alt Text">
+                    <div class="card-title" onclick="infoCloser()">${placename}<i class="fas fa-times cancel-button" ></i></div>
+                     <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Duomo_di_Cagliari_Sardegna.jpg" class="card-img-top" alt="Image Alt Text">
                     <p class="card-text">some discription about this place</p>
+                    <label for="daySelector">Select a day:</label>
+    <select id="daySelector" class="form-control form-control-sm">
+        <option value="Monday">Monday</option>
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        <option value="Friday">Friday</option>
+        <option value="Saturday">Saturday</option>
+        <option value="Sunday">Sunday</option>
+    </select>
+<a href="https://www.google.com/">
+            <img src="http://127.0.0.1:8000/static/images/google_on_white_hdpi.png"  height="20px" alt="Powered by Google">
+
+<canvas id="popularTimesChart" ></canvas>
+    </a>
+    
                   </div>`;
-    $('#infoWindowBox').html(cardContent);
+    jQuery('#infoWindowBox').height(530);
+    jQuery('#infoWindowBox').html(cardContent);
 }
 
 
@@ -120,7 +142,7 @@ function drawRoute(startingAddress, destinationAddress, travelMode, color) {
 
     // Request the route
     directionsService.route({
-        origin: startingAddress, destination: destinationAddress, waypoints: waypoints, travelMode: travelMode// You can also use BICYCLING, WALKING, etc.
+        origin: startingAddress, destination: destinationAddress, waypoints: waypoints, travelMode: travelMode//
     }, function (response, status) {
         if (status === 'OK') {
             // Display the route on the map
@@ -136,64 +158,182 @@ function drawRoute(startingAddress, destinationAddress, travelMode, color) {
 window.initMap = initMap;
 
 // Wait for the document to be ready
-$(document).ready(function () {
+var $j = jQuery.noConflict();
+
+$j(document).ready(function () {
     // Select the collapse element by its ID
-    var collapseElement = $('#form');
+    var collapseElement = jQuery('#form');
 // When the form hide button is clicked
-    $('#hideFormButton').on('click', function () {
+    jQuery('#hideFormButton').on('click', function () {
         event.preventDefault(); // Prevent the default behavior of the button click
 
         // Hide the form
         collapseElement.hide();
         // Show the toggle button
-        $('#collapseButton').show();
+       jQuery('#collapseButton').show();
     });
     // When the collapse is shown
     collapseElement.on('shown.bs.collapse', function () {
         // Hide the button
         collapseElement.show();
-        $('#collapseButton').hide();
+        jQuery('#collapseButton').hide();
 
     });
 
     // When the collapse is hidden
     collapseElement.on('hidden.bs.collapse', function () {
         // Show the button
-        $('#collapseButton').show();
+        jQuery('#collapseButton').show();
         collapseElement.hide();
     });
 });
+function infoCloser() {
+
+  jQuery('#collapseButtonInfo').show();
+  jQuery('#infoWindowBox').hide();
+  jQuery('#infoWindowBox').height(350);
+  loadWeatherCard();
+}
+
+function showWeatherCard(){
+    jQuery('#collapseButtonInfo').hide();
+  jQuery('#infoWindowBox').show();
+}
+
+
+function showForm(flag){
+    if(flag){
+     jQuery('#form').show();
+      jQuery('#collapseButton').hide();
+    }else {
+        jQuery('#form').hide();
+      jQuery('#collapseButton').show();
+
+    }
+}
 
 
 // Wait for the document to be ready for info box
-$(document).ready(function () {
+$j(document).ready(function () {
+
+    loadWeatherCard();
     // Select the collapse element by its ID
-    var collapseElement = $('#infoWindowBox');
-    $('#collapseButtonInfo').hide();
+    var collapseElement = jQuery('#infoWindowBox');
+    jQuery('#collapseButtonInfo').hide();
+
 // When the form hide button is clicked
-    $('#hideBoxButton').on('click', function () {
+    jQuery('#hideBoxButton').on('click', function () {
         event.preventDefault(); // Prevent the default behavior of the button click
 
         // Hide the form
         collapseElement.hide();
         // Show the toggle button
-        $('#collapseButtonInfo').show();
+       jQuery('#collapseButtonInfo').show();
     });
 
     // When the collapse is shown
     collapseElement.on('shown.bs.collapse', function () {
         // Hide the button
+        jQuery('#infoWindowBox').height(300);
         collapseElement.show();
-        $('#collapseButtonInfo').hide();
+        jQuery('#collapseButtonInfo').hide();
 
     });
 
     // When the collapse is hidden
     collapseElement.on('hidden.bs.collapse', function () {
         // Show the button
-        $('#collapseButtonInfo').show();
+        jQuery('#collapseButtonInfo').show();
         collapseElement.hide();
+
     });
+
+
+
+
+
 });
 
+// draw popular chart
+
+function getBarColor(value) {
+      if (value > 75) {
+        return '#FF0000';
+      } else if (value > 50) {
+        return '#0b0b93';
+      } else {
+        return '#2f6dce';
+      }
+    }
+function  draw_popular_time_chart(){
+      // Get the data for the graph
+    const popularTimesData = [{
+      'name': 'Monday',
+      'data': [0, 0, 0, 0, 0, 0, 0, 0, 33, 44, 47, 52, 61, 67, 71, 70, 70, 73, 70, 56, 38, 21, 0, 0]
+    }, {
+      'name': 'Tuesday',
+      'data': [0, 0, 0, 0, 0, 0, 0, 0, 42, 58, 58, 53, 53, 61, 68, 75, 66, 54, 46, 35, 25, 17, 0, 0]
+    }, {
+      'name': 'Wednesday',
+      'data': [0, 0, 0, 0, 0, 0, 0, 0, 38, 55, 62, 71, 79, 80, 89, 87, 78, 57, 45, 34, 25, 13, 0, 0]
+    }, {
+      'name': 'Thursday',
+      'data': [0, 0, 0, 0, 0, 0, 0, 0, 25, 38, 54, 64, 76, 86, 92, 96, 81, 64, 46, 32, 26, 21, 0, 0]
+    }, {
+      'name': 'Friday',
+      'data': [0, 0, 0, 0, 0, 0, 0, 0, 31, 49, 66, 72, 75, 76, 88, 92, 86, 65, 50, 31, 21, 9, 0, 0]
+    }, {
+      'name': 'Saturday',
+      'data': [0, 0, 0, 0, 0, 0, 0, 0, 25, 46, 64, 75, 72, 78, 83, 99, 100, 75, 56, 44, 39, 31, 0, 0]
+    }, {
+      'name': 'Sunday',
+      'data': [0, 0, 0, 0, 0, 0, 0, 0, 12, 25, 40, 53, 71, 82, 92, 92, 90, 77, 64, 48, 29, 15, 0, 0]
+    }];
+const daySelector = document.getElementById('daySelector');
+const chartData = popularTimesData.find(day => day.name === daySelector.value);
+// remove 0 from the data
+const modifiedData = chartData.data.slice(8, 22);
+
+const chart = new Chart(document.getElementById('popularTimesChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+        labels: Array.from({ length: modifiedData.length }, (_, i) => i + 8), // Labels from 8 to 21
+         datasets: [{
+            label: chartData.name,
+            data: modifiedData,
+            backgroundColor: chartData.data.map(value => getBarColor(value)),
+            borderRadius: 2,
+
+        }],
+    },
+    options: {
+        plugins: {
+            legend: {
+                display: false,
+                position: 'top'
+            },
+            title: {
+                display: true,
+                text: 'Popular Times'
+            }
+        },
+
+    }
+});
+
+daySelector.addEventListener('change', () => {
+   const selectedDay = daySelector.value;
+const selectedChartData = popularTimesData.find(day => day.name === selectedDay);
+
+// Extract the data from index 8 to index 21 (excluding the last 2 numbers)
+const modifiedData = selectedChartData.data.slice(8, 22);
+
+chart.data.labels = Array.from({ length: modifiedData.length }, (_, i) => i + 8);
+chart.data.datasets[0].label = selectedChartData.name;
+chart.data.datasets[0].data = modifiedData;
+chart.data.datasets[0].backgroundColor = modifiedData.map(value => getBarColor(value));
+chart.update();
+
+});
+}
 

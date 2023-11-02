@@ -1,26 +1,103 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.1.1/chart.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+    <label for="daySelector">Select a day:</label>
+    <select id="daySelector" class="form-control form-control-sm">
+        <option value="Monday">Monday</option>
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        <option value="Friday">Friday</option>
+        <option value="Saturday">Saturday</option>
+        <option value="Sunday">Sunday</option>
+    </select>
+<a href="https://www.google.com/">
+            <img src="{% static 'images/google_on_white_hdpi.png' %}" alt="powered by google">
+
+    </a>
+    <canvas id="popularTimesChart" style="max-height: 400px; max-width: 400px;"></canvas>
 
 <script>
-  // Get the crowd level data for the restaurant
-  var crowdLevelData = await fetch('/crowd_level_barchart/?latitude=40.714353&longitude=-74.005973');
-
-  // Convert the crowd level data to JSON
-  var crowdLevelChartData = await crowdLevelData.json();
-
-  // Create a new Chart.js chart
-  var crowdLevelChart = new Chart(document.getElementById('crowd-level-chart'), {
-    type: 'bar',
-    data: crowdLevelChartData,
-    options: {
-      title: {
-        display: true,
-        text: 'Crowd level at 40.714353, -74.005973'
+    function getBarColor(value) {
+      if (value > 75) {
+        return '#FF0000';
+      } else if (value < 50) {
+        return '#FFFF00';
+      } else {
+        return '#00FF00';
       }
     }
-  });
+function  draw_popular_time_chart(popular_times_data){
+   const popularTimesData = popular_times_data;
+const daySelector = document.getElementById('daySelector');
+const chartData = popularTimesData.find(day => day.name === daySelector.value);
+
+const chart = new Chart(document.getElementById('popularTimesChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+        labels: Array.from({ length: 24 }, (_, i) => i), // 0 to 23
+        datasets: [{
+            label: chartData.name,
+            data: chartData.data,
+            backgroundColor: chartData.data.map(value => getBarColor(value)),
+            borderRadius: 2,
+
+        }],
+    },
+    options: {
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            },
+            title: {
+                display: true,
+                text: 'Popular Times'
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100,
+                title: {
+                    display: true,
+                    text: 'Percentage'
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Hour'
+                }
+            }
+        }
+    }
+});
+
+daySelector.addEventListener('change', () => {
+    const selectedDay = daySelector.value;
+    const selectedChartData = popularTimesData.find(day => day.name === selectedDay);
+
+    chart.data.labels = Array.from({ length: 24 }, (_, i) => i);
+    chart.data.datasets[0].label = selectedChartData.name;
+    chart.data.datasets[0].data = selectedChartData.data;
+    chart.data.datasets[0].backgroundColor = selectedChartData.data.map(value => getBarColor(value));
+    chart.update();
+});
+}
+
 </script>
 
-
-<!-- In your Django template -->
-<div style="width: 80%; margin: 0 auto;">
-    <canvas id="crowd-level-chart"></canvas>
-</div>
+</body>
+</html>
