@@ -82,7 +82,7 @@ function setContentForDiv(placename) {
 
 // Change content of a div element using jQuery
     // Change content of a Bootstrap card using jQuery
-showWeatherCard()
+showWeatherCard();
     var cardContent = `<div class="card-body">
                     <div class="card-title" onclick="infoCloser()">${placename}<i class="fas fa-times cancel-button" ></i></div>
                      <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Duomo_di_Cagliari_Sardegna.jpg" class="card-img-top" alt="Image Alt Text">

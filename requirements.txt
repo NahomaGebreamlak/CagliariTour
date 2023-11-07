@@ -1,0 +1,6 @@
+python = 3.10
+Django~=4.2.5
+requests~=2.31.0
+xhtml2pdf~=0.2.11
+LivePopularTimes~=1.3
+googlemaps~=4.10.0

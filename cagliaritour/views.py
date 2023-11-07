@@ -73,13 +73,14 @@ class MapView(View):
 
             locations.append(data)
         json_locations = json.dumps(locations, separators=(',', ':'), ensure_ascii=True)
+        weather_data = json.dumps(get_temperature("Cagliari"), separators=(',', ':'), ensure_ascii=True)
 
         # print(json_locations)
         context = {
             "key": key,
             "locations": json_locations,
             "form": form,
-            "weather": get_temperature("Cagliari")
+            "weather": weather_data
         }
 
         return render(request, self.template_name, context)
@@ -203,7 +204,6 @@ def get_average_crowd_level(api_key, place_id):
     response = requests.get(url)
     data = response.json()
 
-
     return data
 
 
@@ -237,8 +237,8 @@ def crowd_level_barchart(request):
 
     # Get the crowd level at the specified location
     crowd_level = \
-    gmaps.places_nearby(location=(latitude, longitude), radius=500, type='restaurant')['results'][0]['place_data'][
-        'business_status']
+        gmaps.places_nearby(location=(latitude, longitude), radius=500, type='restaurant')['results'][0]['place_data'][
+            'business_status']
 
     # Generate a barchart data set
     crowd_level_chart_data = {
@@ -274,6 +274,6 @@ def get_popular_times(request):
     #     # Handle the case where popular times data is not available
     popular_times_data = livepopulartimes.get_populartimes_by_PlaceID(settings.GOOGLE_MAP_API_KEY,
                                                                       "ChIJtW0qSJp0hlQRj22fXuPh7s4")
-    popular_times_data=popular_times_data['populartimes']
+    popular_times_data = popular_times_data['populartimes']
     json_places = json.dumps(popular_times_data, separators=(',', ':'), ensure_ascii=True)
     return render(request, 'cagliaritour/crowd_level.html', {'popular_times_data': json_places})

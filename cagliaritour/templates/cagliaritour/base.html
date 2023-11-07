@@ -24,6 +24,8 @@
 <script src="//cdn.datatables.net/plug-ins/1.10.21/sorting/datetime-moment.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.1.1/chart.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<script id="weatherCard" src="{% static 'cagliaritour/weather_card.js' %}">{{ weather|safe }}</script>
+<script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
 
 <!--  custom JavaScript file -->
 <script id="locationData" src="{% static 'cagliaritour/javascript_map.js' %}">{{ locations|safe }}</script>

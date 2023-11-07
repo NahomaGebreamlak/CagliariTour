@@ -3,7 +3,12 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-    <script>jQuery.noConflict();
+    <script>
+        jQuery.noConflict();
+
+
+
+
     </script>
 
     <div class="container-fluid">
@@ -13,11 +18,12 @@
                     <div id="map"></div>
                     <!-- Overlay Buttons -->
                     <div class="position-absolute top-0 start-0 mt-7 ms-7" style="padding: 10px;">
-                        <div class="btn btn-light btn-lg"
-                             id="collapseButton" onclick="showForm(true)">
-                            <b>Get your<br> Guide </b><img src="{% static 'images/clickme.webp' %}"
-                                                           alt="Tour Guide Button"
-                                                           height="35" width="20">
+                        <div class="btn btn-light btn-lg button-with-image"
+                             id="collapseButton" onclick="showForm(true)" style="width: 180px; height: 90px" >
+<b class="button-text">Get your <br/>Guide </b>
+
+  <img src="{% static 'images/clickme.webp' %}" alt="Image" class="button-image" height="35" width="60">
+
                         </div>
                         <!-- Overlay Form -->
                         <form method="post">
@@ -26,7 +32,7 @@
                                 <div class="card" style="height: 460px; width: 350px; margin: 0">
                                     <button type="button" class="btn btn-light"
                                              id="hideFormButton" onclick="showForm(false)">
-                                        <strong style="font-size: 20px;">Get Your Guide</strong>
+                                        <strong style="font-size: 20px;">Get Your Guide <i class="fas fa-angle-down"></i></strong>
                                     </button>
                                     <div class="card-body">
                                         <!-- Form fields  -->
@@ -102,126 +108,11 @@
 
 
 
-    <script>
-        // Function to update the displayed time
-        function updateDateTime() {
-
-            // Get the current date and time
-            const currentDateTime = new Date();
-
-// Format the date in the format "MM/DD/YYYY"
-            const formattedDate = `${currentDateTime.getMonth() + 1}/${currentDateTime.getDate()}/${currentDateTime.getFullYear()}`;
-
-// Format the time in 12-hour format with AM/PM
-            const hours = currentDateTime.getHours() % 12 || 12;
-            const minutes = currentDateTime.getMinutes();
-            const amPm = currentDateTime.getHours() >= 12 ? 'PM' : 'AM';
-            const formattedTime = `${hours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`;
-
-// Display the formatted date and time in the respective elements
-            // Check if the element with ID 'date' exists
-            var dateElement = document.getElementById('date');
-            if (dateElement) {
-                dateElement.textContent = formattedDate;
-            }
-
-// Check if the element with ID 'time' exists before setting its
-            var timeElement = document.getElementById('time');
-            if (timeElement) {
-                timeElement.textContent = formattedTime;
-            }
+    <script id="dateandtime" src="{% static 'cagliaritour/date_time.js' %}"></script>
 
 
-        }
-
-        // Update the time immediately when the page loads
-        updateDateTime();
-
-        // Update the time every second (1000 milliseconds)
-        setInterval(updateDateTime, 1000);
 
 
-    </script>
-
-
-    <script>
-
-
-        function loadWeatherCard() {
-
-
-            var cardContent = `            <!-- Weather information  -->
-
-     <p onclick="infoCloser()"  id="hideBoxButton" class="text-center font-weight-bold" style="font-size: 20px;">
-         {{weather.city }} <i class="fas fa-angle-up"></i></p>
-
-                        <div class="col m-0 p-0">
-                            <span class="text-start font-weight-normal" style="font-size: 18px;" id="time"> </span>
-                            <br />
-                            <span class="text-start font-weight-normal" style="font-size: 18px;" id="date"></span>
-                        </div>
-
-
-                        <div class="row align-content-start ">
-                            <div class="col col-6">
-                                <div class="table-borderless">
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <span class="font-weight-bold" style="font-size: 25px;">
-                                                    {{weather.temperature }}&deg;C </span>
-                                            </td>
-                                            <td>
-                                                <img src="http://openweathermap.org/img/w/{{ weather.icon }}.png"
-                                                    alt="weather icon" height="80px" width="80px" />
-
-                                            </td>
-                                        </tr>
-
-                                    </table>
-
-                                </div>
-                            </div>
-
-                            <div class="col col-6 text-center align-items-center d-flex">
-                                <div class="flex-grow-1" style="font-size: 15px;">
-                                    <div><i class="fas fa-wind fa-fw" style="color: blue;"></i> <span class="ms-1">
-                                        {{weather.wind_speed }} m/s </span></div>
-                                    <div><i class="fas fa-tint fa-fw" style="color:blue;"></i> <span class="ms-1"> {{weather.wind_direction }}&deg;</span></div>
-                                </div>
-                            </div>
-                            <span style="font-size: 20px;">{{ weather.description }}</span> <br /><br />
-
-
-                            <div class="row align-content-start">
-                                <div class="col col-6 text-center align-items-center d-flex">
-                                    <div class="flex-grow-1" style="font-size: 15px;">
-                                        <div><i class="fas fa-tint" style="color: blue;"></i> Humidity <span
-                                                class="ms-1"> </span> <br /> {{ weather.humidity }}%
-                                        </div>
-                                        <div><i class="fas fa-sun" style="color: blue;"></i> Sunrise <span class="ms-1">
-                                            </span> <br /> {{ weather.sunrise }}</div>
-                                    </div>
-                                </div>
-                                <div class="col col-6 text-center align-items-center d-flex">
-                                    <div class="flex-grow-1" style="font-size: 15px;">
-                                        <div><i class="fas fa-thermometer-half" style="color: blue;"></i> Uv index
-                                            <span class="ms-1"> </span> <br /> 5 of 11
-                                        </div>
-                                        <div><i class="fas fa-cloud-sun" style="color: blue;"></i> Sunset <span
-                                                class="ms-1"> </span> <br /> {{ weather.sunset }} </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    `;
-
-            jQuery('#infoWindowBox').html(cardContent);
-        }
-
-
-    </script>
 
 
 

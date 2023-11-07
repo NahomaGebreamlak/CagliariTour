@@ -5,15 +5,16 @@
 }
 
 #map{
-      height: 100vh; /* Full height of the viewport */
-width: 100vw;
+      min-height: 100%; /* Full height of the viewport */
+min-width: 100%;
 
 
 }
 body, html {
     height: 100vh; /* Full height of the viewport */
-
-    margin: 0;
+    width: 100vw;
+    margin: 0px;
+    padding: 0px;
     overflow: hidden; /* Prevent scrolling on the entire page */
 }
 
@@ -39,10 +40,10 @@ body, html {
 .myTable td, .myTable th {
     border: 0.01em solid #e3e2e2;
   }
-  
+
 .myTable tr:nth-child(even){background-color: #f9f8f8;}
 
-/* Formats the text*/ 
+/* Formats the text*/
 #ourtable3_filter,
 #ourtable3_length,
 #ourtable3_info,
@@ -52,7 +53,7 @@ body, html {
     color: #333;
 }
 
-/* Formats the input fields*/ 
+/* Formats the input fields*/
 #ourtable3_filter input,
 #ourtable3_length select{
     border: 1px solid rgb(3, 154, 204);
@@ -84,7 +85,7 @@ form{
     margin-left: 15px;
     margin-bottom: 20px;
     border-radius: 5px;
-    
+
     background-color: rgb(0, 0, 80);
     color: white
 }
@@ -113,7 +114,7 @@ form{
 .linkholder{
     box-shadow: 0 0 20px rgba(0, 0, 0, .15);
     flex-direction: column;
-   
+
 }
 
 
@@ -182,3 +183,26 @@ form{
         top: 0;
         right: 0;
     }
+
+    .button-with-image {
+  position: relative;
+  display: inline-block;
+   border: 1px solid gainsboro;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.button-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px 20px; /* You can adjust the padding according to your preference */
+}
+
+.button-image {
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
