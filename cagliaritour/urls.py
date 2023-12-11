@@ -9,5 +9,6 @@ urlpatterns = [
     path("crowdlevel", crowd_level_view, name='crowd_level'),
     path("crowd_level_barchart/<str:latitude>/<str:longitude>/", crowd_level_barchart, name='crowd_level_show'),
     path('popular_times/', get_popular_times, name='popular_times'),
+    path('getroute/', calculate_route, name='getroute'),
 
 ]

@@ -2,11 +2,47 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
+    <style>
+        #daysContainer {
+            overflow-x: auto;
+            white-space: nowrap;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 30px;
+        }
 
+        .dayButton {
+            display: inline-block;
+            margin-right: 10px;
+            margin-top: 20px;
+            padding: 8px 12px;
+            color: #000;
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .dayButton.clicked {
+            background-color: lightblue;
+        }
+
+        .list-group-item {
+            display: flex;
+            list-style-type: none;
+            justify-content: space-between;
+            padding: 0px;
+            margin: 0px;
+            margin-bottom: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Adjust the values as needed */
+            transition: box-shadow 0.3s ease-in-out;
+
+        }
+
+    </style>
     <script>
         jQuery.noConflict();
-
-
 
 
     </script>
@@ -19,20 +55,21 @@
                     <!-- Overlay Buttons -->
                     <div class="position-absolute top-0 start-0 mt-7 ms-7" style="padding: 10px;">
                         <div class="btn btn-light btn-lg button-with-image"
-                             id="collapseButton" onclick="showForm(true)" style="width: 180px; height: 90px" >
-<b class="button-text">Get your <br/>Guide </b>
-
-  <img src="{% static 'images/clickme.webp' %}" alt="Image" class="button-image" height="35" width="60">
-
+                             id="collapseButton" onclick="showForm(true)" style="width: 180px; height: 90px">
+                            <b class="button-text">Get your <br/>Guide </b>
+                            <div height="35" width="50">
+                                <img src="{% static 'images/hand_image.png' %}" alt="Image" class="button-image">
+                            </div>
                         </div>
                         <!-- Overlay Form -->
-                        <form method="post">
+                        <form>
                             {% csrf_token %}
                             <div class="accordion-body collapse" id="form">
                                 <div class="card" style="height: 460px; width: 350px; margin: 0">
                                     <button type="button" class="btn btn-light"
-                                             id="hideFormButton" onclick="showForm(false)">
-                                        <strong style="font-size: 20px;">Get Your Guide <i class="fas fa-angle-down"></i></strong>
+                                            id="hideFormButton" onclick="showForm(false)">
+                                        <strong style="font-size: 20px;">Get Your Guide <i
+                                                class="fas fa-angle-down"></i></strong>
                                     </button>
                                     <div class="card-body">
                                         <!-- Form fields  -->
@@ -79,7 +116,9 @@
                                         </div>
 
                                         <div class="form-group text-center mt-4 mb-4">
-                                            <button type="submit" class="btn btn-primary btn-lg">Start</button>
+                                            <button type="button" class="btn btn-primary btn-lg"
+                                                    onclick="generateDayButtons(10)">Start
+                                            </button>
                                         </div>
 
                                     </div>
@@ -87,10 +126,17 @@
                             </div>
                         </form>
                     </div>
+                    <!-- Div for displaying the Days Button -->
+                    <div class="position-absolute top-0 start-50 translate-middle d-flex align-items-center justify-content-center btn-light"
+                         id="daysContainer" style="padding: 20px; margin: 20px;">
+
+                    </div>
+                    <!-- End of Days Button div -->
 
                     <!-- Information button -->
-                    <div class="position-absolute top-0 end-0 mt-7 me-7" style="padding: 10px;">
-                        <button style="width: 300px; border-radius: 15px;" class="btn btn-light" onclick="showWeatherCard()" id="collapseButtonInfo">
+                    <div class="position-absolute top-0 end-0 mt-7 me-7" style="padding: 0px;">
+                        <button style="width: 300px; border-radius: 15px;" class="btn btn-light"
+                                onclick="showWeatherCard()" id="collapseButtonInfo">
                             <b>Weather <i class="fas fa-angle-down"></i> </b>
                         </button>
                         <div class="container bg-light" id="infoWindowBox"
@@ -104,7 +150,7 @@
             </div>
         </main>
     </div>
-    <script async src="https://maps.googleapis.com/maps/api/js?key={{ key }}&callback=initMap"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ key }}&callback=initMap"></script>
 
 
 

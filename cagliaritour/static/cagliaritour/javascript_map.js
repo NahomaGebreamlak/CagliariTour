@@ -1,26 +1,29 @@
 let map
+let directionsService
+let directionsRenderer
 
 function initMap() {
+
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer();
+
     const locations = JSON.parse(document.getElementById('locationData').textContent);
 
     var firstLocation = locations[0];
     var secondLocation = locations[1];
     var infoWindow = [];
 
-    map = new google.maps.Map(document.getElementById("map"), {
-        // address of cagliari
-        center: {lat: 39.224865143130586,  lng: 9.122197204531535},
-        zoom: 14,
+    var mapOptions = {
+        center: {lat: firstLocation.lat, lng: firstLocation.lng},
+        zoom: 15,
         styles: [{
             featureType: 'poi',
-            stylers: [{ visibility: 'off' }] // Hide points of interest
+            stylers: [{visibility: 'off'}] // Hide points of interest
         }],
         mapTypeControl: true,
-        // change position of map buttons
         mapTypeControlOptions: {
             style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
             position: google.maps.ControlPosition.BOTTOM_CENTER,
-
         },
         zoomControl: true,
         zoomControlOptions: {
@@ -31,11 +34,14 @@ function initMap() {
         streetViewControlOptions: {
             position: google.maps.ControlPosition.BOTTOM_CENTER,
         },
-
         fullscreenControl: true,
+    };
 
-    });
-        locations.forEach(function (location) {
+    map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    //  directionsRenderer.setMap(map);
+    // // set this for drawing routes
+    //getLatitudeData();
+    locations.forEach(function (location) {
 
         var marker = new google.maps.Marker({
             position: {lat: location.lat, lng: location.lng},
@@ -43,8 +49,8 @@ function initMap() {
             animation: google.maps.Animation.DROP,
 
             title: location.name,
-            icon: "http://127.0.0.1:8000/static/images/"+location.icon,
-            label: { color: '#000000', fontWeight: 'bold', fontSize: '14px', text: location.name },
+            icon: "http://127.0.0.1:8000/static/images/" + location.icon,
+            // label: { color: '#000000', fontWeight: 'bold', fontSize: '14px', text: location.name },
             optimized: true,
         });
 
@@ -70,9 +76,7 @@ function initMap() {
 
     const transitLayer = new google.maps.TransitLayer();
     transitLayer.setMap(map);
-//        drawLine (firstLocation , secondLocation)
-// drawRoute("64CG+X8 Cagliari, Metropolitan City of Cagliari", "V.le Regina Margherita, 33, 09124 Cagliari CA",'DRIVING','red');
-// drawRoute("64CG+X8 Cagliari, Metropolitan City of Cagliari", "V.le Regina Margherita, 33, 09124 Cagliari CA",'WALKING','blue');
+//drawRoute("Piazza Costituzione, 09121 Cagliari CA", "07030 Zona Industriale Province of Sassari",'DRIVING','red');
 
 
 }
@@ -82,7 +86,7 @@ function setContentForDiv(placename) {
 
 // Change content of a div element using jQuery
     // Change content of a Bootstrap card using jQuery
-showWeatherCard();
+    showWeatherCard();
     var cardContent = `<div class="card-body">
                     <div class="card-title" onclick="infoCloser()">${placename}<i class="fas fa-times cancel-button" ></i></div>
                      <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Duomo_di_Cagliari_Sardegna.jpg" class="card-img-top" alt="Image Alt Text">
@@ -109,6 +113,49 @@ showWeatherCard();
 }
 
 
+// Function to draw multiple routes on the map
+function drawRoutesOnMap(routes) {
+    const lineSymbol = {path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 6};
+
+    routes.forEach((route, index) => {
+        // console.log(index % 2 === 0 ? "solid" : "Dash");
+        // Change line type
+var polylineSelector = index % 2 === 0
+  ? {
+      strokeColor: route.color,
+      strokeWeight: 6
+    }
+  : {
+      strokeOpacity: 0,
+      icons: [{ icon: lineSymbol, offset: '0', repeat: '20px' }],
+      strokeColor: route.color,
+      strokeWeight: 6,
+      strokeDashStyle: '5,5'
+    };
+
+        const directionsService = new google.maps.DirectionsService();
+        const directionsRenderer = new google.maps.DirectionsRenderer({
+            map: map,
+            polylineOptions: polylineSelector
+        });
+
+        const request = {
+            origin: route.start,
+            destination: route.end,
+            travelMode: 'DRIVING'
+        };
+
+        directionsService.route(request, function (response, status) {
+            if (status === 'OK') {
+                directionsRenderer.setDirections(response);
+            } else {
+                console.error('Directions request failed. Status:', status);
+            }
+        });
+    });
+}
+
+
 // function to draw line
 function drawLine(firstLocation, secondLocation) {
 
@@ -124,34 +171,48 @@ function drawLine(firstLocation, secondLocation) {
 
 }
 
-function drawRoute(startingAddress, destinationAddress, travelMode, color) {
+function renderDirections(result, color) {
 
 
-    // Create a DirectionsService object to use the route method and get a result
-    var directionsService = new google.maps.DirectionsService;
-
-    // Create a DirectionsRenderer object to display the route
-    var directionsDisplay = new google.maps.DirectionsRenderer({
-        map: map, polylineOptions: {
-            strokeColor: color // Set the desired color here
-        }
+    var directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsRenderer.setOptions({
+        polylineOptions: polylineOptions
     });
+    directionsRenderer.setMap(map);
+    directionsRenderer.setDirections(result);
+}
 
+
+function drawRoute(startingAddress, destinationAddress, travelMode, color) {
+    console.log("destination New One afternoon 1:-  " + destinationAddress);
+    var _DisplayRenderer = new google.maps.DirectionsRenderer();
+    var polylineOptions = {
+        strokeColor: color,
+        strokeOpacity: 1.0,
+        strokeWeight: 3
+    };
     // Define the waypoints and origin/destination
     var waypoints = [{location: startingAddress}, {location: destinationAddress}];
+    // Set polyline options with the specified color
 
-    // Request the route
     directionsService.route({
-        origin: startingAddress, destination: destinationAddress, waypoints: waypoints, travelMode: travelMode//
+        origin: startingAddress,
+        destination: destinationAddress,
+        waypoints: waypoints,
+        travelMode: travelMode
     }, function (response, status) {
         if (status === 'OK') {
-            // Display the route on the map
-            directionsDisplay.setDirections(response);
+            // Set the polyline options
+            _DisplayRenderer.setOptions({
+                polylineOptions: polylineOptions
+            });
+            _DisplayRenderer.setMap(map);
+            _DisplayRenderer.setDirections(response);
+
         } else {
             window.alert('Directions request failed due to ' + status);
         }
     });
-
 
 }
 
@@ -170,7 +231,7 @@ $j(document).ready(function () {
         // Hide the form
         collapseElement.hide();
         // Show the toggle button
-       jQuery('#collapseButton').show();
+        jQuery('#collapseButton').show();
     });
     // When the collapse is shown
     collapseElement.on('shown.bs.collapse', function () {
@@ -187,27 +248,28 @@ $j(document).ready(function () {
         collapseElement.hide();
     });
 });
+
 function infoCloser() {
 
-  jQuery('#collapseButtonInfo').show();
-  jQuery('#infoWindowBox').hide();
-  jQuery('#infoWindowBox').height(350);
-  loadWeatherCard();
+    jQuery('#collapseButtonInfo').show();
+    jQuery('#infoWindowBox').hide();
+    jQuery('#infoWindowBox').height(350);
+    loadWeatherCard();
 }
 
-function showWeatherCard(){
+function showWeatherCard() {
     jQuery('#collapseButtonInfo').hide();
-  jQuery('#infoWindowBox').show();
+    jQuery('#infoWindowBox').show();
 }
 
 
-function showForm(flag){
-    if(flag){
-     jQuery('#form').show();
-      jQuery('#collapseButton').hide();
-    }else {
+function showForm(flag) {
+    if (flag) {
+        jQuery('#form').show();
+        jQuery('#collapseButton').hide();
+    } else {
         jQuery('#form').hide();
-      jQuery('#collapseButton').show();
+        jQuery('#collapseButton').show();
 
     }
 }
@@ -228,7 +290,7 @@ $j(document).ready(function () {
         // Hide the form
         collapseElement.hide();
         // Show the toggle button
-       jQuery('#collapseButtonInfo').show();
+        jQuery('#collapseButtonInfo').show();
     });
 
     // When the collapse is shown
@@ -249,91 +311,125 @@ $j(document).ready(function () {
     });
 
 
-
-
-
 });
 
 // draw popular chart
 
 function getBarColor(value) {
-      if (value > 75) {
+    if (value > 75) {
         return '#FF0000';
-      } else if (value > 50) {
+    } else if (value > 50) {
         return '#0b0b93';
-      } else {
+    } else {
         return '#2f6dce';
-      }
     }
-function  draw_popular_time_chart(){
-      // Get the data for the graph
+}
+
+function draw_popular_time_chart() {
+    // Get the data for the graph
     const popularTimesData = [{
-      'name': 'Monday',
-      'data': [0, 0, 0, 0, 0, 0, 0, 0, 33, 44, 47, 52, 61, 67, 71, 70, 70, 73, 70, 56, 38, 21, 0, 0]
+        'name': 'Monday',
+        'data': [0, 0, 0, 0, 0, 0, 0, 0, 33, 44, 47, 52, 61, 67, 71, 70, 70, 73, 70, 56, 38, 21, 0, 0]
     }, {
-      'name': 'Tuesday',
-      'data': [0, 0, 0, 0, 0, 0, 0, 0, 42, 58, 58, 53, 53, 61, 68, 75, 66, 54, 46, 35, 25, 17, 0, 0]
+        'name': 'Tuesday',
+        'data': [0, 0, 0, 0, 0, 0, 0, 0, 42, 58, 58, 53, 53, 61, 68, 75, 66, 54, 46, 35, 25, 17, 0, 0]
     }, {
-      'name': 'Wednesday',
-      'data': [0, 0, 0, 0, 0, 0, 0, 0, 38, 55, 62, 71, 79, 80, 89, 87, 78, 57, 45, 34, 25, 13, 0, 0]
+        'name': 'Wednesday',
+        'data': [0, 0, 0, 0, 0, 0, 0, 0, 38, 55, 62, 71, 79, 80, 89, 87, 78, 57, 45, 34, 25, 13, 0, 0]
     }, {
-      'name': 'Thursday',
-      'data': [0, 0, 0, 0, 0, 0, 0, 0, 25, 38, 54, 64, 76, 86, 92, 96, 81, 64, 46, 32, 26, 21, 0, 0]
+        'name': 'Thursday',
+        'data': [0, 0, 0, 0, 0, 0, 0, 0, 25, 38, 54, 64, 76, 86, 92, 96, 81, 64, 46, 32, 26, 21, 0, 0]
     }, {
-      'name': 'Friday',
-      'data': [0, 0, 0, 0, 0, 0, 0, 0, 31, 49, 66, 72, 75, 76, 88, 92, 86, 65, 50, 31, 21, 9, 0, 0]
+        'name': 'Friday',
+        'data': [0, 0, 0, 0, 0, 0, 0, 0, 31, 49, 66, 72, 75, 76, 88, 92, 86, 65, 50, 31, 21, 9, 0, 0]
     }, {
-      'name': 'Saturday',
-      'data': [0, 0, 0, 0, 0, 0, 0, 0, 25, 46, 64, 75, 72, 78, 83, 99, 100, 75, 56, 44, 39, 31, 0, 0]
+        'name': 'Saturday',
+        'data': [0, 0, 0, 0, 0, 0, 0, 0, 25, 46, 64, 75, 72, 78, 83, 99, 100, 75, 56, 44, 39, 31, 0, 0]
     }, {
-      'name': 'Sunday',
-      'data': [0, 0, 0, 0, 0, 0, 0, 0, 12, 25, 40, 53, 71, 82, 92, 92, 90, 77, 64, 48, 29, 15, 0, 0]
+        'name': 'Sunday',
+        'data': [0, 0, 0, 0, 0, 0, 0, 0, 12, 25, 40, 53, 71, 82, 92, 92, 90, 77, 64, 48, 29, 15, 0, 0]
     }];
-const daySelector = document.getElementById('daySelector');
-const chartData = popularTimesData.find(day => day.name === daySelector.value);
+    const daySelector = document.getElementById('daySelector');
+    const chartData = popularTimesData.find(day => day.name === daySelector.value);
 // remove 0 from the data
-const modifiedData = chartData.data.slice(8, 22);
+    const modifiedData = chartData.data.slice(8, 22);
 
-const chart = new Chart(document.getElementById('popularTimesChart').getContext('2d'), {
-    type: 'bar',
-    data: {
-        labels: Array.from({ length: modifiedData.length }, (_, i) => i + 8), // Labels from 8 to 21
-         datasets: [{
-            label: chartData.name,
-            data: modifiedData,
-            backgroundColor: chartData.data.map(value => getBarColor(value)),
-            borderRadius: 2,
+    const chart = new Chart(document.getElementById('popularTimesChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: Array.from({length: modifiedData.length}, (_, i) => i + 8), // Labels from 8 to 21
+            datasets: [{
+                label: chartData.name,
+                data: modifiedData,
+                backgroundColor: chartData.data.map(value => getBarColor(value)),
+                borderRadius: 2,
 
-        }],
-    },
-    options: {
-        plugins: {
-            legend: {
-                display: false,
-                position: 'top'
-            },
-            title: {
-                display: true,
-                text: 'Popular Times'
-            }
+            }],
         },
+        options: {
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Popular Times'
+                }
+            },
 
-    }
-});
+        }
+    });
 
-daySelector.addEventListener('change', () => {
-   const selectedDay = daySelector.value;
-const selectedChartData = popularTimesData.find(day => day.name === selectedDay);
+    daySelector.addEventListener('change', () => {
+        const selectedDay = daySelector.value;
+        const selectedChartData = popularTimesData.find(day => day.name === selectedDay);
 
 // Extract the data from index 8 to index 21 (excluding the last 2 numbers)
-const modifiedData = selectedChartData.data.slice(8, 22);
+        const modifiedData = selectedChartData.data.slice(8, 22);
 
-chart.data.labels = Array.from({ length: modifiedData.length }, (_, i) => i + 8);
-chart.data.datasets[0].label = selectedChartData.name;
-chart.data.datasets[0].data = modifiedData;
-chart.data.datasets[0].backgroundColor = modifiedData.map(value => getBarColor(value));
-chart.update();
+        chart.data.labels = Array.from({length: modifiedData.length}, (_, i) => i + 8);
+        chart.data.datasets[0].label = selectedChartData.name;
+        chart.data.datasets[0].data = modifiedData;
+        chart.data.datasets[0].backgroundColor = modifiedData.map(value => getBarColor(value));
+        chart.update();
 
-});
+    });
 }
+
+
+// a function to find latitude and longitude of a city
+function getLatitudeData() {
+
+
+// Replace 'YOUR_CITY_NAME' with the name of your city
+    const cityName = 'Cagliari';
+
+// Use the Nominatim API to get city details
+    const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}`;
+
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data[0]) {
+                const boundingBox = data[0].boundingbox;
+                const minLatitude = parseFloat(boundingBox[0]);
+                const minLongitude = parseFloat(boundingBox[2]);
+                const maxLatitude = parseFloat(boundingBox[1]);
+                const maxLongitude = parseFloat(boundingBox[3]);
+
+                // Now you can use these values in your Google Maps initialization
+                console.log(`Min Latitude: ${minLatitude}, Min Longitude: ${minLongitude}`);
+                console.log(`Max Latitude: ${maxLatitude}, Max Longitude: ${maxLongitude}`);
+            } else {
+                console.error('City not found');
+            }
+        })
+        .catch(error => console.error('Error fetching data:', error));
+
+}
+
+
+
+
 

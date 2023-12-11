@@ -53,7 +53,7 @@ function loadWeatherCard() {
                                                 class="ms-1"> </span> <br /> ${json_weather.humidity }%
                                         </div>
                                         <div><i class="fas fa-sun" style="color: blue;"></i> Sunrise <span class="ms-1">
-                                            </span> <br /> ${json_weather.sunrise }}</div>
+                                            </span> <br /> ${json_weather.sunrise }</div>
                                     </div>
                                 </div>
                                 <div class="col col-6 text-center align-items-center d-flex">
