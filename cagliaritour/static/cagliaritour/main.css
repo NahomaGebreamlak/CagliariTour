@@ -1,69 +1,28 @@
-.mapholder{
-    height: 100vh; /* Full height of the viewport */
-    width: 100%;
-    overflow: hidden; /* Prevent scrolling */
-}
 
-#map{
-      min-height: 100%; /* Full height of the viewport */
-min-width: 100%;
-
-
-}
 body, html {
-    height: 100vh; /* Full height of the viewport */
-    width: 100vw;
-    margin: 0px;
-    padding: 0px;
-    overflow: hidden; /* Prevent scrolling on the entire page */
-}
-
-#ourtable3_wrapper{
-    width:100%;
-
-}
-
-.myTable{
-    font-size: 12px;
-    min-width: 400px;
+    margin: 0;
+    padding: 0;
+    height: 100%;
     overflow: hidden;
-    border-radius: 7px 7px 0 0;
-    box-shadow: 0 0 20px rgba(0, 0, 0, .15);
 }
 
-.myTable th {
-    background-color: #2D323E;
-    color: white;
-    font-weight: bold;
-  }
 
-.myTable td, .myTable th {
-    border: 0.01em solid #e3e2e2;
-  }
-
-.myTable tr:nth-child(even){background-color: #f9f8f8;}
-
-/* Formats the text*/
-#ourtable3_filter,
-#ourtable3_length,
-#ourtable3_info,
-#ourtable3_paginate{
-    font-size: 12px;
-    font-weight: bold;
-    color: #333;
+.mapholder {
+    height: 100vh;
+    width: 100vw;
+    padding: 0;
+    margin: 0;
+    position: relative;
 }
 
-/* Formats the input fields*/
-#ourtable3_filter input,
-#ourtable3_length select{
-    border: 1px solid rgb(3, 154, 204);
+#map {
+    height: 100vh;
+    width: 100vw;
+    padding: 0;
+    margin: 0;
 }
 
-.pageholder {
-    width: 100%;
-}
-
-form{
+form {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -71,14 +30,8 @@ form{
     width: 100%;
 }
 
-.titleholder,
-.linkholder{
-    display: flex;
-    margin-top: 10px;
-    width: 98%;
-    border-radius: 5px;
-}
-.ourbutton{
+
+.ourbutton {
     margin-right: 10px;
     height: 30px;
     width: 100px;
@@ -90,50 +43,39 @@ form{
     color: white
 }
 
-.ourbutton:hover{
+.ourbutton:hover {
     margin-right: 10px;
     background-color: rgb(142, 142, 142);
     color: white
 }
 
-.form1{
+.form1 {
     width: 30%;
 }
 
-form{
-    width:100%;
-}
-
-.titleholder{
-    display: 'flex';
-    background-color: #4267B2;
-    align-items: center;
-    height: 40px;
-}
-
-.linkholder{
-    box-shadow: 0 0 20px rgba(0, 0, 0, .15);
-    flex-direction: column;
-
+form {
+    width: 100%;
 }
 
 
-.title{
+.title {
     color: white;
 
     font-weight: bold;
     font-size: 15px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-    .marker-label {
-      background-color: white;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 14px;
-      font-weight: bold;
-    }
-.title2{
+
+.marker-label {
+    background-color: white;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.title2 {
     color: #333;
 
     font-weight: bold;
@@ -141,68 +83,103 @@ form{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.linkbox{
-    display: flex;
-    width:20%;
-    height: 50px;
-    justify-content: center;
-    text-align: center;
-    align-items: center;
-    border-radius: 5px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, .15);
 
-
+.container-fluid,
+.row,
+.col-md-3,
+.col-md-9 {
+    height: 100vh;
 }
 
-    .container-fluid,
-    .row,
-    .col-md-3,
-    .col-md-9 {
-        height: 100vh;
-    }
+#sidebar,
+main {
+    overflow-y: auto;
+}
 
-    #sidebar,
-    main {
-        overflow-y: auto;
-    }
-    #form {
-      transition-duration: 0.1ms; /* Set your desired duration in seconds */
-    }
+#form {
+    transition-duration: 0.1ms; /* Set your desired duration in seconds */
+}
 
-     .card-title {
-        white-space: nowrap; /* Prevent text from wrapping */
-        overflow: hidden; /* Hide overflowed text */
-        text-overflow: ellipsis; /* Display ellipsis (...) for overflowed text */
-        position: relative; /* Enable positioning for the cancel button */
-    }
+.card-title {
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide overflowed text */
+    text-overflow: ellipsis; /* Display ellipsis (...) for overflowed text */
+    position: relative; /* Enable positioning for the cancel button */
+}
 
-    .cancel-button {
-        position: absolute;
-        top: 0;
-        right: 0;
-    }
+.cancel-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
 
-    .button-with-image {
-  position: relative;
-  display: inline-block;
-   border: 1px solid gainsboro;
-  cursor: pointer;
-  overflow: hidden;
+.button-with-image {
+    position: relative;
+    display: inline-block;
+    border: 1px solid gainsboro;
+    cursor: pointer;
+    overflow: hidden;
 }
 
 .button-text {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 10px 20px; /* You can adjust the padding according to your preference */
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 10px 20px;
 }
 
 .button-image {
-  height: 80%;
-  object-fit: contain;
-  position: absolute;
-  top: 10px;
-  right: 0;
+    height: 80%;
+    object-fit: contain;
+    position: absolute;
+    top: 10px;
+    right: 0;
+}
+
+
+
+        #daysContainer {
+            overflow-x: auto;
+            white-space: nowrap;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 30px;
+        }
+
+        .dayButton {
+            display: inline-block;
+            margin-right: 10px;
+            margin-top: 20px;
+            padding: 8px 12px;
+            color: #000;
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .dayButton.clicked {
+            background-color: lightblue;
+        }
+
+        .list-group-item {
+            display: flex;
+            list-style-type: none;
+            justify-content: space-between;
+            padding: 0px;
+            margin: 0px;
+            margin-bottom: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Adjust the values as needed */
+            transition: box-shadow 0.3s ease-in-out;
+
+        }
+
+
+        .container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+     width: 100%;
+     padding-right: 0;
+     padding-left:0;
+    margin-right: auto;
+    margin-left: auto;
 }
