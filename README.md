@@ -39,7 +39,7 @@ To set up CTE Map on your system, follow these steps:
 
 1. Clone the repository.
    ```
-   https://github.com/NahomaGebreamlak/CagliariTour.git  ```
+   https://github.com/NahomaGebreamlak/CagliariTour.git 
 
 2. Navigate to the project directory.
    ```

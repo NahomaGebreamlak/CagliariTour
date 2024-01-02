@@ -2,13 +2,22 @@ from django.db import models
 
 class Locations(models.Model):
     name = models.CharField(max_length=500)
+    category = models.CharField(max_length=500,blank=True, null=True)
+    description = models.CharField(max_length=300,blank=True, null=True)
+    OpeningTime = models.JSONField(blank=True, null=True)
+    website_address = models.URLField(blank=True, null=True)
+    phone_number = models.CharField(max_length=50, blank=True, null=True)
     zipcode = models.CharField(max_length=200,blank=True, null=True)
     city = models.CharField(max_length=200,blank=True, null=True)
     country = models.CharField(max_length=200,blank=True, null=True)
     address = models.CharField(max_length=200,blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True,blank=True, null=True)
     edited_at = models.DateTimeField(auto_now=True)
-
+    toilet = models.BooleanField(null=True)
+    accessibility=models.BooleanField(null=True)
+    animals = models.BooleanField(null=True)
+    image = models.ImageField(upload_to='static/images/', null=True, blank=True)
+    visitTime= models.CharField(max_length=200,blank=True, null=True)
     lat = models.CharField(max_length=200,blank=True, null=True)
     lng = models.CharField(max_length=200,blank=True, null=True)
     place_id = models.CharField(max_length=200,blank=True, null=True)

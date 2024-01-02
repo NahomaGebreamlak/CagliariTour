@@ -130,7 +130,7 @@ function showRouteSelectionList(dayName, date) {
                      <div style="width: 280px; margin-top: 20px; overflow-y: auto; max-height: 200px;" style="margin: 0px; padding: 0px;background-color: lightskyblue">
   <div class="card p-0 m-0" style="background-color: lightskyblue">
     <div class="card-header text-center font-weight-bold">
-    <h4>  ${dayName} </h4>
+    <h6>  ${dayName} </h6>
     </div>
     <div class="card-body p-0" style="background-color: deepskyblue">
       <ul class="list-group list-group-flush card" id="list1" style="background-color: lightskyblue;">
@@ -145,7 +145,7 @@ function showRouteSelectionList(dayName, date) {
            <div style="width: 280px; margin-top: 20px; overflow-y: auto; max-height: 200px;" style="margin: 0px; padding: 0px; background-color: lightcoral">
   <div class="card p-0 m-0" style="background-color: lightcoral">
     <div class="card-header text-center font-weight-bold">
-     <h4> Remove </h4> 
+     <h6> Remove </h6> 
     </div>
     <div class="card-body p-0 m-0" style="background-color: lightcoral">
       <ul class="list-group list-group-flush card" id="list2" style="background-color: lightcoral;">
@@ -159,7 +159,7 @@ function showRouteSelectionList(dayName, date) {
 <div style="width: 280px; margin-top: 20px; overflow-y: auto; max-height: 200px;" style="margin: 0px; padding: 0px; background-color: lightyellow">
   <div class="card p-0 m-0" style="background-color: lightyellow">
     <div class="card-header text-center font-weight-bold">
-      <h4>Add</h4>
+      <h6>Add</h6>
     </div>
     <div class="card-body p-0 m-0" style="background-color: lightyellow">
       <ul class="list-group list-group-flush card" id="list3" style="background-color: lightyellow;">  

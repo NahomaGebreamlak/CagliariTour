@@ -21,27 +21,27 @@ class HomeView(ListView):
 
 
 def get_temperature(city):
-    print(city)
-    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid=' + settings.WEATHER_API_KEY
+    if settings.WEATHER_API_KEY != "":
+        url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid=' + settings.WEATHER_API_KEY
 
-    city_weather = requests.get(
-        url.format(city)).json()  # request the API data and convert the JSON to Python data types
-    json_city_weather = json.dumps(city_weather, separators=(',', ':'), ensure_ascii=True)
-    # print(json_city_weather)
-    weather = {
-        "city": city_weather['name'],
-        "temperature": round(city_weather['main']['temp']),
-        "humidity": city_weather['main']['humidity'],
-        "sunrise": convert_unix_timestamp(city_weather['sys']['sunrise']),
-        "sunset": convert_unix_timestamp(city_weather['sys']['sunset']),
-        "description": city_weather['weather'][0]['description'],
-        "icon": city_weather['weather'][0]['icon'],
-        "wind_speed": city_weather['wind']['speed'],
-        "wind_direction": city_weather['wind']['deg'],
+        city_weather = requests.get(
+            url.format(city)).json()  # request the API data and convert the JSON to Python data types
+        json_city_weather = json.dumps(city_weather, separators=(',', ':'), ensure_ascii=True)
+        # print(json_city_weather)
+        weather = {
+            "city": city_weather['name'],
+            "temperature": round(city_weather['main']['temp']),
+            "humidity": city_weather['main']['humidity'],
+            "sunrise": convert_unix_timestamp(city_weather['sys']['sunrise']),
+            "sunset": convert_unix_timestamp(city_weather['sys']['sunset']),
+            "description": city_weather['weather'][0]['description'],
+            "icon": city_weather['weather'][0]['icon'],
+            "wind_speed": city_weather['wind']['speed'],
+            "wind_direction": city_weather['wind']['deg'],
 
-    }
+        }
 
-    return weather
+        return weather
 
 
 def convert_unix_timestamp(unix_timestamp):
@@ -199,33 +199,8 @@ class GeocodingView(View):
         return render(request, self.template_name, context)
 
 
-def get_average_crowd_level(api_key, place_id):
-    url = f"https://maps.googleapis.com/maps/api/place/details/json?placeid={place_id}&key={api_key}"
-    response = requests.get(url)
-    data = response.json()
-
-    return data
 
 
-def crowd_level_view(request):
-    api_key = settings.GOOGLE_MAP_API_KEY
-    place_id = "ChIJ_-a_NJsz5xIR56i_kxzifnE"
-
-    crowd_level = get_average_crowd_level(api_key, place_id)
-
-    # Prepare data to pass to the template
-    crowd_level_data = [
-        ['Time', 'Crowd Level'],
-        ['8:00 AM', 50],
-        ['9:00 AM', 70],
-        ['10:00 AM', 85],
-        ['11:00 AM', 60],
-        ['12:00 PM', 75]
-        # Add more data points as needed
-    ]
-
-    # Render the HTML template with crowd level data
-    return render(request, 'cagliaritour/crowd_level.html', {'crowd_level_data': crowd_level_data})
 
 
 def crowd_level_barchart(request):
