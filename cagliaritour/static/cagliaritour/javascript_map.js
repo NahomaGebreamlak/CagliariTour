@@ -2,6 +2,7 @@ let map
 let directionsService
 let directionsRenderer
 
+// Function to initialize the map
 function initMap() {
 
     directionsService = new google.maps.DirectionsService();
@@ -112,7 +113,6 @@ function setContentForDiv(placename) {
     jQuery('#infoWindowBox').html(cardContent);
 }
 
-
 // Function to draw multiple routes on the map
 function drawRoutesOnMap(routes) {
     const lineSymbol = {path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 6};
@@ -120,23 +120,24 @@ function drawRoutesOnMap(routes) {
     routes.forEach((route, index) => {
         // console.log(index % 2 === 0 ? "solid" : "Dash");
         // Change line type
-var polylineSelector = index % 2 === 0
-  ? {
-      strokeColor: route.color,
-      strokeWeight: 6
-    }
-  : {
-      strokeOpacity: 0,
-      icons: [{ icon: lineSymbol, offset: '0', repeat: '20px' }],
-      strokeColor: route.color,
-      strokeWeight: 6,
-      strokeDashStyle: '5,5'
-    };
+        var polylineSelector = index % 2 === 0
+            ? {
+                strokeColor: route.color,
+                strokeWeight: 6
+            }
+            : {
+                strokeOpacity: 0,
+                icons: [{icon: lineSymbol, offset: '0', repeat: '20px'}],
+                strokeColor: route.color,
+                strokeWeight: 6,
+                strokeDashStyle: '5,5'
+            };
 
         const directionsService = new google.maps.DirectionsService();
         const directionsRenderer = new google.maps.DirectionsRenderer({
             map: map,
-            polylineOptions: polylineSelector
+            polylineOptions: polylineSelector,
+
         });
 
         const request = {
@@ -148,6 +149,22 @@ var polylineSelector = index % 2 === 0
         directionsService.route(request, function (response, status) {
             if (status === 'OK') {
                 directionsRenderer.setDirections(response);
+
+                // Add numbered markers along the route
+                var routepath = response.routes[0].legs[0];
+                for (var i = 0; i < routepath.steps.length; i++) {
+                    console.log(route.poinumber);
+                    addNumberedMarker(map, routepath.steps[i].start_location, route.poinumber, route.color);
+                }
+                 // Determine the route type
+                const routeType = response.routes[0].legs[0].steps[0].travel_mode;
+
+                const routeTypeInfo = getRouteTypeInfo(routeType);
+
+                // Display route information on the map (you can customize this based on your needs)
+                addLegend(routeTypeInfo);
+
+
             } else {
                 console.error('Directions request failed. Status:', status);
             }
@@ -155,6 +172,52 @@ var polylineSelector = index % 2 === 0
     });
 }
 
+// Function to get route type information
+function getRouteTypeInfo(routeType) {
+    switch (routeType) {
+        case 'WALKING':
+            return { label: 'Walking', icon: '🚶' };
+        case 'TRANSIT':
+            return { label: 'Transit', icon: '🚍' };
+        default:
+            return { label: 'Driving', icon: '🚗' };
+    }
+}
+// Function to add a legend on the map
+function addLegend(routeTypeInfo) {
+    // Customize this based on your needs
+    const legendDiv = document.createElement('div');
+    legendDiv.innerHTML = `<p style="font-size: 20px;">${routeTypeInfo.icon} ${routeTypeInfo.label}</p>`;
+    map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legendDiv);
+}
+
+
+
+
+
+// Function to add markers to the steps
+function addNumberedMarker(map, location, number, color) {
+    var marker = new google.maps.Marker({
+        position: location,
+        map: map,
+        label: {
+            text: number.toString(),
+            color: 'white'
+        },
+        icon: getMarkerIcon(color),
+
+    });
+}
+
+function getMarkerIcon(color) {
+    return {
+        path: google.maps.SymbolPath.CIRCLE,
+        fillColor: color,
+        fillOpacity: 1,
+        strokeWeight: 0,
+        scale: 10, // Adjust the scale based on your preference
+    };
+}
 
 // function to draw line
 function drawLine(firstLocation, secondLocation) {

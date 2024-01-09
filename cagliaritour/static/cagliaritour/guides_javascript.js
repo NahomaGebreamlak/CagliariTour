@@ -1,5 +1,5 @@
 // Thi javascript file hold functions for showing guide tours on map
-
+var mainTravelList = [];
 
 function getRandomColor() {
     // Generate a random hexadecimal color code
@@ -10,6 +10,31 @@ function getRandomColor() {
     }
     return color;
 }
+
+function refreshMap() {
+      var routesData = [];
+     for (let i = 0; i < mainTravelList.length; i++) {
+             if (i + 1 < mainTravelList.length ) {
+                    const currentPoi = mainTravelList[i]["name"];
+                    const nextPoi =  mainTravelList[i + 1]["name"];
+                    var randomColor = getRandomColor();
+
+                    // Call drawRoute function with current POI as start and next POI as destination
+                    routesData.push({
+                        poinumber: i + 1,
+                        start: currentPoi + " , Cagliari",
+                        end: nextPoi + " , Cagliari",
+                        color: randomColor
+                    });
+
+                    console.log(i + " Start: " + currentPoi + ", end: " + nextPoi + "\n");
+                }
+     }
+       // Draw routes on the map
+        drawRoutesOnMap(routesData);
+
+}
+
 
 function generateDayButtons(numDays) {
     const daysContainer = document.getElementById('daysContainer');
@@ -86,6 +111,7 @@ async function populateList(targetListId, bgcolor, date) {
 
                     // Call drawRoute function with current POI as start and next POI as destination
                     routesData.push({
+                        poinumber: i + 1,
                         start: currentPoi + " , Cagliari",
                         end: nextPoi + " , Cagliari",
                         color: randomColor
@@ -101,15 +127,20 @@ async function populateList(targetListId, bgcolor, date) {
 
         // Draw routes on the map
         drawRoutesOnMap(routesData);
-        console.log('Length of the list add ' + listdata.length);
+
+
+        if (targetListId == "list1") {
+            mainTravelList = [...listdata];
+        }
+
         listdata.forEach((item) => {
             const listItem = document.createElement('li');
             listItem.style.backgroundColor = bgcolor; // Set random background color
             listItem.draggable = true;
             listItem.classList.add('list-group-item');
             listItem.innerHTML = `
-        <span>${item.number}</span>
-        <span>${item.name}</span>
+        <span id="itemNumber">${item.number},</span>
+        <span>${item.name},</span>
         <span>${item.time}</span>
         <button class="btn"><i class="fa-solid fa-up-down-left-right"></i></button>`;
             list.appendChild(listItem);
@@ -140,7 +171,10 @@ function showRouteSelectionList(dayName, date) {
     </div>
   </div>
 </div>
-
+<br/>
+<div class="text-center">
+    <button class="btn btn-primary rounded" onclick="refreshMap()">Refresh</button>
+</div>
 
            <div style="width: 280px; margin-top: 20px; overflow-y: auto; max-height: 200px;" style="margin: 0px; padding: 0px; background-color: lightcoral">
   <div class="card p-0 m-0" style="background-color: lightcoral">
@@ -194,9 +228,63 @@ function showRouteSelectionList(dayName, date) {
         },
     });
 
-    // Reset the background color when the drag ends
-    drake.on('dragend', (el, source) => {
-        el.style.backgroundColor = '';
+    // // Reset the background color when the drag ends
+    // drake.on('dragend', (el, source) => {
+    //  // el.style.backgroundColor = '';
+    //
+    // });
+
+
+    drake.on('drop', function (el, target, source, sibling) {
+        const parent = el.parentNode;
+        const childNodes = parent.childNodes;
+
+        let index = 0;
+        for (const child of childNodes) {
+            if (child === el) {
+                break;
+            }
+            index++;
+        }
+
+
+        const draggedItemText = el.textContent.trim();
+        const splitText = draggedItemText.split(',');
+        if (target.id === 'list1') {
+            const poi = splitText[1].replace(/\n/g, '').replace(/\s+/g, ' ').trim();
+            const visitTime = splitText[2].replace(/\n/g, '').replace(/\s+/g, ' ').trim();
+            newItem = {number: index, name: poi, time: visitTime}
+            // Insert the new item at the specified position
+
+            mainTravelList.splice(index - 1, 0, newItem);
+            for (let i = index; i < mainTravelList.length; i++) {
+                mainTravelList[i].number += 1;
+            }
+            refreshListView();
+            console.log("Item add.........");
+        }
+        // Item removed from list
+        if (source.id === 'list1') {
+            const poi = splitText[1].replace(/\n/g, '').replace(/\s+/g, ' ').trim();
+
+            // Find the index of the item to be removed
+            const indexOfRemovedItem = mainTravelList.findIndex(item => item.name === poi);
+
+            if (indexOfRemovedItem !== -1) {
+                // Remove the item
+                mainTravelList.splice(indexOfRemovedItem, 1);
+
+                // Update the numbers after the removed item
+                for (let i = indexOfRemovedItem; i < mainTravelList.length; i++) {
+                    mainTravelList[i].number = i + 1;
+                }
+
+                refreshListView();
+                console.log("Item removed from List one .........");
+            }
+        }
+        console.log('Updated MainTravelList:', mainTravelList);
+
     });
 }
 
@@ -215,7 +303,28 @@ function calculateDateDifference() {
     // Calculate the difference in days
     const differenceInDays = Math.floor((departureDate - currentDate) / (1000 * 60 * 60 * 24));
 
-    // return result
-
     return differenceInDays;
+}
+
+
+// Function to refresh the list view based on mainTravelList
+function refreshListView() {
+    // Clear the existing list
+    const list = document.getElementById('list1'); // Replace 'yourListId' with the actual ID of your list
+
+    list.innerHTML = '';
+
+    // Recreate the list based on mainTravelList
+    mainTravelList.forEach((item) => {
+        const listItem = document.createElement('li');
+        listItem.style.backgroundColor = "#87CEFA"; // Set random background color
+        listItem.draggable = true;
+        listItem.classList.add('list-group-item');
+        listItem.innerHTML = `
+        <span id="itemNumber">${item.number},</span>
+        <span>${item.name},</span>
+        <span>${item.time}</span>
+        <button class="btn"><i class="fa-solid fa-up-down-left-right"></i></button>`;
+        list.appendChild(listItem);
+    });
 }
