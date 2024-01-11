@@ -115,84 +115,123 @@ function setContentForDiv(placename) {
 
 // Function to draw multiple routes on the map
 function drawRoutesOnMap(routes) {
-    const lineSymbol = {path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 6};
+    let routeTypeInfoList = [];
+    const lineSymbol = { path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 6 };
+    const directionsService = new google.maps.DirectionsService();
+
+    // Promises array to track directions requests
+    const directionPromises = [];
 
     routes.forEach((route, index) => {
-        // console.log(index % 2 === 0 ? "solid" : "Dash");
-        // Change line type
-        var polylineSelector = index % 2 === 0
+        const polylineSelector = index % 2 === 0
             ? {
                 strokeColor: route.color,
                 strokeWeight: 6
             }
             : {
                 strokeOpacity: 0,
-                icons: [{icon: lineSymbol, offset: '0', repeat: '20px'}],
+                icons: [{ icon: lineSymbol, offset: '0', repeat: '20px' }],
                 strokeColor: route.color,
                 strokeWeight: 6,
                 strokeDashStyle: '5,5'
             };
 
-        const directionsService = new google.maps.DirectionsService();
         const directionsRenderer = new google.maps.DirectionsRenderer({
             map: map,
             polylineOptions: polylineSelector,
-
+            suppressMarkers: true
         });
+        // Get the travel mode form value of travel mode
+const selectElement = document.getElementById('id_moving_preference');
+
+// Get the selected value
+const selectedValue = selectElement.value;
+
 
         const request = {
             origin: route.start,
             destination: route.end,
-            travelMode: 'DRIVING'
+            travelMode: selectedValue
         };
 
-        directionsService.route(request, function (response, status) {
-            if (status === 'OK') {
-                directionsRenderer.setDirections(response);
+        // Create a Promise for each directions request
+        const directionPromise = new Promise((resolve, reject) => {
+            directionsService.route(request, function (response, status) {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(response);
+                    // Add numbered markers along the route
+                    const routepath = response.routes[0].legs[0];
+                    for (let i = 0; i < routepath.steps.length; i++) {
+                        addNumberedMarker(map, routepath.steps[i].start_location, route.poinumber, route.color);
+                    }
 
-                // Add numbered markers along the route
-                var routepath = response.routes[0].legs[0];
-                for (var i = 0; i < routepath.steps.length; i++) {
-                    console.log(route.poinumber);
-                    addNumberedMarker(map, routepath.steps[i].start_location, route.poinumber, route.color);
+                    let concatenatedRouteTypeInfo = "";
+                    if (response.routes.length > 0 && response.routes[0].legs.length > 0 && response.routes[0].legs[0].steps.length > 0) {
+                        const steps = response.routes[0].legs[0].steps;
+                        const travelModes = steps.map((step) => step.travel_mode);
+                        const uniqueTravelModes = [...new Set(travelModes)];
+                        for (const mode of uniqueTravelModes) {
+                            concatenatedRouteTypeInfo += mode + "_";
+                        }
+                    } else {
+                        console.error("No valid route found in the response.");
+                    }
+
+                    const routeTypeInfo = getRouteTypeInfo(concatenatedRouteTypeInfo.slice(0, concatenatedRouteTypeInfo.lastIndexOf('_')));
+                    routeTypeInfo["number"] = route.poinumber;
+                    routeTypeInfoList.push(routeTypeInfo);
+                    resolve();  // Resolve the Promise once directions are processed
+                } else {
+                    console.error('Directions request failed. Status:', status);
+                    reject();  // Reject the Promise if there's an error
                 }
-                 // Determine the route type
-                const routeType = response.routes[0].legs[0].steps[0].travel_mode;
-
-                const routeTypeInfo = getRouteTypeInfo(routeType);
-
-                // Display route information on the map (you can customize this based on your needs)
-                addLegend(routeTypeInfo);
-
-
-            } else {
-                console.error('Directions request failed. Status:', status);
-            }
+            });
         });
+
+        directionPromises.push(directionPromise);
+    });
+
+    // Wait for all directions requests to complete before creating the legend
+    Promise.all(directionPromises).then(() => {
+        routeTypeInfoList.sort((a, b) =>  b.number - a.number);
+
+        addLegend(routeTypeInfoList);
     });
 }
+
 
 // Function to get route type information
 function getRouteTypeInfo(routeType) {
     switch (routeType) {
         case 'WALKING':
-            return { label: 'Walking', icon: '🚶' };
+            return {label: 'Walking', icon: '🚶'};
         case 'TRANSIT':
-            return { label: 'Transit', icon: '🚍' };
+            return {label: 'Transit', icon: '🚍'};
+        case 'WALKING_TRANSIT':
+            return {label: 'Walking and Transit', icon: '🚶🚍'};
+        case 'TRANSIT_WALKING':
+            return {label: 'Transit and Walking', icon: '🚍🚶'};
+        case 'DRIVING':
+            return {label: 'Driving', icon: '🚗'};
+        case 'WALKING_DRIVING':
+            return {label: 'Walking and Driving', icon: '🚶🚗'};
+        case 'DRIVING_WALKING':
+            return {label: 'Driving and Walking', icon: '🚗🚶'};
+        // Add more cases as needed
         default:
-            return { label: 'Driving', icon: '🚗' };
+            return {label: 'Unknown', icon: '❓'};
     }
 }
+
 // Function to add a legend on the map
-function addLegend(routeTypeInfo) {
-    // Customize this based on your needs
-    const legendDiv = document.createElement('div');
-    legendDiv.innerHTML = `<p style="font-size: 20px;">${routeTypeInfo.icon} ${routeTypeInfo.label}</p>`;
-    map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legendDiv);
+function addLegend(routeTypeInfoList) {
+
+    for (const routeTypeInfo of routeTypeInfoList) {
+        const legendDiv = document.createElement('div');
+        legendDiv.innerHTML = `<p style="font-size: 20px; background-color: #e0e0e0"> ${routeTypeInfo.number},${routeTypeInfo.icon} ${routeTypeInfo.label}</p>`;
+        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legendDiv);
+    }
 }
-
-
-
 
 
 // Function to add markers to the steps
@@ -234,16 +273,7 @@ function drawLine(firstLocation, secondLocation) {
 
 }
 
-function renderDirections(result, color) {
 
-
-    var directionsRenderer = new google.maps.DirectionsRenderer();
-    directionsRenderer.setOptions({
-        polylineOptions: polylineOptions
-    });
-    directionsRenderer.setMap(map);
-    directionsRenderer.setDirections(result);
-}
 
 
 function drawRoute(startingAddress, destinationAddress, travelMode, color) {

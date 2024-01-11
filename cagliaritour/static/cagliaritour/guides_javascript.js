@@ -27,7 +27,7 @@ function refreshMap() {
                         color: randomColor
                     });
 
-                    console.log(i + " Start: " + currentPoi + ", end: " + nextPoi + "\n");
+               //     console.log(i + " Start: " + currentPoi + ", end: " + nextPoi + "\n");
                 }
      }
        // Draw routes on the map
@@ -117,7 +117,7 @@ async function populateList(targetListId, bgcolor, date) {
                         color: randomColor
                     });
 
-                    console.log(i + " Start: " + currentPoi + ", end: " + nextPoi + "\n");
+                   // console.log(i + " Start: " + currentPoi + ", end: " + nextPoi + "\n");
                 }
 
             }
@@ -161,7 +161,7 @@ function showRouteSelectionList(dayName, date) {
                      <div style="width: 280px; margin-top: 20px; overflow-y: auto; max-height: 200px;" style="margin: 0px; padding: 0px;background-color: lightskyblue">
   <div class="card p-0 m-0" style="background-color: lightskyblue">
     <div class="card-header text-center font-weight-bold">
-    <h6>  ${dayName} </h6>
+    <h6>  ${dayName} <button class="btn btn-primary rounded" onclick="refreshMap()">Refresh</button></h6>
     </div>
     <div class="card-body p-0" style="background-color: deepskyblue">
       <ul class="list-group list-group-flush card" id="list1" style="background-color: lightskyblue;">
@@ -171,10 +171,7 @@ function showRouteSelectionList(dayName, date) {
     </div>
   </div>
 </div>
-<br/>
-<div class="text-center">
-    <button class="btn btn-primary rounded" onclick="refreshMap()">Refresh</button>
-</div>
+
 
            <div style="width: 280px; margin-top: 20px; overflow-y: auto; max-height: 200px;" style="margin: 0px; padding: 0px; background-color: lightcoral">
   <div class="card p-0 m-0" style="background-color: lightcoral">
