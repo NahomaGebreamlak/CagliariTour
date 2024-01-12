@@ -53,7 +53,7 @@ def convert_unix_timestamp(unix_timestamp):
 
     return human_readable_time
 
-
+# A class to get Information about different markers stored in database
 class MapView(View):
     template_name = "cagliaritour/map.html"
 
@@ -63,18 +63,25 @@ class MapView(View):
         locations = []
         form = TravelPreferenceForm
         for a in eligable_locations:
+            if not a.place_id:  # Check if place_id is empty
+                # If place_id is empty, get it using get_place_id function
+                a.place_id = get_place_id(a.lat, a.lng)
+                a.save()  # Save the updated place_id to the database
+
             data = {
                 "lat": float(a.lat),
                 "lng": float(a.lng),
                 "name": a.name,
-                "icon": a.icon_image
+                "icon": a.icon_image,
+                "description": a.description,
+                "image": a.image.url if a.image else '/static/images/museum.png',
+                "placeId": a.place_id,
 
             }
 
             locations.append(data)
         json_locations = json.dumps(locations, separators=(',', ':'), ensure_ascii=True)
         weather_data = json.dumps(get_temperature("Cagliari"), separators=(',', ':'), ensure_ascii=True)
-
         # print(json_locations)
         context = {
             "key": key,
@@ -203,56 +210,22 @@ class GeocodingView(View):
 
 
 
-def crowd_level_barchart(request):
-    latitude = request.GET.get('latitude')
-    longitude = request.GET.get('longitude')
 
-    # Create a Google Maps client
-    gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+def get_popular_times(request, place_id):
+    try:
+        # Assuming you have a function to retrieve popular times by place ID
+        popular_times_data = livepopulartimes.get_populartimes_by_PlaceID(settings.GOOGLE_MAP_API_KEY, "ChIJtW0qSJp0hlQRj22fXuPh7s4")
+        json_places = json.dumps(popular_times_data['populartimes'], separators=(',', ':'), ensure_ascii=True)
+        return JsonResponse({'data': json_places})
+    except Exception as e:
+        return JsonResponse({'error': str(e)})
 
-    # Get the crowd level at the specified location
-    crowd_level = \
-        gmaps.places_nearby(location=(latitude, longitude), radius=500, type='restaurant')['results'][0]['place_data'][
-            'business_status']
-
-    # Generate a barchart data set
-    crowd_level_chart_data = {
-        'labels': ['Very low', 'Low', 'Medium', 'High', 'Very high'],
-        'datasets': [{
-            'data': [0, 0, 0, 0, 0],
-            'backgroundColor': ['#008000', '#FFFF00', '#FFA500', '#FF0000', '#800000']
-        }]
-    }
-
-    # Set the crowd level data point
-    crowd_level_chart_data['datasets'][0]['data'][crowd_level] = 1
-
-    # Return the barchart data as a JSON object
-    return HttpResponse(json.dumps(crowd_level_chart_data), content_type='application/json')
-
-
-def get_popular_times(request):
-    # gmaps = googlemaps.Client(key=settings.GOOGLE_MAP_API_KEY)
-    # business_id = "ChIJF34OGQ405xIRMTCrO2y0ifg"
-    #
-    # result = gmaps.geocode("cagliari museum")[0]
-    # print(result)
-    # place_id = result.get('place_id', {})
-    # print(place_id)
-    # place = gmaps.place(place_id, fields=['user_ratings_total', 'reviews', 'name'])
-    #
-    # if 'user_ratings_total' in place:
-    #     popular_times_data = place['user_ratings_total']
-    #     # Process and use popular_times_data as needed
-    # else:
-    #     popular_times_data = None
-    #     # Handle the case where popular times data is not available
-    popular_times_data = livepopulartimes.get_populartimes_by_PlaceID(settings.GOOGLE_MAP_API_KEY,
-                                                                      "ChIJtW0qSJp0hlQRj22fXuPh7s4")
-    popular_times_data = popular_times_data['populartimes']
-    json_places = json.dumps(popular_times_data, separators=(',', ':'), ensure_ascii=True)
-    return render(request, 'cagliaritour/crowd_level.html', {'popular_times_data': json_places})
-
+# def get_popular_times():
+#     popular_times_data = livepopulartimes.get_populartimes_by_PlaceID(settings.GOOGLE_MAP_API_KEY,
+#                                                                       "ChIJtW0qSJp0hlQRj22fXuPh7s4")
+#     popular_times_data = popular_times_data['populartimes']
+#     json_places = json.dumps(popular_times_data, separators=(',', ':'), ensure_ascii=True)
+#     return json_places
 
 def calculate_route(request):
     json_response = {
@@ -315,3 +288,23 @@ def calculate_route(request):
         ]
     }
     return JsonResponse(json_response)
+
+# Function to get Place Id that will be used to retrieve popular times graph
+def get_place_id(latitude, longitude):
+    base_url = "https://maps.googleapis.com/maps/api/geocode/json"
+    params = {
+        'latlng': f"{latitude},{longitude}",
+        'key': settings.GOOGLE_MAP_API_KEY,
+    }
+
+    try:
+        response = requests.get(base_url, params=params)
+        data = response.json()
+
+        if response.status_code == 200 and data.get('status') == 'OK':
+            place_id = data['results'][0]['place_id']
+            return place_id
+        else:
+            print(f"Error: {data['status']} - {data.get('error_message', 'No error message')}")
+    except Exception as e:
+        print(f"Error making API request: {e}")

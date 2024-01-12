@@ -61,3 +61,29 @@ To set up CTE Map on your system, follow these steps:
 - Google Maps API
 - OpenWeatherMap API
 - SMTP Gmail
+
+
+
+## Setting Up Super Admin User 
+
+To create a super admin user in your Django project, follow these steps:
+
+1. Navigate to your project directory in the terminal.
+
+2. Run the following command to create a superuser:
+    ```bash
+    python manage.py createsuperuser
+    ```
+
+3. You will be prompted to enter a username, email address, and password for the superuser.
+
+4. After entering the required information, the superuser will be created, and you can use these credentials to log in to the Django admin panel.
+
+## Running the Development Server
+
+To run the development server, use the following command:
+
+```bash
+python manage.py runserver
+ ```
+Visit http://localhost:8000/admin/ in your web browser and log in using the superuser credentials.

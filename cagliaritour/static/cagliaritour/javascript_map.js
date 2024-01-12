@@ -66,8 +66,9 @@ function initMap() {
                 iw.close();
             });
 
-            setContentForDiv(location.name);
-            draw_popular_time_chart();
+            // Function to display some information about the place
+            setContentForDiv(location);
+            // Function to draw popular times graph
 
             infowindow.open(map, marker)
             //  alert("this is me" + location.name);
@@ -83,40 +84,28 @@ function initMap() {
 }
 
 
-function setContentForDiv(placename) {
+function setContentForDiv(placeInfo) {
 
-// Change content of a div element using jQuery
-    // Change content of a Bootstrap card using jQuery
+// Function to hide and display the weather card
     showWeatherCard();
-    var cardContent = `<div class="card-body">
-                    <div class="card-title" onclick="infoCloser()">${placename}<i class="fas fa-times cancel-button" ></i></div>
-                     <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Duomo_di_Cagliari_Sardegna.jpg" class="card-img-top" alt="Image Alt Text">
-                    <p class="card-text">some discription about this place</p>
-                    <label for="daySelector">Select a day:</label>
-    <select id="daySelector" class="form-control form-control-sm">
-        <option value="Monday">Monday</option>
-        <option value="Tuesday">Tuesday</option>
-        <option value="Wednesday">Wednesday</option>
-        <option value="Thursday">Thursday</option>
-        <option value="Friday">Friday</option>
-        <option value="Saturday">Saturday</option>
-        <option value="Sunday">Sunday</option>
-    </select>
-<a href="https://www.google.com/">
-            <img src="http://127.0.0.1:8000/static/images/google_on_white_hdpi.png"  height="20px" alt="Powered by Google">
 
-<canvas id="popularTimesChart" ></canvas>
-    </a>
-    
+     // Content of the div
+    var cardContent = `<div class="card-body">
+                    <div class="card-title" onclick="infoCloser()">${placeInfo.name}<i class="fas fa-times cancel-button" ></i></div>
+                     <img src="http://127.0.0.1:8000/${placeInfo.image}" class="card-img-top" alt="Image of ${placeInfo.name}">
+                    <p class="card-text" style="font-size: 14px">${placeInfo.description}</p>
                   </div>`;
-    jQuery('#infoWindowBox').height(530);
+    jQuery('#infoWindowBox').height(760);
     jQuery('#infoWindowBox').html(cardContent);
+    draw_popular_time_chart( `${placeInfo.placeId}`);
+
+
 }
 
 // Function to draw multiple routes on the map
 function drawRoutesOnMap(routes) {
     let routeTypeInfoList = [];
-    const lineSymbol = { path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 6 };
+    const lineSymbol = {path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 6};
     const directionsService = new google.maps.DirectionsService();
 
     // Promises array to track directions requests
@@ -130,7 +119,7 @@ function drawRoutesOnMap(routes) {
             }
             : {
                 strokeOpacity: 0,
-                icons: [{ icon: lineSymbol, offset: '0', repeat: '20px' }],
+                icons: [{icon: lineSymbol, offset: '0', repeat: '20px'}],
                 strokeColor: route.color,
                 strokeWeight: 6,
                 strokeDashStyle: '5,5'
@@ -142,10 +131,10 @@ function drawRoutesOnMap(routes) {
             suppressMarkers: true
         });
         // Get the travel mode form value of travel mode
-const selectElement = document.getElementById('id_moving_preference');
+        const selectElement = document.getElementById('id_moving_preference');
 
 // Get the selected value
-const selectedValue = selectElement.value;
+        const selectedValue = selectElement.value;
 
 
         const request = {
@@ -193,7 +182,7 @@ const selectedValue = selectElement.value;
 
     // Wait for all directions requests to complete before creating the legend
     Promise.all(directionPromises).then(() => {
-        routeTypeInfoList.sort((a, b) =>  b.number - a.number);
+        routeTypeInfoList.sort((a, b) => b.number - a.number);
 
         addLegend(routeTypeInfoList);
     });
@@ -274,10 +263,7 @@ function drawLine(firstLocation, secondLocation) {
 }
 
 
-
-
 function drawRoute(startingAddress, destinationAddress, travelMode, color) {
-    console.log("destination New One afternoon 1:-  " + destinationAddress);
     var _DisplayRenderer = new google.maps.DirectionsRenderer();
     var polylineOptions = {
         strokeColor: color,
@@ -418,77 +404,91 @@ function getBarColor(value) {
     }
 }
 
-function draw_popular_time_chart() {
-    // Get the data for the graph
-    const popularTimesData = [{
-        'name': 'Monday',
-        'data': [0, 0, 0, 0, 0, 0, 0, 0, 33, 44, 47, 52, 61, 67, 71, 70, 70, 73, 70, 56, 38, 21, 0, 0]
-    }, {
-        'name': 'Tuesday',
-        'data': [0, 0, 0, 0, 0, 0, 0, 0, 42, 58, 58, 53, 53, 61, 68, 75, 66, 54, 46, 35, 25, 17, 0, 0]
-    }, {
-        'name': 'Wednesday',
-        'data': [0, 0, 0, 0, 0, 0, 0, 0, 38, 55, 62, 71, 79, 80, 89, 87, 78, 57, 45, 34, 25, 13, 0, 0]
-    }, {
-        'name': 'Thursday',
-        'data': [0, 0, 0, 0, 0, 0, 0, 0, 25, 38, 54, 64, 76, 86, 92, 96, 81, 64, 46, 32, 26, 21, 0, 0]
-    }, {
-        'name': 'Friday',
-        'data': [0, 0, 0, 0, 0, 0, 0, 0, 31, 49, 66, 72, 75, 76, 88, 92, 86, 65, 50, 31, 21, 9, 0, 0]
-    }, {
-        'name': 'Saturday',
-        'data': [0, 0, 0, 0, 0, 0, 0, 0, 25, 46, 64, 75, 72, 78, 83, 99, 100, 75, 56, 44, 39, 31, 0, 0]
-    }, {
-        'name': 'Sunday',
-        'data': [0, 0, 0, 0, 0, 0, 0, 0, 12, 25, 40, 53, 71, 82, 92, 92, 90, 77, 64, 48, 29, 15, 0, 0]
-    }];
-    const daySelector = document.getElementById('daySelector');
-    const chartData = popularTimesData.find(day => day.name === daySelector.value);
-// remove 0 from the data
-    const modifiedData = chartData.data.slice(8, 22);
+ async function draw_popular_time_chart(placeId) {
+    var cardcontent =
+        ` <div class="card-body">   <label htmlFor="daySelector">Select a day:</label>
+    <select id="daySelector" className="form-control form-control-sm">
+        <option value="Monday">Monday</option>
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        <option value="Friday">Friday</option>
+        <option value="Saturday">Saturday</option>
+        <option value="Sunday">Sunday</option>
+    </select>
+    <a href="https://www.google.com/">
+        <img src="http://127.0.0.1:8000/static/images/google_on_white_hdpi.png"  height="20px" alt="Powered by Google">
+    </a>
+    <canvas id="popularTimesChart"></canvas> </div>`;
 
-    const chart = new Chart(document.getElementById('popularTimesChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: Array.from({length: modifiedData.length}, (_, i) => i + 8), // Labels from 8 to 21
-            datasets: [{
-                label: chartData.name,
-                data: modifiedData,
-                backgroundColor: chartData.data.map(value => getBarColor(value)),
-                borderRadius: 2,
+    var popularTimesData;
 
-            }],
-        },
-        options: {
-            plugins: {
-                legend: {
-                    display: false,
-                    position: 'top'
-                },
-                title: {
-                    display: true,
-                    text: 'Popular Times'
-                }
-            },
+    try {
+        const response = await fetch(`/popular_times/${placeId}`);
+        const responseData = await response.json();
+        popularTimesData = JSON.parse(responseData["data"]);
 
+        if (!popularTimesData || popularTimesData.length === 0) {
+            // Handle case where there is no data
+            console.log('No data available.');
+            return;
         }
-    });
+   // Append the card content only if there is data
+    jQuery('#infoWindowBox').append(cardcontent);
+        const daySelector = document.getElementById('daySelector');
+        const chartData = popularTimesData.find(day => day.name === daySelector.value);
 
-    daySelector.addEventListener('change', () => {
-        const selectedDay = daySelector.value;
-        const selectedChartData = popularTimesData.find(day => day.name === selectedDay);
+        // remove 0 from the data
+        const modifiedData = chartData.data.slice(8, 22);
 
-// Extract the data from index 8 to index 21 (excluding the last 2 numbers)
-        const modifiedData = selectedChartData.data.slice(8, 22);
+        const chart = new Chart(document.getElementById('popularTimesChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: Array.from({length: modifiedData.length}, (_, i) => i + 8), // Labels from 8 to 21
+                datasets: [{
+                    label: chartData.name,
+                    data: modifiedData,
+                    backgroundColor: chartData.data.map(value => getBarColor(value)),
+                    borderRadius: 2,
+                }],
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false,
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Popular Times'
+                    }
+                },
+            }
+        });
 
-        chart.data.labels = Array.from({length: modifiedData.length}, (_, i) => i + 8);
-        chart.data.datasets[0].label = selectedChartData.name;
-        chart.data.datasets[0].data = modifiedData;
-        chart.data.datasets[0].backgroundColor = modifiedData.map(value => getBarColor(value));
-        chart.update();
+        daySelector.addEventListener('change', () => {
+            const selectedDay = daySelector.value;
+            const selectedChartData = popularTimesData.find(day => day.name === selectedDay);
 
-    });
+            // Extract the data from index 8 to index 21 (excluding the last 2 numbers)
+            const modifiedData = selectedChartData.data.slice(8, 22);
+
+            chart.data.labels = Array.from({length: modifiedData.length}, (_, i) => i + 8);
+            chart.data.datasets[0].label = selectedChartData.name;
+            chart.data.datasets[0].data = modifiedData;
+            chart.data.datasets[0].backgroundColor = modifiedData.map(value => getBarColor(value));
+            chart.update();
+        });
+
+    } catch (e) {
+        // Handle errors if necessary
+        console.error('Error fetching or parsing data:', e);
+        return;
+    }
+
+
 }
+
 
 
 // a function to find latitude and longitude of a city
