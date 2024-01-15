@@ -204,7 +204,22 @@ function setUpDragAndDropFunctionality() {
 
         const draggedItemText = el.textContent.trim();
         const splitText = draggedItemText.split(',');
-        if (target.id === 'list1') {
+
+
+        if (target.id === 'list1' && source.id === 'list1') {
+            const poi = splitText[1].replace(/\n/g, '').replace(/\s+/g, ' ').trim();
+            const visitTime = splitText[2].replace(/\n/g, '').replace(/\s+/g, ' ').trim();
+            const newItem = {name: poi, time: visitTime};
+
+            // Remove the item from its current position
+            mainTravelList.splice(index, 1);
+
+            // Insert the item at the specified position
+            mainTravelList.splice(sibling ? indexBefore(sibling) : mainTravelList.length, 0, newItem);
+
+            refreshListView();
+            console.log("Item moved and sorted.........");
+        } else if (target.id === 'list1') {
             const poi = splitText[1].replace(/\n/g, '').replace(/\s+/g, ' ').trim();
             const visitTime = splitText[2].replace(/\n/g, '').replace(/\s+/g, ' ').trim();
             newItem = {number: index, name: poi, time: visitTime}
@@ -217,6 +232,8 @@ function setUpDragAndDropFunctionality() {
             refreshListView();
             console.log("Item add.........");
         }
+
+
         // Item removed from list
         if (source.id === 'list1') {
             const poi = splitText[1].replace(/\n/g, '').replace(/\s+/g, ' ').trim();
