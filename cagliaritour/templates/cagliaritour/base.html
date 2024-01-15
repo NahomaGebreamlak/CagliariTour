@@ -33,7 +33,10 @@
 <!--  custom JavaScript file -->
 <script id="locationData" src="{% static 'cagliaritour/javascript_map.js' %}">{{ locations|safe }}</script>
 <script id="weatherCard" src="{% static 'cagliaritour/weather_card.js' %}">{{ weather|safe }}</script>
-<script id="weatherCard" src="{% static 'cagliaritour/guides_javascript.js' %}">{{ weather|safe }}</script>
+<script id="guideCard" src="{% static 'cagliaritour/guides_javascript.js' %}">{{ weather|safe }}</script>
+<script id="guideCard" src="{% static 'cagliaritour/map_markers.js' %}"></script>
+<script id="guideCard" src="{% static 'cagliaritour/draw_routes.js' %}"></script>
+<script id="guideCard" src="{% static 'cagliaritour/guide_form.js' %}"></script>
 
     <!--  custom css file -->
    <link rel="stylesheet" type="text/css" href="{% static 'cagliaritour/main.css' %}">

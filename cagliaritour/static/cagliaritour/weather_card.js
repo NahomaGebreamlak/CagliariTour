@@ -73,3 +73,7 @@ function loadWeatherCard() {
             jQuery('#infoWindowBox').html(cardContent);
         }
 
+function showWeatherCard() {
+    jQuery('#collapseButtonInfo').hide();
+    jQuery('#infoWindowBox').show();
+}

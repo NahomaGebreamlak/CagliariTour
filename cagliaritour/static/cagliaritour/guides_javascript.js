@@ -12,70 +12,27 @@ function getRandomColor() {
 }
 
 function refreshMap() {
-      var routesData = [];
-     for (let i = 0; i < mainTravelList.length; i++) {
-             if (i + 1 < mainTravelList.length ) {
-                    const currentPoi = mainTravelList[i]["name"];
-                    const nextPoi =  mainTravelList[i + 1]["name"];
-                    var randomColor = getRandomColor();
+    var routesData = [];
+    for (let i = 0; i < mainTravelList.length; i++) {
+        if (i + 1 < mainTravelList.length) {
+            const currentPoi = mainTravelList[i]["name"];
+            const nextPoi = mainTravelList[i + 1]["name"];
+            var randomColor = getRandomColor();
 
-                    // Call drawRoute function with current POI as start and next POI as destination
-                    routesData.push({
-                        poinumber: i + 1,
-                        start: currentPoi + " , Cagliari",
-                        end: nextPoi + " , Cagliari",
-                        color: randomColor
-                    });
+            // Call drawRoute function with current POI as start and next POI as destination
+            routesData.push({
+                poinumber: i + 1,
+                start: currentPoi + " , Cagliari",
+                end: nextPoi + " , Cagliari",
+                color: randomColor
+            });
 
-               //     console.log(i + " Start: " + currentPoi + ", end: " + nextPoi + "\n");
-                }
-     }
-       // Draw routes on the map
-        drawRoutesOnMap(routesData);
-
-}
-
-
-function generateDayButtons(numDays) {
-    const daysContainer = document.getElementById('daysContainer');
-
-    // Clear existing content
-    daysContainer.innerHTML = '';
-    numDays = calculateDateDifference();
-    // Create day buttons
-    for (let i = 1; i <= numDays; i++) {
-        const dayButton = document.createElement('button');
-        const dayName = `Day ${i}`;
-        const today = new Date();
-        today.setDate(today.getDate() + i - 1); // Adjust the date based on the loop index
-
-        const options = {day: '2-digit', month: '2-digit', year: 'numeric'};
-        const formattedDate = today.toLocaleDateString('en-GB', options);
-        const DayNameWithDate = `${dayName} - ${formattedDate}`;
-        dayButton.innerText = `Day ${i}`;
-        dayButton.className = 'dayButton';
-        daysContainer.appendChild(dayButton);
-
-        // Add click event listener to each button
-        dayButton.addEventListener('click', function () {
-            // Remove 'clicked' class from all buttons
-            const allButtons = document.querySelectorAll('.dayButton');
-            allButtons.forEach(button => button.classList.remove('clicked'));
-
-            // Add 'clicked' class to the clicked button
-            dayButton.classList.add('clicked');
-            showRouteSelectionList(DayNameWithDate, formattedDate);
-        });
+            //     console.log(i + " Start: " + currentPoi + ", end: " + nextPoi + "\n");
+        }
     }
-    // Calculate the total width of buttons
-    const totalWidth = Array.from(daysContainer.children).reduce((acc, button) => {
-        return acc + button.offsetWidth + parseInt(window.getComputedStyle(button).marginRight, 10);
-    }, 0);
+    // Draw routes on the map
+    drawRoutesOnMap(routesData);
 
-    // Set the width of the container
-    daysContainer.style.width = `${totalWidth + 50}px`;
-    // to hide the form
-    showForm(false);
 }
 
 
@@ -117,7 +74,7 @@ async function populateList(targetListId, bgcolor, date) {
                         color: randomColor
                     });
 
-                   // console.log(i + " Start: " + currentPoi + ", end: " + nextPoi + "\n");
+                    // console.log(i + " Start: " + currentPoi + ", end: " + nextPoi + "\n");
                 }
 
             }
@@ -161,7 +118,7 @@ function showRouteSelectionList(dayName, date) {
                      <div style="width: 280px; margin-top: 20px; overflow-y: auto; max-height: 200px;" style="margin: 0px; padding: 0px;background-color: lightskyblue">
   <div class="card p-0 m-0" style="background-color: lightskyblue">
     <div class="card-header text-center font-weight-bold">
-    <h6>  ${dayName} <button class="btn btn-primary rounded" onclick="refreshMap()">Refresh</button></h6>
+    <h6>  ${dayName} <button class="btn btn-primary rounded circle" onclick="refreshMap()"><i class="fas fa-sync"></i></button></h6>
     </div>
     <div class="card-body p-0" style="background-color: deepskyblue">
       <ul class="list-group list-group-flush card" id="list1" style="background-color: lightskyblue;">
@@ -215,7 +172,14 @@ function showRouteSelectionList(dayName, date) {
     populateList("list1", "#87CEFA", date);
     populateList("list2", "#F08080", date);
     populateList("list3", "#FFFFE0", date);
-    // Set up drag-and-drop using dragula
+
+    setUpDragAndDropFunctionality();
+
+}
+
+// A function to set Up Drag and Drop functionality using Dragula
+function setUpDragAndDropFunctionality() {
+// Set up drag-and-drop using dragula
     const drake = dragula([document.getElementById('list1'), document.getElementById('list2'), document.getElementById('list3')], {
         moves: (el, container, handle) => !handle.classList.contains('btn'), // exclude the button from dragging
         accepts: (el, target, source, sibling) => {
@@ -224,13 +188,6 @@ function showRouteSelectionList(dayName, date) {
             return true;
         },
     });
-
-    // // Reset the background color when the drag ends
-    // drake.on('dragend', (el, source) => {
-    //  // el.style.backgroundColor = '';
-    //
-    // });
-
 
     drake.on('drop', function (el, target, source, sibling) {
         const parent = el.parentNode;
@@ -283,24 +240,6 @@ function showRouteSelectionList(dayName, date) {
         console.log('Updated MainTravelList:', mainTravelList);
 
     });
-}
-
-
-function calculateDateDifference() {
-    // Get the selected departure date from the input
-    const departureDateInput = document.getElementById('id_departure_date');
-    const departureDateValue = departureDateInput.value;
-
-    // Convert the selected date string to a Date object
-    const departureDate = new Date(departureDateValue);
-
-    // Get the current date
-    const currentDate = new Date();
-
-    // Calculate the difference in days
-    const differenceInDays = Math.floor((departureDate - currentDate) / (1000 * 60 * 60 * 24));
-
-    return differenceInDays;
 }
 
 
