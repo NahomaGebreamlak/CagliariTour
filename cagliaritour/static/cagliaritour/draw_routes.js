@@ -28,11 +28,26 @@ function drawRoutesOnMap(routes) {
             polylineOptions: polylineSelector,
             suppressMarkers: true
         });
+
         // Get the travel mode form value of travel mode
         const selectElement = document.getElementById('id_moving_preference');
 
-// Get the selected value
+        // Get the selected value
         const selectedValue = selectElement.value;
+
+        const showHideButton = document.createElement('button');
+        showHideButton.innerHTML = 'Hide';
+        showHideButton.style.marginRight = '10px';
+        showHideButton.classList.add('btn', 'btn-info');
+        showHideButton.addEventListener('click', function () {
+            if (showHideButton.innerHTML === 'Show') {
+                directionsRenderer.setMap(map);
+                showHideButton.innerHTML = 'Hide';
+            } else {
+                directionsRenderer.setMap(null);
+                showHideButton.innerHTML = 'Show';
+            }
+        });
 
 
         const request = {
@@ -66,8 +81,9 @@ function drawRoutesOnMap(routes) {
 
                     const routeTypeInfo = getRouteTypeInfo(concatenatedRouteTypeInfo.slice(0, concatenatedRouteTypeInfo.lastIndexOf('_')));
                     routeTypeInfo["number"] = route.poinumber;
+                    routeTypeInfo["btn"] = showHideButton;
                     routeTypeInfoList.push(routeTypeInfo);
-                    resolve();  // Resolve the Promise once directions are processed
+                    resolve();// Resolve the Promise once directions are processed
                 } else {
                     console.error('Directions request failed. Status:', status);
                     reject();  // Reject the Promise if there's an error
@@ -81,11 +97,9 @@ function drawRoutesOnMap(routes) {
     // Wait for all directions requests to complete before creating the legend
     Promise.all(directionPromises).then(() => {
         routeTypeInfoList.sort((a, b) => b.number - a.number);
-
         addLegend(routeTypeInfoList);
     });
 }
-
 
 // Function to get route type information
 function getRouteTypeInfo(routeType) {
@@ -117,10 +131,14 @@ function addLegend(routeTypeInfoList) {
 
     for (const routeTypeInfo of routeTypeInfoList) {
         const legendDiv = document.createElement('div');
-        legendDiv.innerHTML = `<p style="font-size: 20px; background-color: #e0e0e0"> ${routeTypeInfo.number},${routeTypeInfo.icon} ${routeTypeInfo.label}</p>`;
+        legendDiv.innerHTML = `<p style="font-size: 20px; display: inline-block;" class="btn btn-light"> ${routeTypeInfo.number},${routeTypeInfo.icon} ${routeTypeInfo.label}</p>`;
+        // Append the button before the text in legendDiv
+        legendDiv.appendChild(routeTypeInfo.btn);
+
         map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legendDiv);
     }
 }
+
 function clearLegend() {
     // Get all elements in the left bottom control position
     const leftBottomControl = map.controls[google.maps.ControlPosition.LEFT_BOTTOM];
