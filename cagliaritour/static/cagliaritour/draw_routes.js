@@ -246,3 +246,18 @@ function getBusNumbers(response) {
     return concatenatedBusNumbers;
 
 }
+// Function to make route card Collapsible
+function showRouteCard() {
+  var routeInfobox = document.getElementById('routeInfobox');
+        var routeInfoMinimize = document.getElementById('routeInfoMinimize');
+
+        // Toggle the visibility of routeInfobox
+        routeInfobox.classList.toggle('collapsed');
+
+        // Change the text/icon of the button based on the current state
+        if (routeInfobox.classList.contains('collapsed')) {
+            routeInfoMinimize.innerHTML = '<b>Route Details<i class="fas fa-angle-up"></i></b>';
+        } else {
+            routeInfoMinimize.innerHTML = '<b>Route Details<i class="fas fa-angle-down"></i></b>';
+        }
+}

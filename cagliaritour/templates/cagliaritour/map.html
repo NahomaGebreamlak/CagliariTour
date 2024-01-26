@@ -3,6 +3,9 @@
 {% load crispy_forms_tags %}
 {% block content %}
     <style>
+        #routeInfobox.collapsed {
+            display: none;
+        }
 
     </style>
     <script>
@@ -100,17 +103,16 @@
 
 
                     <!-- Div for displaying route information -->
-                    <div class="position-absolute bottom-0 left-0 btn-light"
-                         style="padding: 10px; margin: 20px; width: 350px; height: 200px; border: 2px solid black; border-radius: 20px; position: relative; overflow-y: auto;">
-                        <!-- Cancel button added to the top right corner -->
-                        <button class="btn btn-lg position-absolute top-0 end-0"
-                                style="margin: 10px;">
-                            <img src="{% static 'images/minimize.png' %}" alt="collapse button" class="button-image"
-                                 style="width: 25px; height: 25px">
-                        </button>
-  <!-- div for displaying the info -->
 
-                        <div id="routeInfobox">
+                    <div class="position-absolute bottom-0 left-0 btn-light" id="routeInfoContainer">
+                        <button style="width: 350px; border-radius: 15px;" class="btn btn-light"
+                                onclick="showRouteCard()" id="routeInfoMinimize">
+                            <b>Route Details<i class="fas fa-angle-up"></i> </b>
+                        </button>
+                        <!-- div for displaying the info about route plan-->
+                        <div id="routeInfobox" class="collapsed"
+                             style="width: 350px; height: 200px; border: 2px solid black; border-radius: 20px; position: relative; overflow-y: auto;">
+                            <!-- Content of the collapsible div goes here -->
                         </div>
                     </div>
 
