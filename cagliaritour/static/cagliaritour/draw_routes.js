@@ -36,16 +36,20 @@ function drawRoutesOnMap(routes) {
         const selectedValue = selectElement.value;
 
         const showHideButton = document.createElement('button');
-        showHideButton.innerHTML = 'Hide';
+
+        showHideButton.innerHTML = '<i class="fa fa-eye"></i>';
+
         showHideButton.style.marginRight = '10px';
         showHideButton.classList.add('btn', 'btn-info');
+
+// Add click event listener to toggle visibility of directions renderer
         showHideButton.addEventListener('click', function () {
-            if (showHideButton.innerHTML === 'Show') {
+            if (directionsRenderer.getMap() === null) {
                 directionsRenderer.setMap(map);
-                showHideButton.innerHTML = 'Hide';
+                showHideButton.innerHTML = '<i class="fa fa-eye-slash"></i>'; // Replace eye icon with eye slash icon
             } else {
                 directionsRenderer.setMap(null);
-                showHideButton.innerHTML = 'Show';
+                showHideButton.innerHTML = '<i class="fa fa-eye"></i>'; // Replace eye slash icon with eye icon
             }
         });
 
@@ -68,6 +72,7 @@ function drawRoutesOnMap(routes) {
                     }
 
                     let concatenatedRouteTypeInfo = "";
+                    var busNumbers;
                     if (response.routes.length > 0 && response.routes[0].legs.length > 0 && response.routes[0].legs[0].steps.length > 0) {
                         const steps = response.routes[0].legs[0].steps;
                         const travelModes = steps.map((step) => step.travel_mode);
@@ -75,6 +80,13 @@ function drawRoutesOnMap(routes) {
                         for (const mode of uniqueTravelModes) {
                             concatenatedRouteTypeInfo += mode + "_";
                         }
+
+                        // Access the bus numbers function when the travel mode is in transit
+                        if (selectedValue === 'TRANSIT') {
+                            busNumbers = getBusNumbers(response);
+                            console.log('Bus Numbers:', busNumbers);
+                        }
+
                     } else {
                         console.error("No valid route found in the response.");
                     }
@@ -82,6 +94,7 @@ function drawRoutesOnMap(routes) {
                     const routeTypeInfo = getRouteTypeInfo(concatenatedRouteTypeInfo.slice(0, concatenatedRouteTypeInfo.lastIndexOf('_')));
                     routeTypeInfo["number"] = route.poinumber;
                     routeTypeInfo["btn"] = showHideButton;
+                    routeTypeInfo['busNumbers'] = busNumbers;
                     routeTypeInfoList.push(routeTypeInfo);
                     resolve();// Resolve the Promise once directions are processed
                 } else {
@@ -126,18 +139,45 @@ function getRouteTypeInfo(routeType) {
 
 // Function to add a legend on the map
 function addLegend(routeTypeInfoList) {
-// Clear existing legend First
-    clearLegend();
+    const legendContainer = document.getElementById("routeInfobox");
+
+    if (!legendContainer) {
+        console.error(`Container with ID not found.`);
+        return;
+    }
+
+    // Clear existing content of the container
+    legendContainer.innerHTML = '';
 
     for (const routeTypeInfo of routeTypeInfoList) {
         const legendDiv = document.createElement('div');
-        legendDiv.innerHTML = `<p style="font-size: 20px; display: inline-block;" class="btn btn-light"> ${routeTypeInfo.number},${routeTypeInfo.icon} ${routeTypeInfo.label}</p>`;
+
+        let busNumbersHTML = '';
+        if (routeTypeInfo.busNumbers && routeTypeInfo.busNumbers.length > 0) {
+            // If busNumbers is not empty, include it in the legend
+            busNumbersHTML = ` Bus N. ${routeTypeInfo.busNumbers}`;
+        }
+
+        legendDiv.innerHTML = `
+            <p style="font-size: 15px; display: inline-block;" class="btn btn-light">
+                Route
+                <span style="font-size: 15px; display: inline-block; background-color: #007bff; color: #fff; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px;">
+                    ${routeTypeInfo.number}
+                </span>
+                &rarr;
+                <span style="font-size: 20px; display: inline-block; background-color: #007bff; color: #fff; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px;">
+                    ${routeTypeInfo.number + 1}
+                </span>
+                ${routeTypeInfo.icon}${busNumbersHTML}
+            </p>`;
+
         // Append the button before the text in legendDiv
         legendDiv.appendChild(routeTypeInfo.btn);
 
-        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legendDiv);
+        legendContainer.appendChild(legendDiv);
     }
 }
+
 
 function clearLegend() {
     // Get all elements in the left bottom control position
@@ -173,4 +213,36 @@ function getMarkerIcon(color) {
         strokeWeight: 0,
         scale: 10, // Adjust the scale based on your preference
     };
+}
+
+
+// function to get bus numbers from the directions response
+function getBusNumbers(response) {
+    const busNumbers = [];
+
+    // Check if the response contains valid routes and legs
+    if (response.routes.length > 0 && response.routes[0].legs.length > 0) {
+        const legs = response.routes[0].legs;
+
+        // Iterate through each leg to check for transit details
+        legs.forEach((leg) => {
+            // Check if the leg has transit details
+            if (leg.steps && leg.steps.length > 0) {
+                const steps = leg.steps;
+
+                // Iterate through each step to extract bus numbers
+                steps.forEach((step) => {
+                    if (step.transit && step.transit.line && step.transit.line.short_name) {
+                        const busNumber = step.transit.line.short_name;
+                        busNumbers.push(busNumber);
+                    }
+                });
+            }
+        });
+    }
+    // Concatenate bus numbers with hyphen ("-")
+    const concatenatedBusNumbers = busNumbers.join('-');
+
+    return concatenatedBusNumbers;
+
 }

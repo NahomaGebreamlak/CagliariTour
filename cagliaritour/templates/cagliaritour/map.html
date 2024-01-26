@@ -98,6 +98,26 @@
                     </div>
                     <!-- End of Days Button div -->
 
+
+                    <!-- Div for displaying route information -->
+                    <div class="position-absolute bottom-0 left-0 btn-light"
+                         style="padding: 10px; margin: 20px; width: 350px; height: 200px; border: 2px solid black; border-radius: 20px; position: relative; overflow-y: auto;">
+                        <!-- Cancel button added to the top right corner -->
+                        <button class="btn btn-lg position-absolute top-0 end-0"
+                                style="margin: 10px;">
+                            <img src="{% static 'images/minimize.png' %}" alt="collapse button" class="button-image"
+                                 style="width: 25px; height: 25px">
+                        </button>
+  <!-- div for displaying the info -->
+
+                        <div id="routeInfobox">
+                        </div>
+                    </div>
+
+
+                    <!-- Div for displaying route information ends here -->
+
+
                     <!-- Information button -->
                     <div class="position-absolute top-0 end-0 mt-7 me-7" style="padding: 0px;">
                         <button style="width: 300px; border-radius: 15px;" class="btn btn-light"

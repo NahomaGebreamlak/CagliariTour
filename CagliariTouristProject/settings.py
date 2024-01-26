@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "weather",
     "cagliaritour",
-
     'crispy_forms',
     'crispy_bootstrap4',
     'bootstrap5',
