@@ -1,6 +1,10 @@
 // Function to draw multiple routes on the map
+let routeTypeInfoList = [];
+let directionsRenderersList =[];
+// Define a global array to hold references to numbered markers
+let numberedMarkers = [];
 function drawRoutesOnMap(routes) {
-    let routeTypeInfoList = [];
+
     const lineSymbol = {path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 6};
     const directionsService = new google.maps.DirectionsService();
 
@@ -28,6 +32,9 @@ function drawRoutesOnMap(routes) {
             polylineOptions: polylineSelector,
             suppressMarkers: true
         });
+
+        directionsRenderersList.push(directionsRenderer);
+
 
         // Get the travel mode form value of travel mode
         const selectElement = document.getElementById('id_moving_preference');
@@ -109,7 +116,7 @@ function drawRoutesOnMap(routes) {
 
     // Wait for all directions requests to complete before creating the legend
     Promise.all(directionPromises).then(() => {
-        routeTypeInfoList.sort((a, b) => b.number - a.number);
+        routeTypeInfoList.sort((a, b) => a.number - b.number);
         addLegend(routeTypeInfoList);
     });
 }
@@ -165,7 +172,7 @@ function addLegend(routeTypeInfoList) {
                     ${routeTypeInfo.number}
                 </span>
                 &rarr;
-                <span style="font-size: 20px; display: inline-block; background-color: #007bff; color: #fff; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px;">
+                <span style="font-size: 20px; display: inline-block; background-color: #deac08; color: #fff; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px;">
                     ${routeTypeInfo.number + 1}
                 </span>
                 ${routeTypeInfo.icon}${busNumbersHTML}
@@ -203,6 +210,8 @@ function addNumberedMarker(map, location, number, color) {
         icon: getMarkerIcon(color),
 
     });
+    // Push the marker reference into the numberedMarkers array
+    numberedMarkers.push(marker);
 }
 
 function getMarkerIcon(color) {
@@ -260,4 +269,22 @@ function showRouteCard() {
         } else {
             routeInfoMinimize.innerHTML = '<b>Route Details<i class="fas fa-angle-down"></i></b>';
         }
+}
+
+
+function clearRoutes() {
+    // Remove all directions renderers from the map
+
+    directionsRenderersList.forEach(function (renderer) {
+        renderer.setMap(null);
+    });
+// Iterate through each numbered marker and remove it from the map
+    numberedMarkers.forEach(function(marker) {
+        marker.setMap(null);
+    });
+    numberedMarkers = [];
+    // Clear the routeTypeInfoList
+    routeTypeInfoList = [];
+
+
 }

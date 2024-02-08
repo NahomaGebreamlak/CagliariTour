@@ -57,6 +57,12 @@ $j(document).ready(function () {
     // Select the collapse element by its ID
     var collapseElement = jQuery('#infoWindowBox');
     jQuery('#collapseButtonInfo').hide();
+    //Hide route div
+   jQuery('#routeInfoContainer').hide();
+
+   // hide clear button
+    jQuery('#clear_button_Div').hide();
+
 
 // When the form hide button is clicked
     jQuery('#hideBoxButton').on('click', function () {
@@ -133,6 +139,10 @@ function generateDayButtons() {
             // Add 'clicked' class to the clicked button
             dayButton.classList.add('clicked');
             showRouteSelectionList(DayNameWithDate, formattedDate);
+            showRouteInfoDiv();
+            // show clear button
+    jQuery('#clear_button_Div').show();
+
         });
     }
     // Calculate the total width of buttons
@@ -145,3 +155,27 @@ function generateDayButtons() {
     // to hide the form
     showForm(false);
 }
+
+// A function to hide route info route
+function showRouteInfoDiv(){
+    jQuery('#routeInfoContainer').show();
+}
+
+// Function to reset the map
+function clearMap() {
+// clear container
+jQuery('#routeInfoContainer').hide();
+ const daysContainer = document.getElementById('daysContainer');
+
+    // Clear existing content
+    daysContainer.innerHTML = '';
+// hide guide form
+showForm(false);
+// clear infobox
+infoCloser();
+//clear routes
+clearRoutes();
+// hide the clear button
+ jQuery('#clear_button_Div').hide();
+
+    }
