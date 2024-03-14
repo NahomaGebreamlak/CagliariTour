@@ -106,12 +106,9 @@
                     <!-- Div for displaying route information -->
 
                     <div class="position-absolute bottom-0 left-0 btn-light" id="routeInfoContainer">
-                        <button style="width: 350px; border-radius: 15px;" class="btn btn-light"
-                                onclick="showRouteCard()" id="routeInfoMinimize">
-                            <b>Route Details<i class="fas fa-angle-up"></i> </b>
-                        </button>
+
                         <!-- div for displaying the info about route plan-->
-                        <div id="routeInfobox" class="collapsed"
+                        <div id="routeInfobox"
                              style="width: 350px; height: 200px; border: 2px solid black; border-radius: 20px; position: relative; overflow-y: auto;">
                             <!-- Content of the collapsible div goes here -->
                         </div>
@@ -123,10 +120,10 @@
 
 
                     <!-- Clear route information button -->
-                    <div class="position-absolute bottom-0 end-0" id="clear_button_Div">
-                        <button style="width: 180px; height: 50px; border-radius: 15px; background-color: lightcoral" class="btn"
+                    <div class="position-absolute top-0 start-0 mt-7 ms-7" id="clear_button_Div" style="margin-top: 20px">
+                        <button style="width: 180px; height: 50px; border-radius: 15px; " class="btn-light"
                                 onclick="clearMap()">
-                            <b style="font-size: 18px"> Clear </b>
+                            <b style="font-size: 18px"> <i class="fas fa-home"></i> Home </b>
                         </button>
                     </div>
 
@@ -153,8 +150,10 @@
             </div>
         </main>
     </div>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ key }}&callback=initMap"></script>
 
+<script async
+    src="https://maps.googleapis.com/maps/api/js?key={{ key }}&loading=async&callback=initMap">
+</script>
 
 
     <script id="dateandtime" src="{% static 'cagliaritour/date_time.js' %}"></script>

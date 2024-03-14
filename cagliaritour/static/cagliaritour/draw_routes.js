@@ -1,8 +1,9 @@
 // Function to draw multiple routes on the map
 let routeTypeInfoList = [];
-let directionsRenderersList =[];
+let directionsRenderersList = [];
 // Define a global array to hold references to numbered markers
 let numberedMarkers = [];
+
 function drawRoutesOnMap(routes) {
 
     const lineSymbol = {path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 6};
@@ -44,7 +45,7 @@ function drawRoutesOnMap(routes) {
 
         const showHideButton = document.createElement('button');
 
-        showHideButton.innerHTML = '<i class="fa fa-eye"></i>';
+        showHideButton.innerHTML = '<i class="fa fa-eye-slash"></i>';
 
         showHideButton.style.marginRight = '10px';
         showHideButton.classList.add('btn', 'btn-info');
@@ -53,9 +54,14 @@ function drawRoutesOnMap(routes) {
         showHideButton.addEventListener('click', function () {
             if (directionsRenderer.getMap() === null) {
                 directionsRenderer.setMap(map);
+                // Show numbered markers
+                numberedMarkers[index].forEach(marker => {
+                    marker.setMap(map);
+                });
                 showHideButton.innerHTML = '<i class="fa fa-eye-slash"></i>'; // Replace eye icon with eye slash icon
             } else {
                 directionsRenderer.setMap(null);
+                removeNumberedMarkers(index);
                 showHideButton.innerHTML = '<i class="fa fa-eye"></i>'; // Replace eye slash icon with eye icon
             }
         });
@@ -67,6 +73,22 @@ function drawRoutesOnMap(routes) {
             travelMode: selectedValue
         };
 
+
+
+        // If selected travel mode is not 'Car', check distance and set travel mode accordingly
+        // if (selectedValue !== 'DRIVING') {
+        //     const distanceThreshold = 0; // Set your distance threshold in meters here
+        //     const distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(route.start.lat, route.start.lng), new google.maps.LatLng(route.end.lat, route.end.lng));
+        //     if (distance > distanceThreshold) {
+        //         request.travelMode = 'TRANSIT'; // Use bus if distance is greater than threshold
+        //     } else {
+        //         request.travelMode = 'WALKING'; // Use walking if distance is within threshold
+        //     }
+        // }
+
+
+
+
         // Create a Promise for each directions request
         const directionPromise = new Promise((resolve, reject) => {
             directionsService.route(request, function (response, status) {
@@ -74,9 +96,15 @@ function drawRoutesOnMap(routes) {
                     directionsRenderer.setDirections(response);
                     // Add numbered markers along the route
                     const routepath = response.routes[0].legs[0];
+                    const markers = [];
                     for (let i = 0; i < routepath.steps.length; i++) {
-                        addNumberedMarker(map, routepath.steps[i].start_location, route.poinumber, route.color);
+                        if (i % 2 === 0) { // Check if i is even
+                            const marker = addNumberedMarker(map, routepath.steps[i].start_location, route.poinumber, route.color);
+                            markers.push(marker);
+                        }
                     }
+                    numberedMarkers[index] = markers; // Store markers for this index
+
 
                     let concatenatedRouteTypeInfo = "";
                     var busNumbers;
@@ -100,6 +128,7 @@ function drawRoutesOnMap(routes) {
 
                     const routeTypeInfo = getRouteTypeInfo(concatenatedRouteTypeInfo.slice(0, concatenatedRouteTypeInfo.lastIndexOf('_')));
                     routeTypeInfo["number"] = route.poinumber;
+                    routeTypeInfo["color"] =  route.color;
                     routeTypeInfo["btn"] = showHideButton;
                     routeTypeInfo['busNumbers'] = busNumbers;
                     routeTypeInfoList.push(routeTypeInfo);
@@ -156,7 +185,8 @@ function addLegend(routeTypeInfoList) {
     // Clear existing content of the container
     legendContainer.innerHTML = '';
 
-    for (const routeTypeInfo of routeTypeInfoList) {
+    for (let i = 0; i < routeTypeInfoList.length; i++) {
+    const routeTypeInfo = routeTypeInfoList[i];
         const legendDiv = document.createElement('div');
 
         let busNumbersHTML = '';
@@ -168,11 +198,11 @@ function addLegend(routeTypeInfoList) {
         legendDiv.innerHTML = `
             <p style="font-size: 15px; display: inline-block;" class="btn btn-light">
                 Route
-                <span style="font-size: 15px; display: inline-block; background-color: #007bff; color: #fff; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px;">
+                <span style="font-size: 15px; display: inline-block; background-color: ${routeTypeInfo.color}; color: #fff; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px;">
                     ${routeTypeInfo.number}
                 </span>
                 &rarr;
-                <span style="font-size: 20px; display: inline-block; background-color: #deac08; color: #fff; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px;">
+                <span style="font-size: 20px; display: inline-block; background-color: ${routeTypeInfoList[i+1].color}; color: #fff; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px;">
                     ${routeTypeInfo.number + 1}
                 </span>
                 ${routeTypeInfo.icon}${busNumbersHTML}
@@ -211,7 +241,7 @@ function addNumberedMarker(map, location, number, color) {
 
     });
     // Push the marker reference into the numberedMarkers array
-    numberedMarkers.push(marker);
+    return marker;
 }
 
 function getMarkerIcon(color) {
@@ -255,36 +285,49 @@ function getBusNumbers(response) {
     return concatenatedBusNumbers;
 
 }
+
 // Function to make route card Collapsible
 function showRouteCard() {
-  var routeInfobox = document.getElementById('routeInfobox');
-        var routeInfoMinimize = document.getElementById('routeInfoMinimize');
+    var routeInfobox = document.getElementById('routeInfobox');
+    var routeInfoMinimize = document.getElementById('routeInfoMinimize');
 
-        // Toggle the visibility of routeInfobox
-        routeInfobox.classList.toggle('collapsed');
+    // Toggle the visibility of routeInfobox
+    routeInfobox.classList.toggle('collapsed');
 
-        // Change the text/icon of the button based on the current state
-        if (routeInfobox.classList.contains('collapsed')) {
-            routeInfoMinimize.innerHTML = '<b>Route Details<i class="fas fa-angle-up"></i></b>';
-        } else {
-            routeInfoMinimize.innerHTML = '<b>Route Details<i class="fas fa-angle-down"></i></b>';
-        }
+    // Change the text/icon of the button based on the current state
+    if (routeInfobox.classList.contains('collapsed')) {
+        routeInfoMinimize.innerHTML = '<b>Route Details<i class="fas fa-angle-up"></i></b>';
+    } else {
+        routeInfoMinimize.innerHTML = '<b>Route Details<i class="fas fa-angle-down"></i></b>';
+    }
 }
 
 
 function clearRoutes() {
     // Remove all directions renderers from the map
 
-    directionsRenderersList.forEach(function (renderer) {
+    directionsRenderersList.forEach(function (renderer,index) {
         renderer.setMap(null);
+        removeNumberedMarkers(index);
+
     });
 // Iterate through each numbered marker and remove it from the map
-    numberedMarkers.forEach(function(marker) {
-        marker.setMap(null);
-    });
+//     numberedMarkers.forEach(function (markers) {
+//         markers.setMap(null);
+//     });
     numberedMarkers = [];
     // Clear the routeTypeInfoList
     routeTypeInfoList = [];
 
 
+}
+
+
+function removeNumberedMarkers(index) {
+    if (numberedMarkers[index]) {
+        numberedMarkers[index].forEach(marker => {
+            marker.setMap(null);
+        });
+
+    }
 }

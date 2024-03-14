@@ -16,7 +16,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <!-- External JavaScript libraries -->
-<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
@@ -31,7 +30,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js"></script>
 
 <!--  custom JavaScript file -->
-<script id="locationData" src="{% static 'cagliaritour/javascript_map.js' %}">{{ locations|safe }}</script>
+ <script id="locationData" src="{% static 'cagliaritour/javascript_map.js' %}">{{ locations|safe }}</script>
 <script id="weatherCard" src="{% static 'cagliaritour/weather_card.js' %}">{{ weather|safe }}</script>
 <script id="guideCard" src="{% static 'cagliaritour/guides_javascript.js' %}">{{ weather|safe }}</script>
 <script id="guideCard" src="{% static 'cagliaritour/map_markers.js' %}"></script>

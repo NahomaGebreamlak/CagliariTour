@@ -119,6 +119,10 @@ function infoCloser() {
     loadWeatherCard();
 }
 
+
+
+
+
 // A function to return colors for popular time bar chart based on numbers
 function getBarColor(value) {
     if (value > 75) {

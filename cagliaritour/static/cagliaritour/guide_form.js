@@ -111,6 +111,8 @@ function calculateDateDifference() {
     return differenceInDays;
 }
 function generateDayButtons() {
+    jQuery('#infoWindowBox').hide();
+
     const daysContainer = document.getElementById('daysContainer');
 
     // Clear existing content
@@ -132,15 +134,19 @@ function generateDayButtons() {
 
         // Add click event listener to each button
         dayButton.addEventListener('click', function () {
+            jQuery('#infoWindowBox').show();
+
             // Remove 'clicked' class from all buttons
             const allButtons = document.querySelectorAll('.dayButton');
             allButtons.forEach(button => button.classList.remove('clicked'));
 
             // Add 'clicked' class to the clicked button
             dayButton.classList.add('clicked');
+
             showRouteSelectionList(DayNameWithDate, formattedDate);
             showRouteInfoDiv();
-            // show clear button
+            // show home button
+         jQuery('#collapseButton').hide();
     jQuery('#clear_button_Div').show();
 
         });
@@ -154,6 +160,8 @@ function generateDayButtons() {
     daysContainer.style.width = `${totalWidth + 50}px`;
     // to hide the form
     showForm(false);
+
+      // jQuery('#infoWindowBox').hide();
 }
 
 // A function to hide route info route
@@ -163,6 +171,7 @@ function showRouteInfoDiv(){
 
 // Function to reset the map
 function clearMap() {
+   jQuery('#collapseButton').show();
 // clear container
 jQuery('#routeInfoContainer').hide();
  const daysContainer = document.getElementById('daysContainer');
@@ -175,6 +184,7 @@ showForm(false);
 infoCloser();
 //clear routes
 clearRoutes();
+showWeatherCard();
 // hide the clear button
  jQuery('#clear_button_Div').hide();
 
