@@ -5,3 +5,4 @@ from .models import *
 admin.site.register(Locations)
 admin.site.register(Distances)
 admin.site.register(TravelPreference)
+admin.site.register(Place)

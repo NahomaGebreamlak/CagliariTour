@@ -15,7 +15,8 @@ function initMap() {
     var infoWindow = [];
 
     var mapOptions = {
-        center: {lat: firstLocation.lat, lng: firstLocation.lng},
+        center: {lat: 39.223841, lng: 9.121661}, // Coordinates for Cagliari
+
         zoom: 15,
         styles: [{
             featureType: 'poi',
@@ -49,7 +50,10 @@ function initMap() {
             animation: google.maps.Animation.DROP,
 
             title: location.name,
-            icon: "http://127.0.0.1:8000/static/images/" + location.icon,
+            icon: {
+                url: "http://127.0.0.1:8000/" + location.icon,
+                scaledSize: new google.maps.Size(40, 40) // Adjust the size as needed
+            },
             // label: { color: '#000000', fontWeight: 'bold', fontSize: '14px', text: location.name },
             optimized: true,
         });

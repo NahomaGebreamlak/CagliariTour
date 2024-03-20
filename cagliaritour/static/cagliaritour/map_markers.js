@@ -1,22 +1,50 @@
 // A function to be called when the marker is pressed
 // To show some information about the marked place on the right side info window
-function setContentForDiv(placeInfo) {
+// function setContentForDiv(placeInfo) {
+//
+// // Function to hide and display the weather card
+//     showWeatherCard();
+//
+//      // Content of the div
+//     var cardContent = `<div class="card-body">
+//                     <div class="card-title" onclick="infoCloser()">${placeInfo.name}<i class="fas fa-times cancel-button" ></i></div>
+//                      <img src="http://127.0.0.1:8000/${placeInfo.image}" class="card-img-top" alt="Image of ${placeInfo.name}">
+//                     <p class="card-text" style="font-size: 14px">${placeInfo.description}</p>
+//                   </div>`;
+//     jQuery('#infoWindowBox').height(760);
+//     jQuery('#infoWindowBox').html(cardContent);
+//     draw_popular_time_chart( `${placeInfo.placeId}`);
+//
+//
+// }
 
-// Function to hide and display the weather card
+function setContentForDiv(placeInfo) {
+    // Function to hide and display the weather card
     showWeatherCard();
 
-     // Content of the div
+    // Extract filename from the path
+    var filename = placeInfo.image.substring(placeInfo.image.lastIndexOf('/') + 1);
+
+    // Encode the filename
+    var encodedFilename = encodeURIComponent(filename);
+
+    // Truncate description if it exceeds 300 characters
+    var truncatedDescription = placeInfo.description.length > 300 ? placeInfo.description.substring(0, 300) + "..." : placeInfo.description;
+
+    // Content of the div
     var cardContent = `<div class="card-body">
-                    <div class="card-title" onclick="infoCloser()">${placeInfo.name}<i class="fas fa-times cancel-button" ></i></div>
-                     <img src="http://127.0.0.1:8000/${placeInfo.image}" class="card-img-top" alt="Image of ${placeInfo.name}">
-                    <p class="card-text" style="font-size: 14px">${placeInfo.description}</p>
-                  </div>`;
+                        <div class="card-title" onclick="infoCloser()">${placeInfo.name}<i class="fas fa-times cancel-button" ></i></div>
+                        <img src="${placeInfo.image.substring(0, placeInfo.image.lastIndexOf('/') + 1)}${encodedFilename}" class="card-img-top" alt="Image of ${placeInfo.name}">
+                        <p class="card-text" style="font-size: 14px">${truncatedDescription}</p>
+                    </div>`;
     jQuery('#infoWindowBox').height(760);
     jQuery('#infoWindowBox').html(cardContent);
-    draw_popular_time_chart( `${placeInfo.placeId}`);
-
-
+    draw_popular_time_chart(`${placeInfo.placeId}`);
 }
+
+
+
+
 // A function to show collapse the info button
 // and display the info window
 function showWeatherCard() {
