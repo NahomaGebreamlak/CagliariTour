@@ -35,7 +35,7 @@ class MapView(View):
         for a in eligable_locations:
             lat = a.Location.split(',')[0]
             lng = a.Location.split(',')[1]
-            print(lat +"--------#########-----" +lng + "/static/icons/" + a.Icon)
+            # print(lat +"--------#########-----" +lng + "/static/icons/" + a.Icon)
             if not a.place_id:  # Check if place_id is empty
                 # If place_id is empty, get it using get_place_id function
                 a.place_id = get_place_id(lat, lng)
