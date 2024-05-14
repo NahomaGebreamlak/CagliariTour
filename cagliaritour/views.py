@@ -45,7 +45,7 @@ class MapView(View):
                 "lat": float(lat),
                 "lng": float(lng),
                 "name": a.Name,
-                "icon": "/static/icons/" + a.Icon,
+                "icon": "static/icons/" + a.Icon,
                 "description": a.Description,
                 "image": "/static/images/" + a.Image if a.Image else '/static/images/museum.png',
                 "placeId": a.place_id,

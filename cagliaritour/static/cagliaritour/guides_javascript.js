@@ -38,6 +38,8 @@ function refreshMap() {
 
 // Function to populate the list
 async function populateList(targetListId, bgcolor, date) {
+
+   // console.log("........... Selected date ....."+date);
     const list = document.getElementById(targetListId);
     var listdata = [];
 
@@ -45,12 +47,13 @@ async function populateList(targetListId, bgcolor, date) {
         // An Ajax Function to get route Data From Django Server
         const response = await fetch('/getroute/');
         const data = await response.json();
+//console.log("........... json response ....."+ JSON.stringify(data));
 
         const guide = data.guide;
-
+ const  OptionalList = data.optional_guide;
         // Select a specific day
-        const selectedDay = '15/08/2023';
-        const selectedGuide = guide.find((day) => day.day === selectedDay);
+        const selectedDay = date.split(' - ')[1];;
+        const selectedGuide = guide.find((day) => day.day == selectedDay);
         var routesData = [];
         // Check if the day was found
         if (selectedGuide) {
@@ -103,12 +106,46 @@ async function populateList(targetListId, bgcolor, date) {
             list.appendChild(listItem);
         });
 
+  populateOptionalList(OptionalList,selectedDay)
+
 
     } catch (error) {
         console.error('Error:', error);
     }
 }
 
+// A function to populate add list option
+function  populateOptionalList(OptionalList,selectedDay){
+    console.log(OptionalList + "......." +selectedDay);
+     const Optionallist = document.getElementById("list3");
+
+     const selectedGuide = OptionalList.find((day) => day.day == selectedDay);
+     var  optionalList = [];
+     // Check if the day was found
+        if (selectedGuide) {
+            // Loop through each Point of Interest (POI) and visit time for the selected day
+            for (let i = 0; i < selectedGuide.POIs.length; i++) {
+                const poi = selectedGuide.POIs[i];
+                const visitTime = selectedGuide.visitTime[i];
+                const poiText = `  POI: ${poi}, Visit Time: ${visitTime}`;
+                optionalList.push({number: i + 1, name: poi, time: visitTime});
+            }
+        }
+
+
+     optionalList.forEach((item) => {
+            const listItem = document.createElement('li');
+            listItem.style.backgroundColor = "#FFFFE0"; // Set random background color
+            listItem.draggable = true;
+            listItem.classList.add('list-group-item');
+            listItem.innerHTML = `
+        <span id="itemNumber">${item.number},</span>
+        <span>${item.name},</span>
+        <span>${item.time}</span>
+        <button class="btn"><i class="fa-solid fa-up-down-left-right"></i></button>`;
+            Optionallist.appendChild(listItem);
+        });
+}
 
 // Function to show List of days form
 function showRouteSelectionList(dayName, date) {
@@ -169,9 +206,9 @@ function showRouteSelectionList(dayName, date) {
     jQuery('#infoWindowBox').height(760);
     jQuery('#infoWindowBox').html(cardContent);
 
-    populateList("list1", "#87CEFA", date);
-    populateList("list2", "#F08080", date);
-    populateList("list3", "#FFFFE0", date);
+    populateList("list1", "#87CEFA", dayName);
+     // populateList("list2", "#F08080", dayName);
+    // populateList("list3", "#FFFFE0", dayName);
 
     setUpDragAndDropFunctionality();
 
