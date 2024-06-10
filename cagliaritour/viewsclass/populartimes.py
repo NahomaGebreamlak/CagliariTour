@@ -3,15 +3,21 @@ from django.http import JsonResponse
 import json
 from django.conf import settings
 import requests
+
+
 def get_popular_times(request, place_id):
     try:
-        # a function to retrieve popular times by place ID
-        popular_times_data = livepopulartimes.get_populartimes_by_PlaceID(settings.GOOGLE_MAP_API_KEY, "ChIJtW0qSJp0hlQRj22fXuPh7s4")
-        json_places = json.dumps(popular_times_data['populartimes'], separators=(',', ':'), ensure_ascii=True)
-        return JsonResponse({'data': json_places})
+        # Retrieve popular times by place ID
+        popular_times_data = livepopulartimes.get_populartimes_by_PlaceID(settings.GOOGLE_MAP_API_KEY, place_id)
+        print("Place ID ...." + place_id)
+
+        if 'populartimes' in popular_times_data and popular_times_data['populartimes']:
+            json_places = json.dumps(popular_times_data['populartimes'], separators=(',', ':'), ensure_ascii=True)
+            return JsonResponse({'data': json_places})
+        else:
+            return JsonResponse({})
     except Exception as e:
         return JsonResponse({'error': str(e)})
-
 
 
 # Function to get Place Id that will be used to retrieve popular times graph

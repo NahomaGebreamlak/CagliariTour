@@ -6,7 +6,7 @@ class Place(models.Model):
     Name = models.CharField(max_length=255)
     Category = models.CharField(max_length=100)
     Description = models.TextField()
-    OpeningTime = models.CharField(max_length=100)
+    OpeningTime = models.CharField(max_length=500)
     Website = models.URLField(max_length=200, null=True, blank=True)
     PhoneNumber = models.CharField(max_length=20, null=True, blank=True)
     Location = models.CharField(max_length=100)

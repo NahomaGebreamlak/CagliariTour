@@ -6,6 +6,6 @@ urlpatterns = [
     path("homeview", HomeView.as_view(), name='my_home_view'),
     path("", MapView.as_view(), name='my_map_view'),
     path('popular_times/<str:place_id>/', get_popular_times, name='popular_times'),
-    path('getroute/', calculate_route, name='getroute'),
+    path('getroute/<str:numberofdays>/', calculate_route, name='getroute'),
 
 ]

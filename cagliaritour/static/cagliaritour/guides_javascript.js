@@ -12,6 +12,8 @@ function getRandomColor() {
 }
 
 function refreshMap() {
+    // First clear the map
+    clearRoutes();
     var routesData = [];
     for (let i = 0; i < mainTravelList.length; i++) {
         if (i + 1 < mainTravelList.length) {
@@ -27,7 +29,7 @@ function refreshMap() {
                 color: randomColor
             });
 
-            //     console.log(i + " Start: " + currentPoi + ", end: " + nextPoi + "\n");
+                console.log(i + " Start: " + currentPoi + ", end: " + nextPoi + "\n");
         }
     }
     // Draw routes on the map
@@ -45,7 +47,7 @@ async function populateList(targetListId, bgcolor, date) {
 
     try {
         // An Ajax Function to get route Data From Django Server
-        const response = await fetch('/getroute/');
+        const response = await fetch('/getroute/5/');
         const data = await response.json();
 //console.log("........... json response ....."+ JSON.stringify(data));
 
@@ -152,12 +154,12 @@ function showRouteSelectionList(dayName, date) {
 
     var cardContent = `<div class="card-body p-0 m-0">
                     <div class="card-title text-center" onclick="infoCloser()"> <h3>Your Guide  <i class="fas fa-angle-up"></i> </h3></div>
-                     <div style="width: 280px; margin-top: 20px; overflow-y: auto; max-height: 200px;" style="margin: 0px; padding: 0px;background-color: lightskyblue">
+                     <div style="width: 280px; margin-top: 20px; overflow-y: auto; height: 350px;" style="margin: 0px; padding: 0px;background-color: lightskyblue">
   <div class="card p-0 m-0" style="background-color: lightskyblue">
     <div class="card-header text-center font-weight-bold">
     <h6>  ${dayName} <button class="btn btn-primary rounded circle" onclick="refreshMap()"><i class="fas fa-sync"></i></button></h6>
     </div>
-    <div class="card-body p-0" style="background-color: deepskyblue">
+    <div class="card-body p-0" style="background-color: deepskyblue;">
       <ul class="list-group list-group-flush card" id="list1" style="background-color: lightskyblue;">
         
         
@@ -197,13 +199,23 @@ function showRouteSelectionList(dayName, date) {
 
 
 
-<div class="text-center" style="padding-top: 20px">
-<button type="button" class="btn-success"> <h5> <i class="fa-regular fa-envelope"></i> Send </h5></button>
+<div class="d-flex justify-content-center" style="padding-top: 20px">
+    <button type="button" class="btn btn-success btn-lg mr-2">
+        <h5 class="m-0">
+            <i class="fa-regular fa-envelope"></i> Send
+        </h5>
+    </button>
+    <button type="button" class="btn btn-primary btn-lg" style="margin-left: 10px" onclick="refreshMap()">
+        <h5 class="m-0">
+            <i class="fa-solid fa-sync-alt"></i> Update
+        </h5>
+    </button>
 </div>
+
 
                   </div>`;
 
-    jQuery('#infoWindowBox').height(760);
+    jQuery('#infoWindowBox').height(860);
     jQuery('#infoWindowBox').html(cardContent);
 
     populateList("list1", "#87CEFA", dayName);
@@ -216,7 +228,7 @@ function showRouteSelectionList(dayName, date) {
 
 // A function to set Up Drag and Drop functionality using Dragula
 function setUpDragAndDropFunctionality() {
-// Set up drag-and-drop using dragula
+    // Set up drag-and-drop using Dragula
     const drake = dragula([document.getElementById('list1'), document.getElementById('list2'), document.getElementById('list3')], {
         moves: (el, container, handle) => !handle.classList.contains('btn'), // exclude the button from dragging
         accepts: (el, target, source, sibling) => {
@@ -226,7 +238,21 @@ function setUpDragAndDropFunctionality() {
         },
     });
 
-    drake.on('drop', function (el, target, source, sibling) {
+    drake.on('drag', function(el) {
+        el.classList.add('dragged');
+    });
+
+    drake.on('dragend', function(el) {
+        el.classList.remove('dragged');
+        el.classList.add('drop-animate');
+        setTimeout(() => {
+            el.classList.remove('drop-animate');
+        }, 300);
+    });
+
+    drake.on('drop', function(el, target, source, sibling) {
+        el.classList.remove('moving');
+
         const parent = el.parentNode;
         const childNodes = parent.childNodes;
 
@@ -238,10 +264,8 @@ function setUpDragAndDropFunctionality() {
             index++;
         }
 
-
         const draggedItemText = el.textContent.trim();
         const splitText = draggedItemText.split(',');
-
 
         if (target.id === 'list1' && source.id === 'list1') {
             const poi = splitText[1].replace(/\n/g, '').replace(/\s+/g, ' ').trim();
@@ -259,17 +283,16 @@ function setUpDragAndDropFunctionality() {
         } else if (target.id === 'list1') {
             const poi = splitText[1].replace(/\n/g, '').replace(/\s+/g, ' ').trim();
             const visitTime = splitText[2].replace(/\n/g, '').replace(/\s+/g, ' ').trim();
-            newItem = {number: index, name: poi, time: visitTime}
-            // Insert the new item at the specified position
+            const newItem = {number: index, name: poi, time: visitTime};
 
+            // Insert the new item at the specified position
             mainTravelList.splice(index - 1, 0, newItem);
             for (let i = index; i < mainTravelList.length; i++) {
                 mainTravelList[i].number += 1;
             }
             refreshListView();
-            console.log("Item add.........");
+            console.log("Item added.........");
         }
-
 
         // Item removed from list
         if (source.id === 'list1') {
@@ -292,9 +315,19 @@ function setUpDragAndDropFunctionality() {
             }
         }
         console.log('Updated MainTravelList:', mainTravelList);
+    });
 
+    drake.on('cloned', function(clone, original, type) {
+        if (type === 'mirror') {
+            clone.classList.add('moving');
+        }
     });
 }
+
+function indexBefore(sibling) {
+    return Array.prototype.indexOf.call(sibling.parentNode.children, sibling);
+}
+
 
 
 // Function to refresh the list view based on mainTravelList

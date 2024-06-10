@@ -61,7 +61,7 @@ To set up CTE Map on your system, follow these steps:
 - Google Maps API
 - OpenWeatherMap API
 - SMTP Gmail
-
+- django-bootstrap-v5
 
 
 ## Setting Up Super Admin User 

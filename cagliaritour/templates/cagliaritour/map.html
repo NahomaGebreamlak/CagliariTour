@@ -3,26 +3,31 @@
 {% load crispy_forms_tags %}
 {% block content %}
     <style>
+        html, body, .container-fluid, main, .linkholder, .mapholder, #map {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevents scrolling */
+        }
+
         #routeInfobox.collapsed {
             display: none;
         }
 
+        .position-absolute {
+            z-index: 10; /* Ensures overlay buttons are clickable */
+        }
     </style>
     <script>
-
-    jQuery.noConflict();
-
-
+        jQuery.noConflict();
     </script>
 
     <div class="container-fluid">
         <main>
-            <div class="linkholder" style="padding: 0; margin: 0; width: 100%; ">
-                <div class="mapholder position-relative" style="padding: 0; margin: 0; width: 100%; ">
-                    <div id="map" style="padding: 0; margin: 0; width: 100%; ">
+            <div class="linkholder" style="width: 100%;">
+                <div class="mapholder position-relative" style="width: 100%;">
+                    <div id="map"></div>
 
-
-                    </div>
                     <!-- Overlay Buttons -->
                     <div class="position-absolute top-0 start-0 mt-7 ms-7" style="padding: 10px;">
                         <div class="btn btn-light btn-lg button-with-image"
@@ -54,7 +59,6 @@
                                             <label for="id_departure_time">What is your departure time?</label>
                                             <input type="time" class="form-control" id="id_departure_date"
                                                    name="departure_date">
-
                                         </div>
 
                                         <div class="form-group">
@@ -63,10 +67,10 @@
                                             <select class="form-control" id="id_moving_preference"
                                                     name="moving_preference">
                                                 <!-- Options for moving preference go here -->
-                                                <option value="DRIVING">DRIVING</option>
+                                                <option value="DRIVING">Driving</option>
                                                 <option value="TRANSIT">Bus</option>
                                                 <option value="WALKING">Walking</option>
-                                                <option value="BICYCLING">BICYCLING</option>
+                                                <option value="BICYCLING">Bicycling</option>
                                             </select>
                                         </div>
 
@@ -89,60 +93,47 @@
                                                     onclick="generateDayButtons()">Start
                                             </button>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>
+
                     <!-- Div for displaying the Days Button -->
+                    <div id="daysContainerDiv">
                     <div class="position-absolute top-0 start-50 translate-middle d-flex align-items-center justify-content-center btn-light"
                          id="daysContainer" style="padding: 20px; margin: 20px;">
+                    </div>
 
                     </div>
-                    <!-- End of Days Button div -->
-
 
                     <!-- Div for displaying route information -->
-
                     <div class="position-absolute bottom-0 left-0 btn-light" id="routeInfoContainer">
-
-                        <!-- div for displaying the info about route plan-->
+                        <!-- div for displaying the info about route plan -->
                         <div id="routeInfobox"
-                             style="width: 350px; height: 200px; border: 2px solid black; border-radius: 20px; position: relative; overflow-y: auto;">
+                             style="width: 500px; height: 400px; border: 2px solid black; border-radius: 20px; position: relative; overflow-y: auto;">
                             <!-- Content of the collapsible div goes here -->
                         </div>
                     </div>
 
-
-                    <!-- Div for displaying route information ends here -->
-
-
-
                     <!-- Clear route information button -->
                     <div class="position-absolute top-0 start-0 mt-7 ms-7" id="clear_button_Div" style="margin-top: 20px">
-                        <button style="width: 180px; height: 50px; border-radius: 15px; " class="btn-light"
+                        <button style="width: 180px; height: 50px; border-radius: 15px;" class="btn-light"
                                 onclick="clearMap()">
-                            <b style="font-size: 18px"> <i class="fas fa-home"></i> Home </b>
+                            <b style="font-size: 18px"><i class="fas fa-home"></i> Home </b>
                         </button>
                     </div>
 
 
-                    <!-- clear route information button ends here -->
-
-
-
 
                     <!-- Information button -->
-                    <div class="position-absolute top-0 end-0 mt-7 me-7" style="padding: 0px;">
+                    <div class="position-absolute top-0 end-0 mt-7 me-7" style="padding: 10px;">
                         <button style="width: 300px; border-radius: 15px;" class="btn btn-light"
                                 onclick="showWeatherCard()" id="collapseButtonInfo">
-                            <b>Weather <i class="fas fa-angle-down"></i> </b>
+                            <b>Weather <i class="fas fa-angle-down"></i></b>
                         </button>
                         <div class="container bg-light" id="infoWindowBox"
-                             style="height: 350px; width: 300px; border-radius: 15px;">
-
-
+                             style="height: 350px; width: 300px; border-radius: 15px; padding: 10px;">
                             <!-- weather info ends -->
                         </div>
                     </div>
@@ -151,18 +142,9 @@
         </main>
     </div>
 
-<script async
-    src="https://maps.googleapis.com/maps/api/js?key={{ key }}&loading=async&callback=initMap">
-</script>
-
+    <script async
+            src="https://maps.googleapis.com/maps/api/js?key={{ key }}&loading=async&callback=initMap">
+    </script>
 
     <script id="dateandtime" src="{% static 'cagliaritour/date_time.js' %}"></script>
-
-
-
-
-
-
-
-
 {% endblock %}

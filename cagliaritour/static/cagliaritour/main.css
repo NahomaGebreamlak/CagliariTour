@@ -184,3 +184,63 @@ main {
     margin-right: auto;
     margin-left: auto;
 }
+
+
+
+
+
+
+
+.list {
+    min-height: 100px;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    transition: background-color 0.3s ease;
+}
+
+.dragged {
+    opacity: 0.5;
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+.moving {
+    transition: transform 0.3s ease;
+}
+
+.drop-animate {
+    animation: dropAnimation 0.3s forwards;
+}
+
+@keyframes dropAnimation {
+    from {
+        transform: scale(1.2);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+
+.route-circle_drive {
+    font-size: 30px;
+    display: inline-block;
+    color: #fff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+}
+
+.route-circle_bus {
+   font-size: 25px;
+    display: inline-block;
+    color: #fff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+}

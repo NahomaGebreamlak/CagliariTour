@@ -54,6 +54,7 @@ function showWeatherCard() {
 
 // A function to draw the popular time graph
  async function draw_popular_time_chart(placeId) {
+    console.log("this function get called.....");
     var cardcontent =
         ` <div class="card-body">   <label htmlFor="daySelector">Select a day:</label>
     <select id="daySelector" className="form-control form-control-sm">
@@ -70,20 +71,23 @@ function showWeatherCard() {
     </a>
     <canvas id="popularTimesChart"></canvas> </div>`;
 
-    var popularTimesData;
 
     try {
         // A request send to get Live popular data from the server
         const response = await fetch(`/popular_times/${placeId}`);
         const responseData = await response.json();
-        popularTimesData = JSON.parse(responseData["data"]);
+      var  popularTimesData = JSON.parse(responseData["data"]);
+
   // Since there are some places which doesn't have popular times graph check if there is data
         if (!popularTimesData || popularTimesData.length === 0) {
             // Handle case where there is no data
+
             console.log('No data available.');
+
             return;
         }
-   // Append the card content only if there is data
+        else {
+            // Append the card content only if there is data
     jQuery('#infoWindowBox').append(cardcontent);
         const daySelector = document.getElementById('daySelector');
         const chartData = popularTimesData.find(day => day.name === daySelector.value);
@@ -129,10 +133,14 @@ function showWeatherCard() {
             chart.data.datasets[0].backgroundColor = modifiedData.map(value => getBarColor(value));
             chart.update();
         });
+        }
+
 
     } catch (e) {
         // Handle errors if necessary
-        console.error('Error fetching or parsing data:', e);
+         // Change height of the info box
+               jQuery('#infoWindowBox').height(500);
+        //console.error('Error fetching or parsing data:', e);
         return;
     }
 

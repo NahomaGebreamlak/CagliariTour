@@ -74,55 +74,13 @@ from random import sample, shuffle
 from django.http import JsonResponse
 
 
-# def calculate_route(request):
-#     # Assuming places_data is a queryset containing Place objects from your Django model
-#     places_data = list(Place.objects.all())
-#     num_days = 3
-#     # Create an empty list to store the generated itinerary
-#     itinerary = []
-#
-#     # Loop through each day
-#     for i in range(num_days):
-#         # Create a dictionary to represent each day in the itinerary
-#         day_itinerary = {
-#             "day": (datetime.date.today() + datetime.timedelta(days=i)).strftime('%d/%m/%Y'),
-#             "POIs": [],
-#             "visitTime": []
-#         }
-#
-#         # a set to keep track of already selected places
-#         selected_places = set()
-#
-#
-#         #  hours in a day
-#         hours_in_day = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"]
-#
-#         # Shuffle the places_data list to add randomness
-#         shuffle(places_data)
-#
-#         # Iterate through each hour
-#         for hour in hours_in_day:
-#             # Randomly select a place for the current hour
-#             selected_place = sample(places_data, 1)[0]
-#
-#             # Ensure no repetition of places in the day's itinerary
-#             if selected_place not in selected_places:
-#                 selected_places.add(selected_place)
-#                 day_itinerary["POIs"].append(selected_place.Name)
-#                 day_itinerary["visitTime"].append(hour)
-#
-#         # Append the day's itinerary to the main itinerary
-#         itinerary.append(day_itinerary)
-#
-#     # Return the itinerary as a JSON response
-#     return JsonResponse({"guide": itinerary})
-# from random import shuffle, sample
-# import datetime
 
-def calculate_route(request):
+def calculate_route(request,numberofdays):
     # Assuming places_data is a queryset containing Place objects from your Django model
     places_data = list(Place.objects.all())
-    num_days = 3
+    num_days = 7
+
+    print("................ Number of Days"+ numberofdays)
     # Create empty lists to store the generated main itinerary and optional itinerary
     main_itinerary = []
     optional_itinerary = []

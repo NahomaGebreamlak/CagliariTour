@@ -47,8 +47,13 @@ function drawRoutesOnMap(routes) {
 
         showHideButton.innerHTML = '<i class="fa fa-eye-slash"></i>';
 
-        showHideButton.style.marginRight = '10px';
-        showHideButton.classList.add('btn', 'btn-info');
+
+showHideButton.style.marginRight = '10px';
+showHideButton.style.padding = '10px 20px'; // Adjust padding for button size
+showHideButton.style.fontSize = '18px'; // Adjust font size for button text/icon size
+showHideButton.style.width = 'auto'; // Optional: adjust width if needed
+showHideButton.style.height = 'auto'; // Optional: adjust height if needed
+showHideButton.classList.add('btn', 'btn-info');
 
 // Add click event listener to toggle visibility of directions renderer
         showHideButton.addEventListener('click', function () {
@@ -58,11 +63,14 @@ function drawRoutesOnMap(routes) {
                 numberedMarkers[index].forEach(marker => {
                     marker.setMap(map);
                 });
-                showHideButton.innerHTML = '<i class="fa fa-eye-slash"></i>'; // Replace eye icon with eye slash icon
+                showHideButton.innerHTML = '<i class="fa fa-eye-slash"></i>';
+
+
             } else {
                 directionsRenderer.setMap(null);
                 removeNumberedMarkers(index);
-                showHideButton.innerHTML = '<i class="fa fa-eye"></i>'; // Replace eye slash icon with eye icon
+                showHideButton.innerHTML = '<i class="fa fa-eye"></i>';
+
             }
         });
 
@@ -93,6 +101,7 @@ function drawRoutesOnMap(routes) {
         const directionPromise = new Promise((resolve, reject) => {
             directionsService.route(request, function (response, status) {
                 if (status === 'OK') {
+                     directionsRenderer.setOptions({ preserveViewport: true });
                     directionsRenderer.setDirections(response);
                     // Add numbered markers along the route
                     const routepath = response.routes[0].legs[0];
@@ -147,6 +156,7 @@ function drawRoutesOnMap(routes) {
     Promise.all(directionPromises).then(() => {
         routeTypeInfoList.sort((a, b) => a.number - b.number);
         addLegend(routeTypeInfoList);
+
     });
 }
 
@@ -174,6 +184,7 @@ function getRouteTypeInfo(routeType) {
 }
 
 // Function to add a legend on the map
+
 function addLegend(routeTypeInfoList) {
     const legendContainer = document.getElementById("routeInfobox");
 
@@ -181,28 +192,46 @@ function addLegend(routeTypeInfoList) {
         console.error(`Container with ID not found.`);
         return;
     }
+    let divtype = 'route-circle_drive';
+    let fontsize = '35px';
+   var travel_mode = document.getElementById('id_moving_preference').value;
+    if(travel_mode === 'TRANSIT'){
+         divtype ='route-circle_bus';
+         fontsize ='20px';
+    }
 
     // Clear existing content of the container
     legendContainer.innerHTML = '';
 
     for (let i = 0; i < routeTypeInfoList.length; i++) {
-    const routeTypeInfo = routeTypeInfoList[i];
+        const routeTypeInfo = routeTypeInfoList[i];
         const legendDiv = document.createElement('div');
 
         let busNumbersHTML = '';
+
         if (routeTypeInfo.busNumbers && routeTypeInfo.busNumbers.length > 0) {
             // If busNumbers is not empty, include it in the legend
             busNumbersHTML = ` Bus N. ${routeTypeInfo.busNumbers}`;
+
         }
 
+        // Check if routeTypeInfoList[i+1] exists before accessing its color property
+        let nextRouteColor = '#000000' +
+            '';
+        if (routeTypeInfoList[i + 1]) {
+            nextRouteColor = routeTypeInfoList[i + 1].color;
+        }
+
+        console.log(`${routeTypeInfo.color}  ${routeTypeInfoList.length}`);
         legendDiv.innerHTML = `
-            <p style="font-size: 15px; display: inline-block;" class="btn btn-light">
+            <p style="font-size: ${fontsize}; display: inline-block; max-width: 500px" class="btn btn-light">
                 Route
-                <span style="font-size: 15px; display: inline-block; background-color: ${routeTypeInfo.color}; color: #fff; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px;">
+                <span style="background-color: ${routeTypeInfo.color};" class="${divtype}">
                     ${routeTypeInfo.number}
                 </span>
-                &rarr;
-                <span style="font-size: 20px; display: inline-block; background-color: ${routeTypeInfoList[i+1].color}; color: #fff; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px;">
+              <span style="font-size: 30px;">&rarr;</span>  
+                <span style="background-color: ${nextRouteColor};" class="${divtype}">
+               
                     ${routeTypeInfo.number + 1}
                 </span>
                 ${routeTypeInfo.icon}${busNumbersHTML}

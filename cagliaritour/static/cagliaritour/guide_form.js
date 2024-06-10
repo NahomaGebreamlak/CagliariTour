@@ -53,6 +53,9 @@ function showForm(flag) {
 // Wait for the document to be ready for info box
 $j(document).ready(function () {
 // A function to show the weather card automatically
+      // Hide day container
+    jQuery('#daysContainerDiv').hide();
+
     loadWeatherCard();
     // Select the collapse element by its ID
     var collapseElement = jQuery('#infoWindowBox');
@@ -111,6 +114,8 @@ function calculateDateDifference() {
     return differenceInDays;
 }
 function generateDayButtons() {
+        // Hide day container
+    jQuery('#daysContainerDiv').show();
     jQuery('#infoWindowBox').hide();
 
     const daysContainer = document.getElementById('daysContainer');
@@ -142,6 +147,9 @@ function generateDayButtons() {
 
             // Add 'clicked' class to the clicked button
             dayButton.classList.add('clicked');
+//clear previous routes  first
+clearRoutes();
+
 
             showRouteSelectionList(DayNameWithDate, formattedDate);
             showRouteInfoDiv();
@@ -172,6 +180,7 @@ function showRouteInfoDiv(){
 // Function to reset the map
 function clearMap() {
    jQuery('#collapseButton').show();
+   jQuery('#daysContainerDiv').hide();
 // clear container
 jQuery('#routeInfoContainer').hide();
  const daysContainer = document.getElementById('daysContainer');
