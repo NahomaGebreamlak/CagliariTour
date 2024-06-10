@@ -32,7 +32,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "admin_soft.apps.AdminSoftDashboardConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -41,7 +40,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "weather",
     "cagliaritour",
-
     'crispy_forms',
     'crispy_bootstrap4',
     'bootstrap5',
@@ -119,9 +117,9 @@ USE_I18N = True
 
 USE_TZ = True
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
-GOOGLE_MAP_API_KEY = ""
+GOOGLE_MAP_API_KEY = "AIzaSyD7kI-eezkBIKYZIuW9uhrmrWI5kRM9KII"
 
-WEATHER_API_KEY = ""
+WEATHER_API_KEY = "6fa6e4ad8aa066382d1347d83e1d53bf"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 

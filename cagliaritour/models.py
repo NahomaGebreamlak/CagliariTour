@@ -1,31 +1,66 @@
 from django.db import models
 
+
+class Place(models.Model):
+    ID = models.IntegerField(primary_key=True)
+    Name = models.CharField(max_length=255)
+    Category = models.CharField(max_length=100)
+    Description = models.TextField()
+    OpeningTime = models.CharField(max_length=500)
+    Website = models.URLField(max_length=200, null=True, blank=True)
+    PhoneNumber = models.CharField(max_length=20, null=True, blank=True)
+    Location = models.CharField(max_length=100)
+    Address = models.CharField(max_length=255)
+    Toilet = models.BooleanField(default=False)
+    Accessibility = models.BooleanField(default=False)
+    Animals = models.BooleanField(default=False)
+    Image = models.CharField(max_length=250)
+    Icon = models.CharField(max_length=250)
+    VisitTime = models.CharField(max_length=100)
+    Map_Priority = models.IntegerField(default=0)
+    place_id = models.CharField(max_length=200, blank=True, null=True)
+
+    def __str__(self):
+        return self.Name
+
+
 class Locations(models.Model):
     name = models.CharField(max_length=500)
-    zipcode = models.CharField(max_length=200,blank=True, null=True)
-    city = models.CharField(max_length=200,blank=True, null=True)
-    country = models.CharField(max_length=200,blank=True, null=True)
-    address = models.CharField(max_length=200,blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True,blank=True, null=True)
+    category = models.CharField(max_length=500, blank=True, null=True)
+    description = models.CharField(max_length=300, blank=True, null=True)
+    OpeningTime = models.JSONField(blank=True, null=True)
+    website_address = models.URLField(blank=True, null=True)
+    phone_number = models.CharField(max_length=50, blank=True, null=True)
+    zipcode = models.CharField(max_length=200, blank=True, null=True)
+    city = models.CharField(max_length=200, blank=True, null=True)
+    country = models.CharField(max_length=200, blank=True, null=True)
+    address = models.CharField(max_length=200, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     edited_at = models.DateTimeField(auto_now=True)
+    toilet = models.BooleanField(null=True)
+    accessibility = models.BooleanField(null=True)
+    animals = models.BooleanField(null=True)
+    image = models.ImageField(upload_to='static/images/', null=True, blank=True)
+    visitTime = models.CharField(max_length=200, blank=True, null=True)
+    lat = models.CharField(max_length=200, blank=True, null=True)
+    lng = models.CharField(max_length=200, blank=True, null=True)
+    place_id = models.CharField(max_length=200, blank=True, null=True)
+    icon_image = models.CharField(max_length=200, blank=True, null=True)
 
-    lat = models.CharField(max_length=200,blank=True, null=True)
-    lng = models.CharField(max_length=200,blank=True, null=True)
-    place_id = models.CharField(max_length=200,blank=True, null=True)
-    icon_image = models.CharField(max_length=200,blank=True, null=True)
     def __str__(self):
         return self.name
 
-class Distances (models.Model):
-    from_location = models.ForeignKey(Locations, related_name = 'from_location', on_delete=models.CASCADE)
-    to_location = models.ForeignKey(Locations, related_name = 'to_location', on_delete=models.CASCADE)
+
+class Distances(models.Model):
+    from_location = models.ForeignKey(Locations, related_name='from_location', on_delete=models.CASCADE)
+    to_location = models.ForeignKey(Locations, related_name='to_location', on_delete=models.CASCADE)
     mode = models.CharField(max_length=200, blank=True, null=True)
     distance_km = models.DecimalField(max_digits=10, decimal_places=2)
     duration_mins = models.DecimalField(max_digits=10, decimal_places=2)
-    duration_traffic_mins = models.DecimalField(max_digits=10, decimal_places=2,blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True,blank=True, null=True)
+    duration_traffic_mins = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     edited_at = models.DateTimeField(auto_now=True)
-from django.db import models
+
 
 class TravelPreference(models.Model):
     departure_date = models.DateField()
