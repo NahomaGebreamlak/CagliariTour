@@ -193,7 +193,7 @@ function addLegend(routeTypeInfoList) {
         return;
     }
     let divtype = 'route-circle_drive';
-    let fontsize = '35px';
+    let fontsize = '25px';
    var travel_mode = document.getElementById('id_moving_preference').value;
     if(travel_mode === 'TRANSIT'){
          divtype ='route-circle_bus';

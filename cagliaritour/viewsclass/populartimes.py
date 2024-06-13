@@ -9,7 +9,7 @@ def get_popular_times(request, place_id):
     try:
         # Retrieve popular times by place ID
         popular_times_data = livepopulartimes.get_populartimes_by_PlaceID(settings.GOOGLE_MAP_API_KEY, place_id)
-        print("Place ID ...." + place_id)
+        # print("Place ID ...." + place_id)
 
         if 'populartimes' in popular_times_data and popular_times_data['populartimes']:
             json_places = json.dumps(popular_times_data['populartimes'], separators=(',', ':'), ensure_ascii=True)

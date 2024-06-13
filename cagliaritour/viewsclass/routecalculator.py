@@ -80,7 +80,7 @@ def calculate_route(request,numberofdays):
     places_data = list(Place.objects.all())
     num_days = 7
 
-    print("................ Number of Days"+ numberofdays)
+    # print("................ Number of Days"+ numberofdays)
     # Create empty lists to store the generated main itinerary and optional itinerary
     main_itinerary = []
     optional_itinerary = []

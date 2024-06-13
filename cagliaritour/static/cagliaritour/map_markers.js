@@ -139,7 +139,7 @@ function showWeatherCard() {
     } catch (e) {
         // Handle errors if necessary
          // Change height of the info box
-               jQuery('#infoWindowBox').height(500);
+               jQuery('#infoWindowBox').height(550);
         //console.error('Error fetching or parsing data:', e);
         return;
     }
