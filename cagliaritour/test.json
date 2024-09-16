@@ -1,0 +1,330 @@
+{
+  "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw",
+  "id": "ChIJj61dQgK6j4AR4GeTYWZsKWw",
+  "types": [
+    "point_of_interest",
+    "establishment"
+  ],
+  "nationalPhoneNumber": "(650) 253-0000",
+  "internationalPhoneNumber": "+1 650-253-0000",
+  "formattedAddress": "1600 Amphitheatre Pkwy, Mountain View, CA 94043, USA",
+  "addressComponents": [
+    {
+      "longText": "1600",
+      "shortText": "1600",
+      "types": [
+        "street_number"
+      ],
+      "languageCode": "en-GB"
+    },
+    {
+      "longText": "Amphitheatre Parkway",
+      "shortText": "Amphitheatre Pkwy",
+      "types": [
+        "route"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Mountain View",
+      "shortText": "Mountain View",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Santa Clara County",
+      "shortText": "Santa Clara County",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "California",
+      "shortText": "CA",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "United States",
+      "shortText": "US",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "94043",
+      "shortText": "94043",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "en-GB"
+    }
+  ],
+  "plusCode": {
+    "globalCode": "849VCWC7+RV",
+    "compoundCode": "CWC7+RV Mountain View, CA, USA"
+  },
+  "location": {
+    "latitude": 37.4220541,
+    "longitude": -122.0853242
+  },
+  "viewport": {
+    "low": {
+      "latitude": 37.4209489697085,
+      "longitude": -122.0884693
+    },
+    "high": {
+      "latitude": 37.4236469302915,
+      "longitude": -122.0829156
+    }
+  },
+  "rating": 4.2,
+  "googleMapsUri": "https://maps.google.com/?cid=7793879817120868320",
+  "websiteUri": "https://about.google/locations/?region=north-america",
+
+  "utcOffsetMinutes": -420,
+  "adrFormatAddress": "\u003Cspan class=\"street-address\"\u003E1600 Amphitheatre Pkwy\u003C/span\u003E, \u003Cspan class=\"locality\"\u003EMountain View\u003C/span\u003E, \u003Cspan class=\"region\"\u003ECA\u003C/span\u003E \u003Cspan class=\"postal-code\"\u003E94043\u003C/span\u003E, \u003Cspan class=\"country-name\"\u003EUSA\u003C/span\u003E",
+  "businessStatus": "OPERATIONAL",
+  "userRatingCount": 9911,
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+  "iconBackgroundColor": "#7B9EB0",
+  "displayName": {
+    "text": "Googleplex",
+    "languageCode": "en"
+  },
+
+
+  "reviews": [
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/reviews/ChdDSUhNMG9nS0VJQ0FnSURkaWJ2MjNnRRAB",
+      "relativePublishTimeDescription": "5 months ago",
+      "rating": 3,
+      "text": {
+        "text": "Came here for a tour and honestly, it was average. Don’t expect too much and you should be fine. I’m pretty sure if you’re a Googler then you’ll get to see more.\n\nIt was nice to be there, and we were taken to two cafes, see the plants that employees plant and a Google bike that went away as an employee used it then it was the end. It’s much better to walk around yourself, visit the Google Store and hang out at the cafe next door.\n\nI had high expectations therefore gave it 3 stars.",
+        "languageCode": "en"
+      },
+      "originalText": {
+        "text": "Came here for a tour and honestly, it was average. Don’t expect too much and you should be fine. I’m pretty sure if you’re a Googler then you’ll get to see more.\n\nIt was nice to be there, and we were taken to two cafes, see the plants that employees plant and a Google bike that went away as an employee used it then it was the end. It’s much better to walk around yourself, visit the Google Store and hang out at the cafe next door.\n\nI had high expectations therefore gave it 3 stars.",
+        "languageCode": "en"
+      },
+      "authorAttribution": {
+        "displayName": "Helen Bui",
+        "uri": "https://www.google.com/maps/contrib/101985264493939759193/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUlqVb8xMlhnnelVUQbjiGQbtOktWNp9yiSvqAYZgBoZ72-njQq4A=s128-c0x00000000-cc-rp-mo-ba6"
+      },
+      "publishTime": "2024-02-24T19:26:18Z"
+    },
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/reviews/ChZDSUhNMG9nS0VJQ0FnSUR0el91SktnEAE",
+      "relativePublishTimeDescription": "5 months ago",
+      "rating": 1,
+      "text": {
+        "text": "Yeah I don’t know what is wrong with Google headquarters but my wife and I went there maybe 7 years ago and went to the campus and it was no problem. The employees were having a party and they greeted us and offered us food and were kind.\n\nThe other day I followed Google Maps to Google Headquarters and I went into the building that said, “You belong here.”\n\nThen I was treated poorly by their security staff who took her name badge and hid it from me. I was told I couldn’t be there and had to walk a half a mile to the Googleplex. I asked if they could give me a ride. No.\n\nBefore I left, after I called them names for being so rude to me, I walked to the Googleplex store, I looked at some products and then a man came up to me and asked me to leave because I caused a disturbance. So I left and in the way out, gave a dog treat to a man with a dog. Then I went pee in their public bathroom which smelled terrible. I then walked back to my car through the same way I just came and 3 security guards approached me, told me I was trespassing and that they would call the police. They then walked right next to me the whole time intimidating me while I then started screaming obscenities at them because Google is a bunch of holier-than-though, velvet rope scumbags.\n\nYou can see my encounter online on my social media websites. They were out of line and I will never return. Ever.\n\nGoogle is no Apple and those people are a bunch of sadistic psychopaths who told me to leave for causing “a disruption.” First of all, I didn’t cause a disruption UNTIL you told me to leave when I was trying to give you money for your inferior products. And second, I thought tech companies like disruptors?\n\nWell not Google. They have a monopoly that the government needs to break up and they don’t want any disruption to their dominating market share and unfair business practices.",
+        "languageCode": "en"
+      },
+      "originalText": {
+        "text": "Yeah I don’t know what is wrong with Google headquarters but my wife and I went there maybe 7 years ago and went to the campus and it was no problem. The employees were having a party and they greeted us and offered us food and were kind.\n\nThe other day I followed Google Maps to Google Headquarters and I went into the building that said, “You belong here.”\n\nThen I was treated poorly by their security staff who took her name badge and hid it from me. I was told I couldn’t be there and had to walk a half a mile to the Googleplex. I asked if they could give me a ride. No.\n\nBefore I left, after I called them names for being so rude to me, I walked to the Googleplex store, I looked at some products and then a man came up to me and asked me to leave because I caused a disturbance. So I left and in the way out, gave a dog treat to a man with a dog. Then I went pee in their public bathroom which smelled terrible. I then walked back to my car through the same way I just came and 3 security guards approached me, told me I was trespassing and that they would call the police. They then walked right next to me the whole time intimidating me while I then started screaming obscenities at them because Google is a bunch of holier-than-though, velvet rope scumbags.\n\nYou can see my encounter online on my social media websites. They were out of line and I will never return. Ever.\n\nGoogle is no Apple and those people are a bunch of sadistic psychopaths who told me to leave for causing “a disruption.” First of all, I didn’t cause a disruption UNTIL you told me to leave when I was trying to give you money for your inferior products. And second, I thought tech companies like disruptors?\n\nWell not Google. They have a monopoly that the government needs to break up and they don’t want any disruption to their dominating market share and unfair business practices.",
+        "languageCode": "en"
+      },
+      "authorAttribution": {
+        "displayName": "Ian Williams",
+        "uri": "https://www.google.com/maps/contrib/107670812783470007196/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXRv9--b-MW6SEOXZHw6Ho4IVYrwKX4tA2yILlIeYnXXwPMQ2Si_Q=s128-c0x00000000-cc-rp-mo-ba5"
+      },
+      "publishTime": "2024-02-08T13:03:00Z"
+    },
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/reviews/ChdDSUhNMG9nS0VJQ0FnSURGcHRxeS1nRRAB",
+      "relativePublishTimeDescription": "8 months ago",
+      "rating": 5,
+      "text": {
+        "text": "Walked around after a tour of the Vistor Experience. Not really much to see, but I was fascinated with the landscaping and plants. Not too many tech parks have watermelons growing. Lots of pollinators were being visited by their flying friend. Impressive that a company of this size cares enough to do such a good job!",
+        "languageCode": "en"
+      },
+      "originalText": {
+        "text": "Walked around after a tour of the Vistor Experience. Not really much to see, but I was fascinated with the landscaping and plants. Not too many tech parks have watermelons growing. Lots of pollinators were being visited by their flying friend. Impressive that a company of this size cares enough to do such a good job!",
+        "languageCode": "en"
+      },
+      "authorAttribution": {
+        "displayName": "Anne Margaret White",
+        "uri": "https://www.google.com/maps/contrib/110847646938702671418/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocKcS8MdxYWWPd4cQviiGHGozidIWHyD1Y8GrTjy4EQ0o0nfLA=s128-c0x00000000-cc-rp-mo-ba6"
+      },
+      "publishTime": "2023-11-06T19:47:34Z"
+    },
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/reviews/ChdDSUhNMG9nS0VJQ0FnSUMxc0txajVBRRAB",
+      "relativePublishTimeDescription": "7 months ago",
+      "rating": 5,
+      "text": {
+        "text": "google hosts activities occasionally which is such a great way to being about people together. otherwise it's such an inspiring place to just work in, the cafe has very reasonable prices, the environment is great",
+        "languageCode": "en"
+      },
+      "originalText": {
+        "text": "google hosts activities occasionally which is such a great way to being about people together. otherwise it's such an inspiring place to just work in, the cafe has very reasonable prices, the environment is great",
+        "languageCode": "en"
+      },
+      "authorAttribution": {
+        "displayName": "mhyles",
+        "uri": "https://www.google.com/maps/contrib/113071239298658716661/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjU3FQkGUZkFCmqnn-Zyb7RV6iKIWSdWzFn6t_6agifERs2DCrBX=s128-c0x00000000-cc-rp-mo-ba3"
+      },
+      "publishTime": "2023-12-21T01:30:47Z"
+    },
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/reviews/ChZDSUhNMG9nS0VJQ0FnSUQxa2V1c0pnEAE",
+      "relativePublishTimeDescription": "5 months ago",
+      "rating": 5,
+      "text": {
+        "text": "Get your Google on and make a pilgrimage you geeks!\nThe butternut squash soup is fantastic! 😋👍\nYou will enjoy a wonderful experience!",
+        "languageCode": "en"
+      },
+      "originalText": {
+        "text": "Get your Google on and make a pilgrimage you geeks!\nThe butternut squash soup is fantastic! 😋👍\nYou will enjoy a wonderful experience!",
+        "languageCode": "en"
+      },
+      "authorAttribution": {
+        "displayName": "Ming Dynasty",
+        "uri": "https://www.google.com/maps/contrib/108496854794544261860/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUCcN6sUsUGDe-ZHjBHyCJzhaAlq_4lgAY28FKDhSgKggb89LE=s128-c0x00000000-cc-rp-mo-ba5"
+      },
+      "publishTime": "2024-01-29T19:42:57Z"
+    }
+  ],
+  "photos": [
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/photos/AelY_CuPoL6z4gGguRhYI4jGUc_z8FRln-79jqi1UDa35sgZO-ZXr6fW4GPSSANmapmE_Rus0Y_WUAmCiKJT01QLc04I7MZ-3OnbgPXNyJgu-V3mft2kSorbFlNkfkKvx8RSAhMssuSgduQ6aQSEOVl1bH7laguBHm3vtZ_Q",
+      "widthPx": 4032,
+      "heightPx": 3024,
+      "authorAttributions": [
+        {
+          "displayName": "Mark Yan",
+          "uri": "//maps.google.com/maps/contrib/104861146276467007354",
+          "photoUri": "//lh3.googleusercontent.com/a-/ALV-UjXvHp8Kg932h80MpoDSJ_Sl4FQ-XPMd6zFK8LllY7GpoqivreKYsA=s100-p-k-no-mo"
+        }
+      ]
+    },
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/photos/AelY_Cu_d-yQOG6mHSYbkkXE92MU7PtqaFduFpPUcVz-kuVvQ3cMArStYr2J-2zFb7kNP4vxBmwqV7MfTTBCEoNuMQ_Ak6WjvnmfzZUxH6LxffEv6Mht2khBtI3NnN66yMTYohnAgm5l4Zswoyz5ybJfC50o4wpmeGqalgYw",
+      "widthPx": 800,
+      "heightPx": 600,
+      "authorAttributions": [
+        {
+          "displayName": "Hamid Rs",
+          "uri": "//maps.google.com/maps/contrib/110013516674213805914",
+          "photoUri": "//lh3.googleusercontent.com/a-/ALV-UjVXNBGL4MQFCYiPVcSbS3lP784A5HhJdLww8KRV_p0rJmsbIFRp=s100-p-k-no-mo"
+        }
+      ]
+    },
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/photos/AelY_CtOPjkwBBJ2GRBrZ_aLZJHH6O19rOno6AL0X1wOasuh4MzO-PB72j_U-ksuEqF8tchjG-AMBlENw61kS1REgATBFKZSxHGCPjH5204i3yphPN4hPiKkXn9Qd9m22D7jOuHVoCzEDrLdMaE-8nyCCqTKm0k_7SgURAhM",
+      "widthPx": 1731,
+      "heightPx": 1154,
+      "authorAttributions": [
+        {
+          "displayName": "Klugtscheisser",
+          "uri": "//maps.google.com/maps/contrib/117855073372519923016",
+          "photoUri": "//lh3.googleusercontent.com/a-/ALV-UjU6PT3ABCHridyZr865fsoEw3547yYuOh6F5bb4ob5n1G3oEL9_=s100-p-k-no-mo"
+        }
+      ]
+    },
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/photos/AelY_CtDV2jE4H69zcekGuWxzolwjk3xM8aizemODh7NktwwgjYNMV5L8XVZ1IKNMX-zLxiRNRp3lp_qpk4mLig76hOE7LCNzrpNM-9zdOb_K4ScLGBiIcZws6gHgLddFeRHsfPmxjTS_Jb90aqcTsHrjOShKnA9qrhtEeGM",
+      "widthPx": 3072,
+      "heightPx": 4080,
+      "authorAttributions": [
+        {
+          "displayName": "Brian Johnson",
+          "uri": "//maps.google.com/maps/contrib/100907662529430491672",
+          "photoUri": "//lh3.googleusercontent.com/a-/ALV-UjVxGRoebBBQ4HBPsuNOUuOBXUk-iMxq5YD9RPANqwcMB7N63kI=s100-p-k-no-mo"
+        }
+      ]
+    },
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/photos/AelY_Ct2yicnA1FELtus8bKyyyq6tizaqhfhhC86dkMJgDlsW9x52KkrVZVzk55aXOUWEDfDHbPdheuWwB_f0YvnJjIgvF-NMHOvRytiud-ZmoTwxcl5avzkJX6nZiJ0sED2BBS4GoAVXxNtprz20oj66tIj53Lc-YbeAnV9",
+      "widthPx": 4624,
+      "heightPx": 3468,
+      "authorAttributions": [
+        {
+          "displayName": "Tomas Corteggiano",
+          "uri": "//maps.google.com/maps/contrib/103940696680568174301",
+          "photoUri": "//lh3.googleusercontent.com/a-/ALV-UjV__vdqWKAG6K5-xVB9lB5TNv-f8DdAfR8Pas9QfPdeS2uTJsM=s100-p-k-no-mo"
+        }
+      ]
+    },
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/photos/AelY_CtJg8rTgeRfeLLCKhyX2Q7BKHh_curjCYPXh-K_fqeLMedN8SMP2OEXwstf17lFFXhO7Of9QyHHLBO5Y9Ci0NmL0QLyZQ0Gv8n7V63IUjV_ngVNVqyipIyzDLk8d11XZhVM8kZU2XrNiHrh-XNETbAEvCQIIfDooeHe",
+      "widthPx": 4288,
+      "heightPx": 2848,
+      "authorAttributions": [
+        {
+          "displayName": "MomZee Jen",
+          "uri": "//maps.google.com/maps/contrib/108316326160858492184",
+          "photoUri": "//lh3.googleusercontent.com/a-/ALV-UjXOwHrfgdtsu2x3nXFECnk3Qn84ACz3LeAtq3dDwvL0mS9btFRa=s100-p-k-no-mo"
+        }
+      ]
+    },
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/photos/AelY_CuqP3xc6RlIDrBgZ5ftRGj3uFvT_6ULn7HxSt6uG1GN2UqtACxf-UhQicaIQGHdCEqTizPpORRehuhRd90Z0jBAbuF9ODcFX9oMf0Xg3VQkPOBqxp1bRSQjcjTEVRtCSpBxFe6fOk-cjm91C-7lkwkpu2lNcwyjfVgX",
+      "widthPx": 4032,
+      "heightPx": 3024,
+      "authorAttributions": [
+        {
+          "displayName": "Jack Liu",
+          "uri": "//maps.google.com/maps/contrib/104792114110711088396",
+          "photoUri": "//lh3.googleusercontent.com/a-/ALV-UjVTj9BdqaCDmd0ScmNlEX78i6XjMacKWbrYgNBLlXV03HHdf5C4AA=s100-p-k-no-mo"
+        }
+      ]
+    },
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/photos/AelY_Cux1r71uZ96xk_wVwRGFBR4N-oALogA5bBXbV0a-kVGhv1C6F82dWOVdV93RfRrn977OsFqMhe7_qeuBoYN3jvlClRTGUEv4wZUpvKptVNwAQW5EPF8tJ_y-sh5wDSQlM3Lizc2h_HkWvWvg70-vJoaDov_w6QSktsc",
+      "widthPx": 3024,
+      "heightPx": 4032,
+      "authorAttributions": [
+        {
+          "displayName": "Abusayed Suman",
+          "uri": "//maps.google.com/maps/contrib/115918987062599555800",
+          "photoUri": "//lh3.googleusercontent.com/a-/ALV-UjV7tsgZ1XSk_VV2TVWEEeYNKI2ouP9I74rvpf2iAgZAIElGwRfndQ=s100-p-k-no-mo"
+        }
+      ]
+    },
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/photos/AelY_Cs8-dqlF9lSLC6oI5D8u92aAAYb4zQh4ILq92Lk4N5l-50HX1vMeCxmJ8ju1M7oHWAPD9vQl6izdjV5Q3S6APb1DUdYOQR-Aob2zPL-fzu61GtnGvxFK-ziqiM9CF__-8NmuFgBYRYTUmMpJ5zvexsF0S3FLzyQf2PT",
+      "widthPx": 4032,
+      "heightPx": 3024,
+      "authorAttributions": [
+        {
+          "displayName": "Simone",
+          "uri": "//maps.google.com/maps/contrib/117851692593417823996",
+          "photoUri": "//lh3.googleusercontent.com/a/ACg8ocKmwhxILjKfGngHPaoogOUI017iabwcZRA_3pUWG1UMDSBh2g=s100-p-k-no-mo"
+        }
+      ]
+    },
+    {
+      "name": "places/ChIJj61dQgK6j4AR4GeTYWZsKWw/photos/AelY_Cs7ViAeCfhQ3-_Qw5OkTVYEqpbEXPsO1IDEPQuJygHUth-5wCxw44GFbJAKRRCChY102lYeoUOhknrNdZlVQP4pI76zDy0noq9cAcNp-067P4H9fyYUDOCkoGwkhHuCaW4WN-q-YzLIKlIx6SW4TZdipbc72lDckxoU",
+      "widthPx": 4608,
+      "heightPx": 3456,
+      "authorAttributions": [
+        {
+          "displayName": "Xabier M",
+          "uri": "//maps.google.com/maps/contrib/102526882975735820957",
+          "photoUri": "//lh3.googleusercontent.com/a/ACg8ocJS93TxKA2BnDMB6463Hw4n09b_5K70XFXkGTpBWiGWScZs6bTq=s100-p-k-no-mo"
+        }
+      ]
+    }
+  ],
+  "accessibilityOptions": {
+    "wheelchairAccessibleParking": true,
+    "wheelchairAccessibleEntrance": true
+  }
+}

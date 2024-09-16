@@ -27,13 +27,13 @@ def get_place_id(latitude, longitude):
         'latlng': f"{latitude},{longitude}",
         'key': settings.GOOGLE_MAP_API_KEY,
     }
-
     try:
         response = requests.get(base_url, params=params)
         data = response.json()
 
         if response.status_code == 200 and data.get('status') == 'OK':
             place_id = data['results'][0]['place_id']
+            print(data)
             return place_id
         else:
             print(f"Error: {data['status']} - {data.get('error_message', 'No error message')}")

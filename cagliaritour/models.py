@@ -41,11 +41,16 @@ class Locations(models.Model):
     accessibility = models.BooleanField(null=True)
     animals = models.BooleanField(null=True)
     image = models.ImageField(upload_to='static/images/', null=True, blank=True)
-    visitTime = models.CharField(max_length=200, blank=True, null=True)
     lat = models.CharField(max_length=200, blank=True, null=True)
     lng = models.CharField(max_length=200, blank=True, null=True)
     place_id = models.CharField(max_length=200, blank=True, null=True)
     icon_image = models.CharField(max_length=200, blank=True, null=True)
+    average_rating = models.FloatField(null=True, blank=True)
+    user_rating_accessibility = models.FloatField(null=True, blank=True)
+    num_positive_comments = models.IntegerField(default=0)
+    num_negative_comments = models.IntegerField(default=0)
+    wheelchair_accessible_entrance = models.BooleanField(null=True, blank=True)
+    visitTime = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
         return self.name

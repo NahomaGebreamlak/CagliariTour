@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Place List</title>
+</head>
+<body>
+    <h1>Place List</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Google Place ID</th>
+                <th>Average Rating</th>
+                <th>User Rating Accessibility</th>
+                <th>Positive Comments</th>
+                <th>Negative Comments</th>
+                <th>Wheelchair Accessible Entrance</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for place in places %}
+                <tr>
+                    <td>{{ place.name }}</td>
+                    <td>{{ place.place_id }}</td>
+                    <td>{{ place.average_rating }}</td>
+                    <td>{{ place.user_rating_accessibility }}</td>
+                    <td>{{ place.num_positive_comments }}</td>
+                    <td>{{ place.num_negative_comments }}</td>
+                    <td>{{ place.wheelchair_accessible_entrance }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

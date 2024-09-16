@@ -1,10 +1,33 @@
+
 let map
 let directionsService
 let directionsRenderer
+function setCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+// Utility function to get a cookie
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
 
 // Function to initialize the map
 function initMap() {
-
+    // set the cookie to false first
+setCookie('showInfoWindow', 'false', 1);
     directionsService = new google.maps.DirectionsService();
     directionsRenderer = new google.maps.DirectionsRenderer();
 
@@ -40,6 +63,7 @@ function initMap() {
     };
 
     map = new google.maps.Map(document.getElementById('map'), mapOptions);
+ var infoWindow = new google.maps.InfoWindow();
 
     // Adding markers to the map
     locations.forEach(function (location) {
@@ -58,26 +82,44 @@ function initMap() {
             optimized: true,
         });
 
-        var infowindow = new google.maps.InfoWindow({
-            content: location.name
-        });
+        var infowindowContent = `
+    <div style="width: 220px; padding: 10px; overflow: hidden; box-sizing: border-box; border-radius: 8px; font-family: Arial, sans-serif;">
+        <h6 style="margin: 0; padding: 0; font-size: 16px; color: #333;">${location.name}</h6>
+        <img src="http://127.0.0.1:8000/${location.image}" alt="${location.name}" style="width: 100%; height: auto; margin: 10px 0; border-radius: 5px;" />
+        <p style="margin: 0 0 10px 0; font-size: 14px; color: #666; line-height: 1.4;">${location.description}</p>
+        <div style="display: flex; justify-content: flex-end;">
+            <button onclick="addToMainTravelList('${location.name}', '${location.description}')"
+                    style="padding: 5px 15px; background-color: #007BFF; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: bold;">
+                Add
+            </button>
+        </div>
+    </div>
+`;
 
-        infoWindow.push(infowindow)
-// Add listener for each marker click
+
+        // Add listener for each marker click
         marker.addListener('click', function () {
-            infoWindow.forEach(function (iw) {
-                iw.close();
-            });
-
-            // Function to display some information about the place
-            setContentForDiv(location);
 
 
-            infowindow.open(map, marker)
+  const showInfoWindow = getCookie('showInfoWindow') === 'true'; // Convert the string to a boolean
+
+
+
+            if (showInfoWindow) {
+                // Close previously opened InfoWindow
+            infoWindow.close();
+
+            // Set new content and open the InfoWindow
+            infoWindow.setContent(infowindowContent);
+            infoWindow.open(map, marker);
+            } else {
+              setContentForDiv(location);
+            }
 
 
         });
     });
+
 
     const transitLayer = new google.maps.TransitLayer();
     transitLayer.setMap(map);
@@ -85,6 +127,21 @@ function initMap() {
 
 
 }
+// Function to handle add button click
+function addToMainTravelList(name, description) {
+    // Add a new item to the mainTravelList
+    const newItem = {
+        number: mainTravelList.length + 1, // Assign a new number based on the list size
+        name: name,
+        time: 'N/A' // Add a default value for time if needed
+    };
 
+    mainTravelList.push(newItem); // Add the new item to the list
+
+    // Refresh the list view to display the new item
+     refreshListView();
+
+    console.log("Added new item to mainTravelList:", newItem);
+}
 
 window.initMap = initMap;

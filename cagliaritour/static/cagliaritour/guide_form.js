@@ -114,7 +114,8 @@ function calculateDateDifference() {
     return differenceInDays;
 }
 function generateDayButtons() {
-        // Hide day container
+
+         // Hide day container
     jQuery('#daysContainerDiv').show();
     jQuery('#infoWindowBox').hide();
 
@@ -139,6 +140,9 @@ function generateDayButtons() {
 
         // Add click event listener to each button
         dayButton.addEventListener('click', function () {
+  // cookie to control which info button is displayed
+             setCookie('showInfoWindow', true, 1);
+
             jQuery('#infoWindowBox').show();
 
             // Remove 'clicked' class from all buttons
@@ -179,6 +183,8 @@ function showRouteInfoDiv(){
 
 // Function to reset the map
 function clearMap() {
+     setCookie('showInfoWindow', false, 1);
+
    jQuery('#collapseButton').show();
    jQuery('#daysContainerDiv').hide();
 // clear container

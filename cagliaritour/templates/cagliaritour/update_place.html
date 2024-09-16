@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Place Details</title>
+</head>
+<body>
+    <h1>Update Place Details</h1>
+    <form action="{% url 'update_place_details' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Update Place Details</button>
+    </form>
+    <!-- Optionally show any success or error messages -->
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>
