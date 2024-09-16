@@ -69,20 +69,40 @@ async function populateList(targetListId, bgcolor, date) {
             mainTravelList = [...listdata];
         }
 
+
         listdata.forEach((item) => {
-            const listItem = document.createElement('li');
-            listItem.style.backgroundColor = bgcolor;
-            listItem.draggable = true;
-            listItem.classList.add('list-group-item');
-            listItem.innerHTML = `
-                <span id="itemNumber">${item.number},</span>
-                <span>${item.name},</span>
-                <span>${item.time}</span>
-                <button class="btn btn-danger delete-btn">Delete</button>
-                <button class="btn"><i class="fa-solid fa-up-down-left-right"></i></button>
-            `;
-            list.appendChild(listItem);
-        });
+    const listItem = document.createElement('li');
+    listItem.style.cssText = `
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: ${bgcolor};
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        width: 100%;
+        box-sizing: border-box;
+    `;
+    listItem.draggable = true;
+    listItem.classList.add('list-group-item');
+    listItem.innerHTML = `
+        <div style="flex-grow: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+            <span id="itemNumber" style="font-weight: bold; margin-right: 10px;">${item.number},</span>
+            <span style="margin-right: 10px;">${item.name},</span>
+            <span>${item.time}</span>
+        </div>
+        <div style="flex-shrink: 0; display: flex; gap: 10px;">
+            <button class="btn btn-danger delete-btn" style="padding: 5px; width: 30px; height: 30px;">
+                <i class="fa fa-trash" style="color: white;"></i>
+            </button>
+            <button class="btn" style="padding: 5px; width: 30px; height: 30px;">
+                <i class="fa-solid fa-up-down-left-right"></i>
+            </button>
+        </div>
+    `;
+    list.appendChild(listItem);
+});
+
+
 
         // Add delete button functionality
         document.querySelectorAll('.delete-btn').forEach(button => {
@@ -168,23 +188,42 @@ function setUpDragAndDropFunctionality() {
 }
 
 function refreshListView() {
-    const list = document.getElementById('list1');
-    list.innerHTML = '';
 
-    mainTravelList.forEach((item, index) => {
-        const listItem = document.createElement('li');
-        listItem.style.backgroundColor = "#87CEFA";
-        listItem.draggable = true;
-        listItem.classList.add('list-group-item');
-        listItem.innerHTML = `
-            <span id="itemNumber">${index + 1},</span>
-            <span>${item.name},</span>
+  const list = document.getElementById('list1');
+list.innerHTML = '';
+
+mainTravelList.forEach((item, index) => {
+    const listItem = document.createElement('li');
+    listItem.style.cssText = `
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #87CEFA;
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        width: 100%;
+        box-sizing: border-box;
+    `;
+    listItem.draggable = true;
+    listItem.classList.add('list-group-item');
+    listItem.innerHTML = `
+        <div style="flex-grow: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+            <span id="itemNumber" style="font-weight: bold; margin-right: 10px;">${index + 1},</span>
+            <span style="margin-right: 10px;">${item.name},</span>
             <span>${item.time}</span>
-            <button class="btn btn-danger delete-btn">Delete</button>
-            <button class="btn"><i class="fa-solid fa-up-down-left-right"></i></button>
-        `;
-        list.appendChild(listItem);
-    });
+        </div>
+        <div style="flex-shrink: 0; display: flex; gap: 10px;">
+            <button class="btn btn-danger delete-btn" style="padding: 5px; width: 30px; height: 30px;">
+                <i class="fa fa-trash" style="color: white;"></i>
+            </button>
+            <button class="btn" style="padding: 5px; width: 30px; height: 30px;">
+                <i class="fa-solid fa-up-down-left-right"></i>
+            </button>
+        </div>
+    `;
+    list.appendChild(listItem);
+});
+
 
     // Reattach delete button event listeners
     document.querySelectorAll('.delete-btn').forEach(button => {
