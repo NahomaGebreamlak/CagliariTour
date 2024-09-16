@@ -139,6 +139,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
     os.path.join(BASE_DIR, 'static/downloads'),
     os.path.join(BASE_DIR, 'static/images'),
+    os.path.join(BASE_DIR, 'static/models'),
     os.path.join(BASE_DIR, 'cagliaritour/static/images'),
 ]
 # Default primary key field type

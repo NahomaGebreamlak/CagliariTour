@@ -17,9 +17,100 @@
         .position-absolute {
             z-index: 10; /* Ensures overlay buttons are clickable */
         }
+
+        /* Styling for the modal dialog */
+        #facialAnalysisDialog {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 200px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+        }
+
+        #facialAnalysisDialog img {
+            width: 100px;
+            height: 100px;
+        }
+
+        #facialAnalysisDialog .loading-bar {
+            margin-top: 20px;
+        }
     </style>
+
     <script>
         jQuery.noConflict();
+// Function to start the camera and display the feed in the <video> element
+function startCamera() {
+    var video = document.getElementById('cameraFeed');
+
+    // Access the camera and stream the video feed
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+                video.srcObject = stream;
+                video.play();
+            })
+            .catch(function (error) {
+                console.error("Error accessing camera: ", error);
+                alert("Could not access the camera. Please check your browser settings.");
+            });
+    } else {
+        alert("Camera not supported in this browser.");
+    }
+}
+
+function generateDayButtons() {
+    // Show the facial analysis dialog
+    var dialog = document.getElementById("facialAnalysisDialog");
+    var loadingBar = document.getElementById("loadingBar");
+    var loadingText = document.getElementById("loadingText");
+
+    // Reset progress bar and text
+    loadingBar.style.width = '0%';
+    loadingText.innerHTML = 'LOADING... 0%';
+
+    dialog.style.display = 'block';
+
+    // Start the camera feed
+    startCamera();
+
+    // Start the loading process
+    var progress = 0;
+    var intervalTime = 30; // Time for each increment (ms)
+    var totalDuration = 3000; // Total duration (3 seconds)
+    var increment = 100 / (totalDuration / intervalTime); // Increment percentage
+
+    var interval = setInterval(function () {
+        progress += increment; // Increment the progress
+
+        if (progress >= 100) {
+            progress = 100; // Ensure progress stops at 100%
+        }
+
+        // Update the width of the progress bar
+        loadingBar.style.width = progress + '%';
+        // Update the text to show percentage
+        loadingText.innerHTML = 'LOADING... ' + Math.floor(progress) + '%';
+
+        // Check if progress is 100 or more, and clear the interval
+        if (progress >= 100) {
+            clearInterval(interval); // Stop the interval
+            setTimeout(function () {
+                dialog.style.display = 'none'; // Hide the dialog after loading is complete
+            }, 500); // Small delay before hiding
+        }
+    }, intervalTime); // Update every 30ms
+}
+
+
     </script>
 
     <div class="container-fluid">
@@ -37,6 +128,7 @@
                                 <img src="{% static 'images/hand_image.png' %}" alt="Image" class="button-image">
                             </div>
                         </div>
+
                         <!-- Overlay Form -->
                         <form>
                             {% csrf_token %}
@@ -48,7 +140,7 @@
                                                 class="fas fa-angle-down"></i></strong>
                                     </button>
                                     <div class="card-body">
-                                        <!-- Form fields  -->
+                                        <!-- Form fields -->
                                         <div class="form-group">
                                             <label for="id_departure_date">What is your departure day?</label>
                                             <input type="date" class="form-control" id="id_departure_date"
@@ -57,8 +149,8 @@
 
                                         <div class="form-group">
                                             <label for="id_departure_time">What is your departure time?</label>
-                                            <input type="time" class="form-control" id="id_departure_date"
-                                                   name="departure_date">
+                                            <input type="time" class="form-control" id="id_departure_time"
+                                                   name="departure_time">
                                         </div>
 
                                         <div class="form-group">
@@ -66,7 +158,6 @@
                                                 around?</label>
                                             <select class="form-control" id="id_moving_preference"
                                                     name="moving_preference">
-                                                <!-- Options for moving preference go here -->
                                                 <option value="DRIVING">Driving</option>
                                                 <option value="TRANSIT">Bus</option>
                                                 <option value="WALKING">Walking</option>
@@ -88,6 +179,11 @@
                                             </select>
                                         </div>
 
+                                        <div class="form-group">
+                                            <input type="checkbox" id="facialAnalysis" name="facialAnalysis">
+                                            <label for="facialAnalysis">Facial Analysis</label>
+                                        </div>
+
                                         <div class="form-group text-center mt-4 mb-4">
                                             <button type="button" class="btn btn-primary btn-lg"
                                                     onclick="generateDayButtons()">Start
@@ -99,6 +195,26 @@
                         </form>
                     </div>
 
+<!-- Facial Analysis Dialog -->
+<div id="facialAnalysisDialog" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; height: 400px; background-color: white; border-radius: 15px; padding: 20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); text-align: center; overflow: hidden;">
+    <p style="font-weight: bold; font-size: 20px;">Performing Facial Analysis</p>
+
+    <!-- Video element for camera feed -->
+    <div class="video-container" style="width: 100%; display: flex; justify-content: center; margin-bottom: 20px;">
+        <video id="cameraFeed" autoplay style="width: 200px; height: 250px; border-radius: 10px; object-fit: cover;"></video>
+    </div>
+
+    <!-- Loading Bar with percentage -->
+    <div class="loading-bar" style="margin-top: 20px;">
+        <b id="loadingText" style="font-size: 18px;">LOADING... 0%</b>
+        <div class="progress" style="height: 20px; margin-top: 10px; border-radius: 10px; background-color: #f0f0f0;">
+            <div class="progress-bar" role="progressbar" style="width: 0%; background-color: #007bff; height: 100%; border-radius: 10px;" id="loadingBar"></div>
+        </div>
+    </div>
+</div>
+
+
+
                     <!-- Div for displaying the Days Button -->
                     <div id="daysContainerDiv">
                     <div class="position-absolute top-0 start-50 translate-middle d-flex align-items-center justify-content-center btn-light"
@@ -109,10 +225,8 @@
 
                     <!-- Div for displaying route information -->
                     <div class="position-absolute bottom-0 left-0 btn-light" id="routeInfoContainer">
-                        <!-- div for displaying the info about route plan -->
                         <div id="routeInfobox"
                              style="width: 500px; height: 400px; border: 2px solid black; border-radius: 20px; position: relative; overflow-y: auto;">
-                            <!-- Content of the collapsible div goes here -->
                         </div>
                     </div>
 
@@ -124,8 +238,6 @@
                         </button>
                     </div>
 
-
-
                     <!-- Information button -->
                     <div class="position-absolute top-0 end-0 mt-7 me-7" style="padding: 10px;">
                         <button style="width: 300px; border-radius: 15px;" class="btn btn-light"
@@ -134,7 +246,6 @@
                         </button>
                         <div class="container bg-light" id="infoWindowBox"
                              style="height: 350px; width: 300px; border-radius: 15px; padding: 10px;">
-                            <!-- weather info ends -->
                         </div>
                     </div>
                 </div>

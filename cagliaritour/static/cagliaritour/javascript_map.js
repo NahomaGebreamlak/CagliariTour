@@ -128,6 +128,7 @@ setCookie('showInfoWindow', 'false', 1);
 
 }
 // Function to handle add button click
+// Function to handle add button click
 function addToMainTravelList(name, description) {
     // Add a new item to the mainTravelList
     const newItem = {
@@ -138,10 +139,11 @@ function addToMainTravelList(name, description) {
 
     mainTravelList.push(newItem); // Add the new item to the list
 
-    // Refresh the list view to display the new item
-     refreshListView();
+    // Refresh the list view to display the new item with yellow background
+    refreshListView(true); // Pass a flag to indicate that it's a new item
 
     console.log("Added new item to mainTravelList:", newItem);
 }
+
 
 window.initMap = initMap;

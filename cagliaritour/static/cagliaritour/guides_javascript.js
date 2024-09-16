@@ -187,43 +187,93 @@ function setUpDragAndDropFunctionality() {
     });
 }
 
-function refreshListView() {
+// function refreshListView() {
+//
+//   const list = document.getElementById('list1');
+// list.innerHTML = '';
+//
+// mainTravelList.forEach((item, index) => {
+//     const listItem = document.createElement('li');
+//     listItem.style.cssText = `
+//         display: flex;
+//         align-items: center;
+//         justify-content: space-between;
+//         background-color: #87CEFA;
+//         padding: 10px;
+//         border-bottom: 1px solid #ccc;
+//         width: 100%;
+//         box-sizing: border-box;
+//     `;
+//     listItem.draggable = true;
+//     listItem.classList.add('list-group-item');
+//     listItem.innerHTML = `
+//         <div style="flex-grow: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+//             <span id="itemNumber" style="font-weight: bold; margin-right: 10px;">${index + 1},</span>
+//             <span style="margin-right: 10px;">${item.name},</span>
+//             <span>${item.time}</span>
+//         </div>
+//         <div style="flex-shrink: 0; display: flex; gap: 10px;">
+//             <button class="btn btn-danger delete-btn" style="padding: 5px; width: 30px; height: 30px;">
+//                 <i class="fa fa-trash" style="color: white;"></i>
+//             </button>
+//             <button class="btn" style="padding: 5px; width: 30px; height: 30px;">
+//                 <i class="fa-solid fa-up-down-left-right"></i>
+//             </button>
+//         </div>
+//     `;
+//     list.appendChild(listItem);
+// });
+//
+//
+//     // Reattach delete button event listeners
+//     document.querySelectorAll('.delete-btn').forEach(button => {
+//         button.addEventListener('click', function() {
+//             const listItem = this.parentElement;
+//             const itemIndex = Array.from(list.children).indexOf(listItem);
+//             mainTravelList.splice(itemIndex, 1);
+//             refreshListView();
+//         });
+//     });
+// }
+function refreshListView(isNewItem = false) {
+    const list = document.getElementById('list1');
+    list.innerHTML = '';
 
-  const list = document.getElementById('list1');
-list.innerHTML = '';
+    mainTravelList.forEach((item, index) => {
+        const listItem = document.createElement('li');
 
-mainTravelList.forEach((item, index) => {
-    const listItem = document.createElement('li');
-    listItem.style.cssText = `
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background-color: #87CEFA;
-        padding: 10px;
-        border-bottom: 1px solid #ccc;
-        width: 100%;
-        box-sizing: border-box;
-    `;
-    listItem.draggable = true;
-    listItem.classList.add('list-group-item');
-    listItem.innerHTML = `
-        <div style="flex-grow: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
-            <span id="itemNumber" style="font-weight: bold; margin-right: 10px;">${index + 1},</span>
-            <span style="margin-right: 10px;">${item.name},</span>
-            <span>${item.time}</span>
-        </div>
-        <div style="flex-shrink: 0; display: flex; gap: 10px;">
-            <button class="btn btn-danger delete-btn" style="padding: 5px; width: 30px; height: 30px;">
-                <i class="fa fa-trash" style="color: white;"></i>
-            </button>
-            <button class="btn" style="padding: 5px; width: 30px; height: 30px;">
-                <i class="fa-solid fa-up-down-left-right"></i>
-            </button>
-        </div>
-    `;
-    list.appendChild(listItem);
-});
+        // Apply yellow color only to the newly added item (last item in the list)
+        const backgroundColor = (isNewItem && index === mainTravelList.length - 1) ? '#FFFFE0' : '#87CEFA';
 
+        listItem.style.cssText = `
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: ${backgroundColor}; /* Apply yellow only to new item */
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            width: 100%;
+            box-sizing: border-box;
+        `;
+        listItem.draggable = true;
+        listItem.classList.add('list-group-item');
+        listItem.innerHTML = `
+            <div style="flex-grow: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                <span id="itemNumber" style="font-weight: bold; margin-right: 10px;">${index + 1},</span>
+                <span style="margin-right: 10px;">${item.name},</span>
+                <span>${item.time}</span>
+            </div>
+            <div style="flex-shrink: 0; display: flex; gap: 10px;">
+                <button class="btn btn-danger delete-btn" style="padding: 5px; width: 30px; height: 30px;">
+                    <i class="fa fa-trash" style="color: white;"></i>
+                </button>
+                <button class="btn" style="padding: 5px; width: 30px; height: 30px;">
+                    <i class="fa-solid fa-up-down-left-right"></i>
+                </button>
+            </div>
+        `;
+        list.appendChild(listItem);
+    });
 
     // Reattach delete button event listeners
     document.querySelectorAll('.delete-btn').forEach(button => {
@@ -231,7 +281,7 @@ mainTravelList.forEach((item, index) => {
             const listItem = this.parentElement;
             const itemIndex = Array.from(list.children).indexOf(listItem);
             mainTravelList.splice(itemIndex, 1);
-            refreshListView();
+            refreshListView(); // Refresh list view after deletion
         });
     });
 }
