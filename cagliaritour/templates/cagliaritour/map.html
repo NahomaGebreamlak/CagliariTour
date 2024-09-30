@@ -48,7 +48,8 @@
         canvas {
             position: absolute;
         }
-/* Dialog Box Styling */
+
+        /* Dialog Box Styling */
         #facialAnalysisDialog {
             display: none;
             position: absolute;
@@ -109,171 +110,171 @@
 
     </style>
 
-   <script>
-// Define the width and height globally for reusability
-const VIDEO_WIDTH = 250;
-const VIDEO_HEIGHT = 300;
+    <script>
+        // Define the width and height globally for reusability
+        const VIDEO_WIDTH = 250;
+        const VIDEO_HEIGHT = 300;
 
-jQuery.noConflict();
+        jQuery.noConflict();
 
-function startVideoOnCall() {
-    loadModelsAndStartVideo().then(() => {
-        // Models and video loaded, now start face detection
-    }).catch(error => {
-        console.error("Error starting video:", error);
-    });
-}
+        function startVideoOnCall() {
+            loadModelsAndStartVideo().then(() => {
+                // Models and video loaded, now start face detection
+            }).catch(error => {
+                console.error("Error starting video:", error);
+            });
+        }
 
-function loadModelsAndStartVideo() {
-    return new Promise((resolve, reject) => {
-        showDialog();
+        function loadModelsAndStartVideo() {
+            return new Promise((resolve, reject) => {
+                showDialog();
 
-        const models = [
-            faceapi.nets.tinyFaceDetector.loadFromUri("/static/models"),
-            faceapi.nets.faceLandmark68Net.loadFromUri("/static/models"),
-            faceapi.nets.faceRecognitionNet.loadFromUri("/static/models"),
-            faceapi.nets.faceExpressionNet.loadFromUri("/static/models"),
-            faceapi.nets.ageGenderNet.loadFromUri("/static/models")
-        ];
+                const models = [
+                    faceapi.nets.tinyFaceDetector.loadFromUri("/static/models"),
+                    faceapi.nets.faceLandmark68Net.loadFromUri("/static/models"),
+                    faceapi.nets.faceRecognitionNet.loadFromUri("/static/models"),
+                    faceapi.nets.faceExpressionNet.loadFromUri("/static/models"),
+                    faceapi.nets.ageGenderNet.loadFromUri("/static/models")
+                ];
 
-        let loadedModels = 0;
-        models.forEach((model) => {
-            model.then(() => {
-                loadedModels++;
-                updateLoadingBar(Math.floor((loadedModels / models.length) * 100));
+                let loadedModels = 0;
+                models.forEach((model) => {
+                    model.then(() => {
+                        loadedModels++;
+                        updateLoadingBar(Math.floor((loadedModels / models.length) * 100));
 
-                if (loadedModels === models.length) {
-                    startVideo().then(() => resolve()).catch(reject); // Resolve once video starts
+                        if (loadedModels === models.length) {
+                            startVideo().then(() => resolve()).catch(reject); // Resolve once video starts
+                        }
+                    }).catch(reject); // Handle any loading errors
+                });
+            });
+        }
+
+        function startVideo() {
+            return new Promise((resolve, reject) => {
+                const video = document.getElementById("video");
+                if (!video) {
+                    reject(new Error("Video element not found"));
+                    return;
                 }
-            }).catch(reject); // Handle any loading errors
+
+                navigator.mediaDevices.getUserMedia({video: {}})
+                    .then(stream => {
+                        video.srcObject = stream;
+                        video.onloadedmetadata = () => {
+                            video.play();
+
+                            // Ensure video has valid dimensions
+                            video.onplaying = () => {
+                                // Set video dimensions in JavaScript as well
+                                video.width = VIDEO_WIDTH;
+                                video.height = VIDEO_HEIGHT;
+
+                                performFaceDetection(video, stream); // Start face detection once video is ready
+
+                                // Start a 10-second timer to update loading bar again
+                                let startTime = Date.now();
+                                let loadingInterval = setInterval(() => {
+                                    let elapsedTime = Date.now() - startTime;
+                                    let percentage = Math.round((elapsedTime / 10000) * 100);
+
+                                    if (percentage >= 100) {
+                                        clearInterval(loadingInterval); // Stop interval after 10 seconds
+                                        hideDialog(); // Hide the dialog after 10 seconds
+                                        stopVideoStream(stream); // Stop video stream after detection is done
+                                        generateDayButtons();
+                                    } else {
+                                        updateLoadingBar(percentage);
+                                    }
+                                }, 100);
+
+                                resolve();  // Resolve the promise when video starts
+                            };
+                        };
+                    })
+                    .catch(err => reject(err));  // Reject in case of errors
+            });
+        }
+
+        function stopVideoStream(stream) {
+            stream.getTracks().forEach(track => track.stop()); // Stop all tracks to stop the camera
+        }
+
+        function performFaceDetection(video, stream) {
+            const canvas = faceapi.createCanvasFromMedia(video);
+            let container = document.querySelector(".canvaContainer");
+            container.append(canvas);
+
+            // Set canvas dimensions to match video
+            canvas.width = 250;
+            canvas.height = 300;
+
+            const displaySize = {width: 250, height: 300};
+            faceapi.matchDimensions(canvas, displaySize);
+
+            // Custom draw options (to change the color)
+            const drawOptions = {
+                lineWidth: 3,
+                drawLines: true,
+                color: '#000000',  // Change to your desired color
+            };
+
+            // Perform face detection every 100ms
+            setInterval(async () => {
+                const detections = await faceapi
+                    .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+                    .withFaceLandmarks()
+                    .withFaceExpressions()
+                    .withAgeAndGender();
+
+                if (detections) {
+                    const resizedDetections = faceapi.resizeResults(detections, displaySize);
+                    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Draw face landmarks with custom color
+                    faceapi.draw.drawFaceLandmarks(canvas, resizedDetections, drawOptions);
+
+                    // Handle results if needed
+                    if (resizedDetections) {
+                        const age = resizedDetections.age;
+                        const interpolatedAge = interpolateAgePredictions(age);
+                        const gender = resizedDetections.gender;
+                        const expressions = resizedDetections.expressions;
+                        const maxValue = Math.max(...Object.values(expressions));
+                        const emotion = Object.keys(expressions).filter(
+                            item => expressions[item] === maxValue
+                        );
+                        // Display results (optional)
+                    }
+                }
+            }, 100); // Adjust the interval as necessary
+        }
+
+        function interpolateAgePredictions(age) {
+            // Your interpolation logic here
+        }
+
+        function showDialog() {
+            document.getElementById("facialAnalysisDialog").style.display = "block";
+        }
+
+        function hideDialog() {
+            document.getElementById("facialAnalysisDialog").style.display = "none";
+        }
+
+        function updateLoadingBar(percentage) {
+            const loadingText = document.getElementById("loadingText");
+            const loadingBar = document.getElementById("loadingBar");
+
+            loadingText.innerText = `LOADING... ${percentage.toFixed(2)}%`;
+            loadingBar.style.width = `${percentage}%`;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Add event listeners or other setup tasks here
         });
-    });
-}
-
-function startVideo() {
-    return new Promise((resolve, reject) => {
-        const video = document.getElementById("video");
-        if (!video) {
-            reject(new Error("Video element not found"));
-            return;
-        }
-
-        navigator.mediaDevices.getUserMedia({ video: {} })
-            .then(stream => {
-                video.srcObject = stream;
-                video.onloadedmetadata = () => {
-                    video.play();
-
-                    // Ensure video has valid dimensions
-                    video.onplaying = () => {
-                        // Set video dimensions in JavaScript as well
-                        video.width = VIDEO_WIDTH;
-                        video.height = VIDEO_HEIGHT;
-
-                        performFaceDetection(video, stream); // Start face detection once video is ready
-
-                        // Start a 10-second timer to update loading bar again
-                        let startTime = Date.now();
-                        let loadingInterval = setInterval(() => {
-                            let elapsedTime = Date.now() - startTime;
-                            let percentage = Math.round((elapsedTime / 10000) * 100);
-
-                            if (percentage >= 100) {
-                                clearInterval(loadingInterval); // Stop interval after 10 seconds
-                                hideDialog(); // Hide the dialog after 10 seconds
-                                stopVideoStream(stream); // Stop video stream after detection is done
-                                generateDayButtons();
-                            } else {
-                                updateLoadingBar(percentage);
-                            }
-                        }, 100);
-
-                        resolve();  // Resolve the promise when video starts
-                    };
-                };
-            })
-            .catch(err => reject(err));  // Reject in case of errors
-    });
-}
-
-function stopVideoStream(stream) {
-    stream.getTracks().forEach(track => track.stop()); // Stop all tracks to stop the camera
-}
-
-function performFaceDetection(video, stream) {
-    const canvas = faceapi.createCanvasFromMedia(video);
-    let container = document.querySelector(".canvaContainer");
-    container.append(canvas);
-
-    // Set canvas dimensions to match video
-    canvas.width = 250;
-    canvas.height = 300;
-
-    const displaySize = { width: 250, height: 300 };
-    faceapi.matchDimensions(canvas, displaySize);
-
-    // Custom draw options (to change the color)
-    const drawOptions = {
-        lineWidth: 3,
-        drawLines: true,
-        color: '#000000',  // Change to your desired color
-    };
-
-    // Perform face detection every 100ms
-    setInterval(async () => {
-        const detections = await faceapi
-            .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
-            .withFaceLandmarks()
-            .withFaceExpressions()
-            .withAgeAndGender();
-
-        if (detections) {
-            const resizedDetections = faceapi.resizeResults(detections, displaySize);
-            canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw face landmarks with custom color
-            faceapi.draw.drawFaceLandmarks(canvas, resizedDetections, drawOptions);
-
-            // Handle results if needed
-            if (resizedDetections) {
-                const age = resizedDetections.age;
-                const interpolatedAge = interpolateAgePredictions(age);
-                const gender = resizedDetections.gender;
-                const expressions = resizedDetections.expressions;
-                const maxValue = Math.max(...Object.values(expressions));
-                const emotion = Object.keys(expressions).filter(
-                    item => expressions[item] === maxValue
-                );
-                // Display results (optional)
-            }
-        }
-    }, 100); // Adjust the interval as necessary
-}
-
-function interpolateAgePredictions(age) {
-    // Your interpolation logic here
-}
-
-function showDialog() {
-    document.getElementById("facialAnalysisDialog").style.display = "block";
-}
-
-function hideDialog() {
-    document.getElementById("facialAnalysisDialog").style.display = "none";
-}
-
-function updateLoadingBar(percentage) {
-    const loadingText = document.getElementById("loadingText");
-    const loadingBar = document.getElementById("loadingBar");
-
-    loadingText.innerText = `LOADING... ${percentage.toFixed(2)}%`;
-    loadingBar.style.width = `${percentage}%`;
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    // Add event listeners or other setup tasks here
-});
-</script>
+    </script>
 
     <div class="container-fluid">
         <main>
@@ -295,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <form>
                             {% csrf_token %}
                             <div class="accordion-body collapse" id="form">
-                                <div class="card" style="height: 460px; width: 350px; margin: 0">
+                                <div class="card" style="height: 300px; width: 350px; margin: 0">
                                     <button type="button" class="btn btn-light"
                                             id="hideFormButton" onclick="showForm(false)">
                                         <strong style="font-size: 20px;">Get Your Guide <i
@@ -315,31 +316,18 @@ document.addEventListener("DOMContentLoaded", () => {
                                                    name="departure_time">
                                         </div>
 
-                                        <div class="form-group">
+                                        <div class="form-group" style="display: none;">
                                             <label for="id_moving_preference">How do you mainly prefer moving
                                                 around?</label>
                                             <select class="form-control" id="id_moving_preference"
                                                     name="moving_preference">
-                                                <option value="DRIVING">Driving</option>
+                                                <option value="DRIVING" selected>Driving</option>
                                                 <option value="TRANSIT">Bus</option>
                                                 <option value="WALKING">Walking</option>
                                                 <option value="BICYCLING">Bicycling</option>
                                             </select>
                                         </div>
 
-                                        <div class="form-group">
-                                            <label for="id_main_interests">What are your main interests?</label>
-                                            <select multiple class="form-control" id="id_main_interests"
-                                                    name="main_interests[]">
-                                                <option value="nature">Nature and Outdoor Activities</option>
-                                                <option value="culture">Cultural Experiences</option>
-                                                <option value="adventure">Adventure Sports</option>
-                                                <option value="food">Food and Culinary</option>
-                                                <option value="history">Historical Sites</option>
-                                                <option value="shopping">Shopping</option>
-                                                <option value="other">Other</option>
-                                            </select>
-                                        </div>
 
                                         <div class="form-group">
                                             <input type="checkbox" id="facialAnalysis" name="facialAnalysis">
@@ -358,24 +346,28 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
 
                     <!-- Facial Analysis Dialog -->
-<div id="facialAnalysisDialog" style="display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; margin: 0 auto;">
-    <p style="font-weight: bold; font-size: 20px; text-align: center;">Performing Facial Analysis</p>
+                    <div id="facialAnalysisDialog"
+                         style="display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; margin: 0 auto;">
+                        <p style="font-weight: bold; font-size: 20px; text-align: center;">Performing Facial
+                            Analysis</p>
 
-    <!-- Video Container -->
-    <div class="canvaContainer" style="display: flex; justify-content: center; align-items: center; width: 100%;">
-        <video id="video" autoplay muted style="width: 100%; max-width: 350px; height: auto;"></video>
-    </div>
+                        <!-- Video Container -->
+                        <div class="canvaContainer"
+                             style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                            <video id="video" autoplay muted
+                                   style="width: 100%; max-width: 350px; height: auto;"></video>
+                        </div>
 
-    <!-- Loading Bar with Percentage -->
-    <div class="loading-bar" style="width: 100%; max-width: 300px; margin: 10px auto;">
-        <b id="loadingText" style="font-size: 18px;">LOADING... 65%</b>
-        <div class="progress" style="width: 100%; background-color: #f3f3f3; border-radius: 5px; overflow: hidden; height: 20px; margin-top: 10px;">
-            <div class="progress-bar" id="loadingBar" style="height: 100%; width: 65%; background-color: #4caf50; border-radius: 5px;"></div>
-        </div>
-    </div>
-</div>
-
-
+                        <!-- Loading Bar with Percentage -->
+                        <div class="loading-bar" style="width: 100%; max-width: 300px; margin: 10px auto;">
+                            <b id="loadingText" style="font-size: 18px;">LOADING... 65%</b>
+                            <div class="progress"
+                                 style="width: 100%; background-color: #f3f3f3; border-radius: 5px; overflow: hidden; height: 20px; margin-top: 10px;">
+                                <div class="progress-bar" id="loadingBar"
+                                     style="height: 100%; width: 65%; background-color: #4caf50; border-radius: 5px;"></div>
+                            </div>
+                        </div>
+                    </div>
 
 
                     <!-- Div for displaying the Days Button -->
