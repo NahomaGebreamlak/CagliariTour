@@ -9,6 +9,7 @@ urlpatterns = [
     path('getroute/<str:numberofdays>/', calculate_route, name='getroute'),
     path('update-place-details/', update_place_details, name='update_place_details'),
     path('update-place/', show_update_page, name='show_update_page'),
-    path('place-list/', place_list, name='place_list'),  # Add this line
+    path('place-list/', place_list, name='place_list'),
+    path('face_detection/', face_detection, name='face_detection'),
 
 ]

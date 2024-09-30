@@ -117,9 +117,9 @@ USE_I18N = True
 
 USE_TZ = True
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
-GOOGLE_MAP_API_KEY = "AIzaSyD7kI-eezkBIKYZIuW9uhrmrWI5kRM9KII"
+GOOGLE_MAP_API_KEY = ""
 
-WEATHER_API_KEY = "6fa6e4ad8aa066382d1347d83e1d53bf"
+WEATHER_API_KEY = ""
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 

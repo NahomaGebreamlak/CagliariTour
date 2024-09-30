@@ -187,10 +187,6 @@ main {
 
 
 
-
-
-
-
 .list {
     min-height: 100px;
     margin: 10px;
@@ -246,6 +242,35 @@ main {
 }
 
 
+
+
+
+ html, body, .container-fluid, main, .linkholder, .mapholder, #map {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevents scrolling */
+        }
+
+        #routeInfobox.collapsed {
+            display: none;
+        }
+
+        .position-absolute {
+            z-index: 10; /* Ensures overlay buttons are clickable */
+        }
+
+        /* Styling for the modal dialog */
+
+
+        #facialAnalysisDialog img {
+            width: 100px;
+            height: 100px;
+        }
+
+        #facialAnalysisDialog .loading-bar {
+            margin-top: 20px;
+        }
 
 
 

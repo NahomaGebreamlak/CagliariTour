@@ -48,12 +48,12 @@ function drawRoutesOnMap(routes) {
         showHideButton.innerHTML = '<i class="fa fa-eye-slash"></i>';
 
 
-showHideButton.style.marginRight = '10px';
-showHideButton.style.padding = '10px 20px'; // Adjust padding for button size
-showHideButton.style.fontSize = '18px'; // Adjust font size for button text/icon size
-showHideButton.style.width = 'auto'; // Optional: adjust width if needed
-showHideButton.style.height = 'auto'; // Optional: adjust height if needed
-showHideButton.classList.add('btn', 'btn-info');
+        showHideButton.style.marginRight = '10px';
+        showHideButton.style.padding = '10px 20px'; // Adjust padding for button size
+        showHideButton.style.fontSize = '18px'; // Adjust font size for button text/icon size
+        showHideButton.style.width = 'auto'; // Optional: adjust width if needed
+        showHideButton.style.height = 'auto'; // Optional: adjust height if needed
+        showHideButton.classList.add('btn', 'btn-info');
 
 // Add click event listener to toggle visibility of directions renderer
         showHideButton.addEventListener('click', function () {
@@ -80,7 +80,7 @@ showHideButton.classList.add('btn', 'btn-info');
             destination: route.end,
             travelMode: selectedValue
         };
-
+//console.log(`Route Start: ${request.origin}, Route End: ${request.destination}`);
 
 
         // If selected travel mode is not 'Car', check distance and set travel mode accordingly
@@ -95,25 +95,79 @@ showHideButton.classList.add('btn', 'btn-info');
         // }
 
 
-
-
         // Create a Promise for each directions request
         const directionPromise = new Promise((resolve, reject) => {
             directionsService.route(request, function (response, status) {
                 if (status === 'OK') {
-                     directionsRenderer.setOptions({ preserveViewport: true });
+                    directionsRenderer.setOptions({preserveViewport: true});
                     directionsRenderer.setDirections(response);
-                    // Add numbered markers along the route
+
+                    // Get route legs and start/end locations
                     const routepath = response.routes[0].legs[0];
+
+                    // Add start marker
+                    const startMarker = new google.maps.Marker({
+                        position: routepath.start_location,
+                        map: map,
+                        label: {
+                            text: 'Start ' + route.poinumber,  // Custom label
+                            fontSize: '24px',  // Increase the font size
+                            color: 'green'  // Optional: Set label color
+                        },
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 8,
+                            fillColor: 'green',
+                            fillOpacity: 1,
+                            strokeWeight: 0
+                        }
+                    });
+
+
+                    // Add end marker
+                    const endMarker = new google.maps.Marker({
+                        position: routepath.end_location,
+                        map: map,
+                        label: {
+                            text: 'End '+ route.poinumber,  // Custom label
+                            fontSize: '24px',  // Increase the font size
+                            color: 'red'  // Optional: Set label color
+                        },
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 8,
+                            fillColor: 'red',
+                            fillOpacity: 1,
+                            strokeWeight: 0
+                        }
+                    });
+
+
+                    // Add numbered markers along the route
                     const markers = [];
-                    for (let i = 0; i < routepath.steps.length; i++) {
-                        if (i % 2 === 0) { // Check if i is even
-                            const marker = addNumberedMarker(map, routepath.steps[i].start_location, route.poinumber, route.color);
+                    for (let i = 1; i < routepath.steps.length - 1; i++) {
+                        let color = route.color; // Default color for most markers
+
+                        // Change color for the first index
+                        if (i === 1) {
+                            console.log(`First Index: ${i}`);
+                            color = "green"; // Color for the first marker
+                        }
+                        // Change color for the last index
+                        else if (i === routepath.steps.length - 2) {
+                            console.log(`Last Index: ${i}`);
+                            color = "red"; // Color for the last marker
+                        }
+
+                        // Add marker for even indices, first and last indices
+                        if (i % 2 === 0 || i === 1 || i === routepath.steps.length - 2) {
+                            const marker = addNumberedMarker(map, routepath.steps[i].start_location, route.poinumber, color);
                             markers.push(marker);
                         }
                     }
-                    numberedMarkers[index] = markers; // Store markers for this index
 
+
+                    numberedMarkers[index] = markers; // Store markers for this index
 
                     let concatenatedRouteTypeInfo = "";
                     var busNumbers;
@@ -137,17 +191,18 @@ showHideButton.classList.add('btn', 'btn-info');
 
                     const routeTypeInfo = getRouteTypeInfo(concatenatedRouteTypeInfo.slice(0, concatenatedRouteTypeInfo.lastIndexOf('_')));
                     routeTypeInfo["number"] = route.poinumber;
-                    routeTypeInfo["color"] =  route.color;
+                    routeTypeInfo["color"] = route.color;
                     routeTypeInfo["btn"] = showHideButton;
                     routeTypeInfo['busNumbers'] = busNumbers;
                     routeTypeInfoList.push(routeTypeInfo);
-                    resolve();// Resolve the Promise once directions are processed
+                    resolve(); // Resolve the Promise once directions are processed
                 } else {
                     console.error('Directions request failed. Status:', status);
                     reject();  // Reject the Promise if there's an error
                 }
             });
         });
+
 
         directionPromises.push(directionPromise);
     });
@@ -194,10 +249,10 @@ function addLegend(routeTypeInfoList) {
     }
     let divtype = 'route-circle_drive';
     let fontsize = '25px';
-   var travel_mode = document.getElementById('id_moving_preference').value;
-    if(travel_mode === 'TRANSIT'){
-         divtype ='route-circle_bus';
-         fontsize ='20px';
+    var travel_mode = document.getElementById('id_moving_preference').value;
+    if (travel_mode === 'TRANSIT') {
+        divtype = 'route-circle_bus';
+        fontsize = '20px';
     }
 
     // Clear existing content of the container
@@ -335,7 +390,7 @@ function showRouteCard() {
 function clearRoutes() {
     // Remove all directions renderers from the map
 
-    directionsRenderersList.forEach(function (renderer,index) {
+    directionsRenderersList.forEach(function (renderer, index) {
         renderer.setMap(null);
         removeNumberedMarkers(index);
 

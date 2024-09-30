@@ -198,3 +198,61 @@ def show_update_page(request):
 def place_list(request):
     places = Place.objects.all()  # Retrieve all places
     return render(request, 'cagliaritour/place_list.html', {'places': places})
+
+from deepface import DeepFace
+import cv2
+import numpy as np
+import base64
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+import logging
+
+logger = logging.getLogger(__name__)
+
+@csrf_exempt
+def face_detection(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            image_data = data.get('image')
+
+            # Decode the base64 image
+            if image_data:
+                image_data = image_data.split(',')[1]  # Remove the base64 header
+                image_bytes = base64.b64decode(image_data)
+                image_array = np.frombuffer(image_bytes, np.uint8)
+                image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+
+                # Perform face analysis using DeepFace
+                try:
+                    analysis_result = DeepFace.analyze(image, actions=['age', 'gender', 'race', 'emotion'], detector_backend='mtcnn', enforce_detection=False)
+
+                    # You can access detected faces and bounding boxes here
+                    for face in analysis_result['instances']:
+                        x, y, w, h = face['region']['x'], face['region']['y'], face['region']['w'], face['region']['h']
+                        cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+                    # Encode the processed image back to base64
+                    _, buffer = cv2.imencode('.jpg', image)
+                    processed_image_base64 = base64.b64encode(buffer).decode('utf-8')
+
+                    return JsonResponse({"success": True, "processed_image": processed_image_base64, "analysis": analysis_result})
+
+                except Exception as e:
+                    logger.error(f"Error during face detection: {str(e)}")
+                    return JsonResponse({"success": False, "error": str(e)})
+            else:
+                logger.error("No image data found")
+                return JsonResponse({"success": False, "error": "No image data found"})
+
+        except json.JSONDecodeError:
+            logger.error("JSON decode error")
+            return JsonResponse({"success": False, "error": "Invalid JSON format"})
+
+        except Exception as e:
+            logger.error(f"An error occurred: {str(e)}")
+            return JsonResponse({"success": False, "error": str(e)})
+
+    logger.warning("Invalid request method")
+    return JsonResponse({"success": False, "error": "Invalid request method"})
