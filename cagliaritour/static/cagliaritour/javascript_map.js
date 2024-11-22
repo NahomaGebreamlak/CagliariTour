@@ -88,7 +88,7 @@ setCookie('showInfoWindow', 'false', 1);
         <img src="http://127.0.0.1:8000/${location.image}" alt="${location.name}" style="width: 100%; height: auto; margin: 10px 0; border-radius: 5px;" />
         <p style="margin: 0 0 10px 0; font-size: 14px; color: #666; line-height: 1.4;">${location.description}</p>
         <div style="display: flex; justify-content: flex-end;">
-            <button onclick="addToMainTravelList('${location.name}', '${location.description}')"
+            <button onclick="addToMainTravelList('${location.name}')"
                     style="padding: 5px 15px; background-color: #007BFF; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: bold;">
                 Add
             </button>
@@ -123,27 +123,50 @@ setCookie('showInfoWindow', 'false', 1);
 
     const transitLayer = new google.maps.TransitLayer();
     transitLayer.setMap(map);
-//drawRoute("Piazza Costituzione, 09121 Cagliari CA", "07030 Zona Industriale Province of Sassari",'DRIVING','red');
-
 
 }
-// Function to handle add button click
-// Function to handle add button click
-function addToMainTravelList(name, description) {
-    // Add a new item to the mainTravelList
-    const newItem = {
-        number: mainTravelList.length + 1, // Assign a new number based on the list size
-        name: name,
-        time: 'N/A' // Add a default value for time if needed
-    };
 
-    mainTravelList.push(newItem); // Add the new item to the list
+function addToMainTravelList(name) {
+    // Ensure cachedData is initialized
+    let mainTravelList = cachedData || {};
 
-    // Refresh the list view to display the new item with yellow background
-    refreshListView(true); // Pass a flag to indicate that it's a new item
+    // Ensure `guide` exists in `cachedData`
+    if (!mainTravelList.guide || !Array.isArray(mainTravelList.guide)) {
+        mainTravelList.guide = [];
+    }
 
-    console.log("Added new item to mainTravelList:", newItem);
+    // Find the correct day's data in the `guide` array
+    let dayEntry = mainTravelList.guide.find(entry => entry.day === selectedDay);
+
+    if (!dayEntry) {
+        // If no entry exists for the selected day, create one
+        dayEntry = {
+            day: selectedDay,
+            POIs: [],
+            visitTime: []
+        };
+        mainTravelList.guide.push(dayEntry);
+    }
+
+    // Add the place and visit time to the day's entry
+    dayEntry.POIs.push(name);
+    dayEntry.visitTime.push('N/A'); // Default visit time, can be updated as needed
+
+    // Update the global cachedData
+    cachedData = mainTravelList;
+
+    // Save updated data to the cookie
+    saveDayToCookie(selectedDay, cachedData);
+
+    // Refresh the list view
+    refreshListView(true);
+
+    // Debug logs
+    console.log("Updated cachedData:", cachedData);
+    console.log("Updated day entry:", dayEntry);
 }
+
+
 
 
 window.initMap = initMap;

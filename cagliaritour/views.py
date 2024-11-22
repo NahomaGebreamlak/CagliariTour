@@ -164,7 +164,7 @@ def update_place_details(request):
     api_key = settings.GOOGLE_MAP_API_KEY
 
     # Fetch the first 3 places where place_id is not null
-    places = Place.objects.filter(place_id__isnull=False).all()[2:5]
+    places = Place.objects.filter(place_id__isnull=False).all()
 
     for place in places:
         details = fetch_place_details(api_key, place.place_id)
@@ -185,7 +185,7 @@ def update_place_details(request):
                 place.wheelchair_accessible_entrance = accessibility_info
 
             place.save()
-            print(f"Updated place: {place.average_rating} - {place.name}")
+            print(f"Updated place: {place.average_rating} - {place.Name}")
         else:
             print(f"Details not found for place ID: {place.place_id}")
 

@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import *
-from .viewsclass.routecalculator import calculate_route
+from .viewsclass.faceprediction import analyze_image
+from .viewsclass.routecalculator import calculate_route, feedback_route, print_unique_categories
 from .viewsclass.populartimes import get_popular_times
 urlpatterns = [
     path("homeview", HomeView.as_view(), name='my_home_view'),
@@ -11,5 +12,8 @@ urlpatterns = [
     path('update-place/', show_update_page, name='show_update_page'),
     path('place-list/', place_list, name='place_list'),
     path('face_detection/', face_detection, name='face_detection'),
+    path('analyze_image/', analyze_image, name='analyze_image'),
+    path('feedback/', feedback_route, name='feedback'),
+    path('unique-categories/', print_unique_categories, name='unique_categories'),
 
 ]

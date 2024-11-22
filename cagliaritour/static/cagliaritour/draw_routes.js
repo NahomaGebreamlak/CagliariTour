@@ -5,7 +5,7 @@ let directionsRenderersList = [];
 let numberedMarkers = [];
 
 function drawRoutesOnMap(routes) {
-
+console.log(`Draw route called with ${routes}`);
     const lineSymbol = {path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 6};
     const directionsService = new google.maps.DirectionsService();
 
@@ -36,12 +36,12 @@ function drawRoutesOnMap(routes) {
 
         directionsRenderersList.push(directionsRenderer);
 
-
-        // Get the travel mode form value of travel mode
-        const selectElement = document.getElementById('id_moving_preference');
-
-        // Get the selected value
-        const selectedValue = selectElement.value;
+        //
+        // // Get the travel mode form value of travel mode
+        // const selectElement = document.getElementById('id_moving_preference');
+        //
+        // // Get the selected value
+        const selectedValue = 'DRIVING';
 
         const showHideButton = document.createElement('button');
 
@@ -78,9 +78,9 @@ function drawRoutesOnMap(routes) {
         const request = {
             origin: route.start,
             destination: route.end,
-            travelMode: selectedValue
+            travelMode: 'DRIVING'
         };
-//console.log(`Route Start: ${request.origin}, Route End: ${request.destination}`);
+console.log(`Route Start: ${request.origin}, Route End: ${request.destination}`);
 
 
         // If selected travel mode is not 'Car', check distance and set travel mode accordingly
@@ -105,42 +105,42 @@ function drawRoutesOnMap(routes) {
                     // Get route legs and start/end locations
                     const routepath = response.routes[0].legs[0];
 
-                    // Add start marker
+                    //Add start marker
                     const startMarker = new google.maps.Marker({
                         position: routepath.start_location,
                         map: map,
                         label: {
                             text: 'Start ' + route.poinumber,  // Custom label
-                            fontSize: '24px',  // Increase the font size
+                            fontSize: '14px',  // Increase the font size
                             color: 'green'  // Optional: Set label color
                         },
-                        icon: {
-                            path: google.maps.SymbolPath.CIRCLE,
-                            scale: 8,
-                            fillColor: 'green',
-                            fillOpacity: 1,
-                            strokeWeight: 0
-                        }
+                        // icon: {
+                        //     path: google.maps.SymbolPath.CIRCLE,
+                        //     scale: 8,
+                        //     fillColor: 'green',
+                        //     fillOpacity: 1,
+                        //     strokeWeight: 0
+                        // }
                     });
 
 
                     // Add end marker
-                    const endMarker = new google.maps.Marker({
-                        position: routepath.end_location,
-                        map: map,
-                        label: {
-                            text: 'End '+ route.poinumber,  // Custom label
-                            fontSize: '24px',  // Increase the font size
-                            color: 'red'  // Optional: Set label color
-                        },
-                        icon: {
-                            path: google.maps.SymbolPath.CIRCLE,
-                            scale: 8,
-                            fillColor: 'red',
-                            fillOpacity: 1,
-                            strokeWeight: 0
-                        }
-                    });
+                    // const endMarker = new google.maps.Marker({
+                    //     position: routepath.end_location,
+                    //     map: map,
+                    //     label: {
+                    //         text: 'End '+ route.poinumber,  // Custom label
+                    //         fontSize: '24px',  // Increase the font size
+                    //         color: 'red'  // Optional: Set label color
+                    //     },
+                    //     icon: {
+                    //         path: google.maps.SymbolPath.CIRCLE,
+                    //         scale: 8,
+                    //         fillColor: 'red',
+                    //         fillOpacity: 1,
+                    //         strokeWeight: 0
+                    //     }
+                    // });
 
 
                     // Add numbered markers along the route
@@ -148,16 +148,16 @@ function drawRoutesOnMap(routes) {
                     for (let i = 1; i < routepath.steps.length - 1; i++) {
                         let color = route.color; // Default color for most markers
 
-                        // Change color for the first index
-                        if (i === 1) {
-                            console.log(`First Index: ${i}`);
-                            color = "green"; // Color for the first marker
-                        }
-                        // Change color for the last index
-                        else if (i === routepath.steps.length - 2) {
-                            console.log(`Last Index: ${i}`);
-                            color = "red"; // Color for the last marker
-                        }
+                        // // Change color for the first index
+                        // if (i === 1) {
+                        //     console.log(`First Index: ${i}`);
+                        //     color = "green"; // Color for the first marker
+                        // }
+                        // // Change color for the last index
+                        // else if (i === routepath.steps.length - 2) {
+                        //     console.log(`Last Index: ${i}`);
+                        //     color = "red"; // Color for the last marker
+                        // }
 
                         // Add marker for even indices, first and last indices
                         if (i % 2 === 0 || i === 1 || i === routepath.steps.length - 2) {
@@ -415,3 +415,6 @@ function removeNumberedMarkers(index) {
 
     }
 }
+
+
+

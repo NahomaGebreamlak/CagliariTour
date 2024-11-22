@@ -1,7 +1,6 @@
 // A file more related to collapsing and showing the form and side panels
 
 
-
 // Wait for the document to be ready
 var $j = jQuery.noConflict();
 
@@ -34,9 +33,6 @@ $j(document).ready(function () {
 });
 
 
-
-
-
 // Function to show and hide the form
 function showForm(flag) {
     if (flag) {
@@ -53,7 +49,7 @@ function showForm(flag) {
 // Wait for the document to be ready for info box
 $j(document).ready(function () {
 // A function to show the weather card automatically
-      // Hide day container
+    // Hide day container
     jQuery('#daysContainerDiv').hide();
 
     loadWeatherCard();
@@ -61,9 +57,9 @@ $j(document).ready(function () {
     var collapseElement = jQuery('#infoWindowBox');
     jQuery('#collapseButtonInfo').hide();
     //Hide route div
-   jQuery('#routeInfoContainer').hide();
+    jQuery('#routeInfoContainer').hide();
 
-   // hide clear button
+    // hide clear button
     jQuery('#clear_button_Div').hide();
 
 
@@ -96,6 +92,7 @@ $j(document).ready(function () {
 
 
 });
+
 // A fuction to calculate date difference to display number of Day buttons
 function calculateDateDifference() {
     // Get the selected departure date from the input
@@ -113,9 +110,10 @@ function calculateDateDifference() {
 
     return differenceInDays;
 }
-function generateDayButtons() {
 
-         // Hide day container
+async function generateDayButtons() {
+
+    // Hide day container
     jQuery('#daysContainerDiv').show();
     jQuery('#infoWindowBox').hide();
 
@@ -124,6 +122,11 @@ function generateDayButtons() {
     // Clear existing content
     daysContainer.innerHTML = '';
     numDays = calculateDateDifference();
+
+    setCookie("numberofdays", numDays, 1);
+
+
+
     // Create day buttons
     for (let i = 1; i <= numDays; i++) {
         const dayButton = document.createElement('button');
@@ -139,9 +142,9 @@ function generateDayButtons() {
         daysContainer.appendChild(dayButton);
 
         // Add click event listener to each button
-        dayButton.addEventListener('click', function () {
-  // cookie to control which info button is displayed
-             setCookie('showInfoWindow', true, 1);
+        dayButton.addEventListener('click', async function () {
+            // cookie to control which info button is displayed
+            setCookie('showInfoWindow', true, 1);
 
             jQuery('#infoWindowBox').show();
 
@@ -152,14 +155,23 @@ function generateDayButtons() {
             // Add 'clicked' class to the clicked button
             dayButton.classList.add('clicked');
 //clear previous routes  first
-clearRoutes();
+            clearRoutes();
 
 
-            showRouteSelectionList(DayNameWithDate, formattedDate);
+            if (i == 1) {
+
+                console.log("First date");
+                showRouteSelectionList(DayNameWithDate, formattedDate, false);
+            } else {
+                showRouteSelectionList(DayNameWithDate, formattedDate, false);
+                console.log("Other dates");
+            }
+
+
             showRouteInfoDiv();
             // show home button
-         jQuery('#collapseButton').hide();
-    jQuery('#clear_button_Div').show();
+            jQuery('#collapseButton').hide();
+            jQuery('#clear_button_Div').show();
 
         });
     }
@@ -171,36 +183,38 @@ clearRoutes();
     // Set the width of the container
     daysContainer.style.width = `${totalWidth + 50}px`;
     // to hide the form
-    showForm(false);
 
-      // jQuery('#infoWindowBox').hide();
+
+    showForm(false);
+    await fetchData(true);
+    // jQuery('#infoWindowBox').hide();
 }
 
 // A function to hide route info route
-function showRouteInfoDiv(){
+function showRouteInfoDiv() {
     jQuery('#routeInfoContainer').show();
 }
 
 // Function to reset the map
 function clearMap() {
-     setCookie('showInfoWindow', false, 1);
+    setCookie('showInfoWindow', false, 1);
 
-   jQuery('#collapseButton').show();
-   jQuery('#daysContainerDiv').hide();
+    jQuery('#collapseButton').show();
+    jQuery('#daysContainerDiv').hide();
 // clear container
-jQuery('#routeInfoContainer').hide();
- const daysContainer = document.getElementById('daysContainer');
+    jQuery('#routeInfoContainer').hide();
+    const daysContainer = document.getElementById('daysContainer');
 
     // Clear existing content
     daysContainer.innerHTML = '';
 // hide guide form
-showForm(false);
+    showForm(false);
 // clear infobox
-infoCloser();
+    infoCloser();
 //clear routes
-clearRoutes();
-showWeatherCard();
+    clearRoutes();
+    showWeatherCard();
 // hide the clear button
- jQuery('#clear_button_Div').hide();
+    jQuery('#clear_button_Div').hide();
 
-    }
+}

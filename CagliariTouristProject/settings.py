@@ -82,11 +82,12 @@ WSGI_APPLICATION = "CagliariTouristProject.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -117,9 +118,9 @@ USE_I18N = True
 
 USE_TZ = True
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
-GOOGLE_MAP_API_KEY = ""
+GOOGLE_MAP_API_KEY = "AIzaSyD7kI-eezkBIKYZIuW9uhrmrWI5kRM9KII"
 
-WEATHER_API_KEY = ""
+WEATHER_API_KEY = "6fa6e4ad8aa066382d1347d83e1d53bf"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
