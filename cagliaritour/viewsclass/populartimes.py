@@ -21,10 +21,11 @@ def get_popular_times(request, place_id):
 
 
 # Function to get Place Id that will be used to retrieve popular times graph
-def get_place_id(latitude, longitude):
+def get_place_id(latitude, longitude,place_name):
     base_url = "https://maps.googleapis.com/maps/api/geocode/json"
     params = {
-        'latlng': f"{latitude},{longitude}",
+        # 'latlng': f"{latitude},{longitude}",
+        'address': place_name,
         'key': settings.GOOGLE_MAP_API_KEY,
     }
     try:
@@ -33,7 +34,7 @@ def get_place_id(latitude, longitude):
 
         if response.status_code == 200 and data.get('status') == 'OK':
             place_id = data['results'][0]['place_id']
-            print(data)
+            print(f"Place Id--------- {place_id}")
             return place_id
         else:
             print(f"Error: {data['status']} - {data.get('error_message', 'No error message')}")

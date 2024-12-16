@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphs</title>
+</head>
+<body>
+    <h1>Graphs</h1>
+
+    <!-- Display race counts in a concise format -->
+    <div>
+        <h2>Race Counts</h2>
+        <ul>
+            {% for race, count in race_counts.items %}
+                <li>{{ race }}: {{ count }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div>
+        <h2>Place Selection Frequency</h2>
+        <img src="{{ graph_url }}" alt="Place Selection Frequency">
+    </div>
+
+    <!-- Table of Place Counts -->
+<h2>Place Counts Table</h2>
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Place</th>
+            <th>Frequency</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for place, count in place_counts_dict.items %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ place }}</td>
+            <td>{{ count }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+    <div>
+        <h2>Score Distribution</h2>
+        <img src="{{ graph2_url }}" alt="Score Distribution">
+    </div>
+</body>
+</html>

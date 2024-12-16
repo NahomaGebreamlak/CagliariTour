@@ -32,13 +32,16 @@ class MapView(View):
         eligable_locations = Place.objects.all()
         locations = []
         form = TravelPreferenceForm
+
         for a in eligable_locations:
             lat = a.Location.split(',')[0]
             lng = a.Location.split(',')[1]
+            name = a.Name
             # print(lat +"--------#########-----" +lng + "/static/icons/" + a.Icon)
             if not a.place_id:  # Check if place_id is empty
                 # If place_id is empty, get it using get_place_id function
-                a.place_id = get_place_id(lat, lng)
+                a.place_id = get_place_id(lat, lng,name)
+                print(f"Place Name {name} ---- {a.place_id}")
                 a.save()  # Save the updated place_id to the database
 
             data = {
@@ -152,9 +155,11 @@ def analyze_comments(comments):
 
     for comment in comments:
         sentiment = analyzer.polarity_scores(comment)
-        if sentiment['compound'] >= 0.05:
-            positive_comments += 1
-        elif sentiment['compound'] <= -0.05:
+        compound_score = sentiment['compound']
+
+        if compound_score >= 0.05 or (compound_score >= -0.05 and compound_score <= 0.05):
+            positive_comments += 1  # Count positive and neutral as positive
+        elif compound_score <= -0.05:
             negative_comments += 1
 
     return positive_comments, negative_comments
@@ -164,13 +169,16 @@ def update_place_details(request):
     api_key = settings.GOOGLE_MAP_API_KEY
 
     # Fetch the first 3 places where place_id is not null
+    # places = Place.objects.filter(place_id__isnull=False).all()
     places = Place.objects.filter(place_id__isnull=False).all()
+
 
     for place in places:
         details = fetch_place_details(api_key, place.place_id)
+
         if details:
             place.average_rating = float(details.get('rating', 0.0))
-            place.user_rating_accessibility = float(details.get('user_ratings_total', 0))
+            place.user_rating_accessibility = int(details.get('user_ratings_total', 0))  # New field update
 
             reviews = details.get('reviews', [])
             comments = [review['text'] for review in reviews]

@@ -52,7 +52,7 @@ async function fetchData(isFirstTime) {
     const taxiChecked = document.getElementById('taxi').checked;
 
      // Construct the URL dynamically with the selected values
-     const url = `/getroute/${numberofdays}/?age=${age}&race=${race}&public_transport=${publicTransportPercentage}&taxi=${taxiChecked}`;
+     const url = `http://192.167.133.40:8080/getroute/${numberofdays}/?age=${age}&race=${race}&public_transport=${publicTransportPercentage}&taxi=${taxiChecked}`;
      console.log(url);
     try {
         const response = await fetch(url);

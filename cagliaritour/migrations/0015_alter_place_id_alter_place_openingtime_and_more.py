@@ -15,11 +15,7 @@ class Migration(migrations.Migration):
             name="ID",
             field=models.AutoField(primary_key=True, serialize=False),
         ),
-        migrations.AlterField(
-            model_name="place",
-            name="OpeningTime",
-            field=models.JSONField(),
-        ),
+
         migrations.AlterField(
             model_name="place",
             name="VisitTime",
