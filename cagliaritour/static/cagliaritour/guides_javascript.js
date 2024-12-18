@@ -1,37 +1,85 @@
 var mainTravelList = [];
 var selectedDay;
-
+var sessionID;
 let cachedData = null; // To store the data fetched from the URL
 
 function getRandomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
+    let color;
+    do {
+        var letters = '0123456789ABCDEF';
+        color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+    } while (isLightColor(color)); // Repeat until a non-light color is generated
+
     return color;
 }
 
+// Helper function to determine if the color is light
+function isLightColor(hex) {
+    // Convert hex to RGB
+    const r = parseInt(hex.substring(1, 3), 16);
+    const g = parseInt(hex.substring(3, 5), 16);
+    const b = parseInt(hex.substring(5, 7), 16);
+
+    // Calculate brightness using the luminance formula
+    const brightness = (0.299 * r + 0.587 * g + 0.114 * b);
+
+    // Return true if brightness exceeds a threshold (e.g., 200)
+    return brightness > 200;
+}
+
+
 function refreshMap() {
     clearRoutes();
-       mainTravelList=  getDayFromCookie(selectedDay);
-    var routesData = [];
-    for (let i = 0; i < mainTravelList.length; i++) {
-        if (i + 1 < mainTravelList.length) {
-            const currentPoi = mainTravelList[i]["name"];
-            const nextPoi = mainTravelList[i + 1]["name"];
-            var randomColor = getRandomColor();
-            routesData.push({
-                poinumber: i + 1,
-                start: currentPoi + " , Cagliari",
-                end: nextPoi + " , Cagliari",
-                color: randomColor
-            });
-            console.log(i + " Start: " + currentPoi + ", end: " + nextPoi + "\n");
-        }
+
+    // Retrieve the guide from cachedData
+    const guide = cachedData?.guide;
+    if (!Array.isArray(guide)) {
+        console.error("Error: `guide` is not an array or missing in `cachedData`.");
+        return;
     }
+
+    // Find the specific day's data
+    const mainTravelList = guide.find(day => day.day === selectedDay);
+    if (!mainTravelList || !Array.isArray(mainTravelList.POIs) || !Array.isArray(mainTravelList.visitTime)) {
+        console.error(`Error: No valid data found for selected day (${selectedDay}), or POIs/visitTime are not arrays.`);
+        return;
+    }
+
+    const { POIs, visitTime } = mainTravelList; // Destructure POIs and visitTime
+    if (POIs.length !== visitTime.length) {
+        console.warn("Warning: POIs and visitTime arrays have mismatched lengths. Routes may be incomplete.");
+    }
+
+    const routesData = [];
+
+    // Generate routes data
+    for (let i = 0; i < POIs.length - 1; i++) {
+        const currentPoi = POIs[i];
+        const nextPoi = POIs[i + 1];
+
+        if (!currentPoi || !nextPoi) {
+            console.warn(`Warning: Missing POI names at indices ${i} and ${i + 1}. Skipping.`);
+            continue;
+        }
+
+        const randomColor = getRandomColor();
+        routesData.push({
+            poinumber: i + 1,
+            start: `${currentPoi}, Cagliari`,
+            end: `${nextPoi}, Cagliari`,
+            color: randomColor
+        });
+
+        console.log(`Route ${i + 1}: Start: ${currentPoi}, End: ${nextPoi}`);
+    }
+
+    // Draw routes on the map
     drawRoutesOnMap(routesData);
 }
+
 
 
 
@@ -45,8 +93,9 @@ async function fetchData(isFirstTime) {
     }
 
     console.log("Fetching data from URL...");
-    const age = getCookieRace('age');
-    const race = getCookieRace('race');
+   const age = getCookieRace('age') ?? 19; // Default age to 0 if null or undefined
+   const race = getCookieRace('race') ?? 'DefaultRace'; // Default race to 'human' if null or undefined
+
     const numberofdays = getCookie("numberofdays");
     const publicTransportPercentage = document.getElementById('public-transport-range').value / 100; // Range is 0 to 100
     const taxiChecked = document.getElementById('taxi').checked;
@@ -57,6 +106,8 @@ async function fetchData(isFirstTime) {
     try {
         const response = await fetch(url);
         cachedData = await response.json();// Cache the data
+        sessionID = cachedData['session_id'];
+         console.log("Routes and session ID received:", sessionID);
         return cachedData;
     } catch (error) {
         console.error("Error fetching data:", error);
@@ -204,7 +255,7 @@ function showRouteSelectionList(dayName, date,isFirstTime) {
                      <div style="width: 280px; margin-top: 20px; overflow-y: auto; height: 550px;" style="margin: 0px; padding: 0px;background-color: lightskyblue">
   <div class="card p-0 m-0" style="background-color: lightskyblue">
     <div class="card-header text-center font-weight-bold">
-    <h6>  ${dayName} <button class="btn btn-primary rounded circle" onclick="refreshMap()"><i class="fas fa-sync"></i></button></h6>
+    <h6>  ${dayName}</h6>
     </div>
     <div class="card-body p-0" style="background-color: deepskyblue;">
       <ul class="list-group list-group-flush card" id="list1" style="background-color: lightskyblue;">
@@ -230,7 +281,7 @@ function showRouteSelectionList(dayName, date,isFirstTime) {
 </div>
                   </div>`;
 
-    jQuery('#infoWindowBox').height(860);
+    jQuery('#infoWindowBox').height(690);
     jQuery('#infoWindowBox').html(cardContent);
 
     populateList("list1", "#87CEFA", dayName,isFirstTime);
@@ -439,31 +490,7 @@ function getDayFromCookie(date) {
     return parsedData;
 }
 
-// Retrieve all saved days' travel lists from cookies
-function getAllDaysFromCookies() {
-    const cookies = document.cookie.split("; ");
-    const allDaysData = {};
 
-    cookies.forEach(cookie => {
-        const [key, value] = cookie.split("=");
-        try {
-            const decodedKey = decodeURIComponent(key);
-            const decodedValue = JSON.parse(decodeURIComponent(value));
-
-            // Add only keys that look like dates (e.g., "16-11-2024")
-            if (/^\d{2}-\d{2}-\d{4}$/.test(decodedKey)) {
-                allDaysData[decodedKey] = decodedValue;
-            }
-        } catch (error) {
-            console.warn(`Skipping invalid cookie: ${key}`, error);
-        }
-    });
-
-    // Debugging output to verify all loaded data
-    console.log("Loaded all days' travel lists from cookies:", allDaysData);
-
-    return allDaysData;
-}
 
 // Send feedback route to the backend
 function sendFeedbackRoute() {
@@ -479,7 +506,8 @@ function sendFeedbackRoute() {
     console.log("Sending all routes for feedback:", cachedData);
 
 
-    fetch("/feedback/", {
+
+    fetch("http://192.167.133.40:8080/feedback/", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

@@ -13,7 +13,7 @@ import random
 from scipy.spatial import distance
 from django.db.models import Max
 import json
-from math import radians, sin, cos, sqrt, atan2
+from math import radians, sin, cos, sqrt, atan2, log
 from scipy.spatial.distance import cdist
 from math import radians, sin, cos, sqrt, atan2
 
@@ -190,41 +190,25 @@ def parse_time(time_str):
         return None
 
 
-def fitness(route, profile, public_transport, taxi, time_slots, category_weight=0.4, distance_weight=0.1,
-            rating_weight=0.5):
-    """
-    Fitness function to prioritize category distribution, short distances, and high-rated places
-    with a strong emphasis on ratings and number of ratings.
-
-    Args:
-        route: List of places in the itinerary.
-        profile: List of desired category distribution (proportions).
-        public_transport: Boolean indicating if public transport is used.
-        taxi: Boolean indicating if taxi is used.
-        time_slots: List of time slots for visiting the places.
-        category_weight: Weight assigned to category distribution in the fitness score.
-        distance_weight: Weight assigned to minimizing distance in the fitness score.
-        rating_weight: Weight assigned to ratings/comments in the fitness score.
-
-    Returns:
-        A fitness score for the given route.
-    """
-
-    # Ensure weights sum to 1
+def fitness(route, profile, public_transport, taxi, time_slots, category_weight=0.4, distance_weight=0.1, rating_weight=0.5):
+    # Normalize weights
     total_weight = category_weight + distance_weight + rating_weight
     category_weight /= total_weight
     distance_weight /= total_weight
     rating_weight /= total_weight
 
-    # Filter out closed places
+    # print(f"Normalized Weights: Category={category_weight}, Distance={distance_weight}, Rating={rating_weight}")
+
+    # Filter open places
     open_route = [
         place for place, time_slot in zip(route, time_slots[: len(route)])
         if is_open(place, datetime.strptime(time_slot[0], "%H:%M"))
     ]
+    # print(f"Open Route: {len(open_route)} places open out of {len(route)} total.")
 
-    # If no places are open, return a very low score
     if not open_route:
-        return -10000
+        # print("No places open. Returning minimal score.")
+        return -10000  # Minimal score based on route size
 
     # 1. Category Distribution Penalty
     category_counts = {category: 0 for category in categories}
@@ -235,8 +219,11 @@ def fitness(route, profile, public_transport, taxi, time_slots, category_weight=
         count / len(open_route) for count in category_counts.values()
     ]
     category_penalty = sum(
-        abs(actual_distribution[i] - profile[i]) for i in range(len(profile))
+        (actual_distribution[i] - profile[i]) ** 2 for i in range(len(profile))
     )
+    # print(f"Category Counts: {category_counts}")
+    # print(f"Actual Distribution: {actual_distribution}")
+    # print(f"Category Penalty: {category_penalty}")
 
     # 2. Distance Penalty
     total_distance = sum(
@@ -248,14 +235,17 @@ def fitness(route, profile, public_transport, taxi, time_slots, category_weight=
         )
         for i in range(len(open_route) - 1)
     )
-    distance_penalty = total_distance  # Directly penalize total distance
+    average_distance = total_distance / max(len(open_route) - 1, 1)
+    distance_penalty = average_distance
+    # print(f"Total Distance: {total_distance}, Average Distance: {average_distance}")
+    # print(f"Distance Penalty: {distance_penalty}")
 
     # 3. Rating Score
     composite_scores = []
     for place in open_route:
         # Normalize rating
-        rating = place.average_rating or 1  # Default to minimum rating
-        normalized_rating = (rating - 1) / 4  # Normalize to [0,1]
+        rating = place.average_rating or 1
+        normalized_rating = (rating - 1) / 4
 
         # Positive comment ratio
         total_comments = place.num_positive_comments + place.num_negative_comments
@@ -263,33 +253,39 @@ def fitness(route, profile, public_transport, taxi, time_slots, category_weight=
             place.num_positive_comments / total_comments if total_comments > 0 else 0.5
         )
 
-        # Normalize and emphasize the number of ratings
-        num_ratings = place.user_rating_accessibility if isinstance(place.user_rating_accessibility, (
-            int, float)) and place.user_rating_accessibility > 0 else 1
-        normalized_num_ratings = min(num_ratings / 30, 1)  # Adjusted cap for influence
+        # Normalize number of ratings using log scaling
+        num_ratings = place.user_rating_accessibility or 1  # Get number of ratings, default to 1 if not available
+        normalized_num_ratings = min((num_ratings ** 0.5) / (1000 ** 0.5), 1)  # Square root scaling
 
-        # Composite score: Higher emphasis on number of ratings and positivity
-        composite_score = (
-            0.6 * normalized_rating + 0.4 * positive_ratio
-        ) * (1 +   num_ratings)
-
+        # Composite score
+        composite_score = (0.7 * normalized_rating + 0.3 * positive_ratio) * normalized_num_ratings
         composite_scores.append(composite_score)
 
-    # Average rating score
-    rating_score = sum(composite_scores) / len(open_route) if composite_scores else 0
+        # Print each place's score breakdown
+        # print(f"Place: {place.Name}")
+        # print(f"  Rating: {rating}, Normalized Rating: {normalized_rating}")
+        # print(f"  Positive Ratio: {positive_ratio}")
+        # print(f"  Number of Ratings: {num_ratings}, Normalized Num Ratings: {normalized_num_ratings}")
+        # print(f"  Composite Score: {composite_score}")
 
-    # 4. Number of Places Visited (Reward)
+    rating_score = sum(composite_scores) / len(open_route) if composite_scores else 0
+    # print(f"Rating Score: {rating_score}")
+
+    # 4. Visit Bonus
     visit_bonus = len(open_route)
+    # print(f"Visit Bonus: {visit_bonus}")
 
     # Final Weighted Score
     final_score = (
-            -category_weight * category_penalty
-            - distance_weight * distance_penalty
-            + rating_weight * rating_score
-            + visit_bonus
+        -category_weight * category_penalty
+        - distance_weight * distance_penalty
+        + rating_weight * rating_score
+        + visit_bonus
     )
+    # print(f"Final Score: {final_score}")
 
     return final_score
+
 
 
 def get_average_age_group(age):
@@ -492,6 +488,7 @@ def feedback_route(request):
     Iterates over each day in the guide, calculates the reward, and updates the Q-learning state.
     """
     # Retrieve session-stored original state and action
+
     session_state = request.session.get('current_state')
     session_action = request.session.get('current_action')
     if not session_state or not session_action:
@@ -602,181 +599,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-# @csrf_exempt
-# def get_route_and_graph(request, numberofdays):
-#     try:
-#         if request.method != "GET":
-#             return JsonResponse({"error": "Only GET requests are allowed."}, status=405)
-#
-#         # Fetch parameters from the GET request
-#         public_transport = request.GET.get("public_transport", 0)  # Default is 0
-#         taxi = request.GET.get("taxi", "false").lower() == "true"  # Convert to boolean
-#         random_age = random.choice(ages)  # Randomly choose an age
-#         random_race = random.choice(races)  # Randomly choose a race
-#
-#         # Initialize list to collect all POIs from all days
-#         all_places = []
-#
-#         # Call the URL 50 times (same as before)
-#         for _ in range(50):
-#             # Build the external route URL
-#             route_url = f"http://127.0.0.1:8000/getroute/{numberofdays}/"
-#             params = {
-#                 "age": random_age,
-#                 "race": random_race,
-#                 "public_transport": public_transport,
-#                 "taxi": taxi
-#             }
-#
-#             # Make the HTTP GET request
-#             response = requests.get(route_url, params=params)
-#             if response.status_code != 200:
-#                 return JsonResponse(
-#                     {"error": f"Error from calculate_route endpoint: {response.json().get('error', 'Unknown error')}"},
-#                     status=response.status_code)
-#
-#             # Parse the response JSON and extract POIs
-#             result = response.json()
-#             for day in result['guide']:  # Iterate through each day
-#                 all_places.extend(day['POIs'])  # Collect all POIs across all days
-#
-#         # Aggregate place frequencies across all days
-#         place_counts = pd.Series(all_places).value_counts()
-#
-#         # Truncate place names to 8 characters for consistent display
-#         truncated_place_names = [place[:8] + "..." if len(place) > 8 else place for place in place_counts.index]
-#         place_counts.index = truncated_place_names  # Update the place names with truncated versions
-#
-#         # Prepare a dictionary for the places and their counts (this will be passed to the template)
-#         place_counts_dict = place_counts.to_dict()
-#
-#         # Plot Place Selection Frequency with adjusted size
-#         fig, ax = plt.subplots(figsize=(14, 8))  # Increased figure size for better readability
-#         place_counts.sort_values(ascending=False).plot(kind='bar', color='skyblue', ax=ax)
-#         ax.set_title("Place Selection Frequency (50 calls)", fontsize=16)
-#         ax.set_xlabel("Places", fontsize=12)
-#         ax.set_ylabel("Frequency", fontsize=12)
-#
-#         # Rotate the x-axis labels to make them readable
-#         plt.xticks(rotation=90, ha='center', fontsize=12)  # Rotate labels, larger font for readability
-#
-#         # Save the first graph with the rotated labels and truncated names
-#         graph1_path = os.path.join("static", "graphs", "place_frequency_with_rotated_labels.png")
-#         os.makedirs(os.path.dirname(graph1_path), exist_ok=True)
-#         plt.tight_layout()  # Adjust layout to prevent overlap
-#         plt.savefig(graph1_path)
-#         plt.close()  # Free memory
-#
-#         # Plot Score Distribution (using random scores as placeholder for now)
-#         plt.figure(figsize=(10, 6))
-#         sns.histplot([random.random() for _ in range(10)], kde=True, bins=10, color='purple', alpha=0.7)
-#         plt.title("Score Distribution")
-#         plt.xlabel("Score")
-#         plt.ylabel("Frequency")
-#
-#         # Save the second graph
-#         graph2_path = os.path.join("static", "graphs", "score_distribution.png")
-#         plt.savefig(graph2_path)
-#         plt.close()  # Free memory
-#
-#         # Render the template with the paths to the graphs and the table data
-#         return render(request, "cagliaritour/graphs.html", {
-#             "graph1_url": "/" + graph1_path,
-#             "graph2_url": "/" + graph2_path,
-#             "place_counts_dict": place_counts_dict,  # Pass place counts as dictionary
-#         })
-#
-#     except Exception as e:
-#         return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
-# @csrf_exempt
-# def get_route_and_graph(request, numberofdays):
-#     try:
-#         if request.method != "GET":
-#             return JsonResponse({"error": "Only GET requests are allowed."}, status=405)
-#
-#         # Fetch parameters from the GET request
-#         public_transport = request.GET.get("public_transport", 0)  # Default is 0
-#         taxi = request.GET.get("taxi", "false").lower() == "true"  # Convert to boolean
-#         random_age = random.choice(ages)  # Randomly choose an age
-#         random_race = random.choice(races)  # Randomly choose a race
-#
-#         # Initialize list to collect all POIs and their fitness scores
-#         all_places = []
-#         fitness_scores = []
-#
-#         # Call the URL 50 times (same as before)
-#         for _ in range(50):
-#             # Build the external route URL
-#             route_url = f"http://127.0.0.1:8000/getroute/{numberofdays}/"
-#             params = {
-#                 "age": random_age,
-#                 "race": random_race,
-#                 "public_transport": public_transport,
-#                 "taxi": taxi
-#             }
-#
-#             # Make the HTTP GET request
-#             response = requests.get(route_url, params=params)
-#             if response.status_code != 200:
-#                 return JsonResponse(
-#                     {"error": f"Error from calculate_route endpoint: {response.json().get('error', 'Unknown error')}"},
-#                     status=response.status_code)
-#
-#             # Parse the response JSON and extract POIs and fitness scores
-#             result = response.json()
-#             for day in result['guide']:  # Iterate through each day
-#                 for poi in day['POIs']:  # Iterate through POIs of each day
-#                     all_places.append(poi['placeName'])  # Collect all place names
-#                     fitness_scores.append(float(poi['fitnessScore']))  # Collect the fitness scores as floats
-#
-#         # Aggregate place frequencies across all days
-#         place_counts = pd.Series(all_places).value_counts()
-#
-#         # Truncate place names to 8 characters for consistent display
-#         truncated_place_names = [place[:8] + "..." if len(place) > 8 else place for place in place_counts.index]
-#         place_counts.index = truncated_place_names  # Update the place names with truncated versions
-#
-#         # Prepare a dictionary for the places and their counts (this will be passed to the template)
-#         place_counts_dict = place_counts.to_dict()
-#
-#         # Plot Place Selection Frequency with adjusted size
-#         fig, ax = plt.subplots(figsize=(14, 8))  # Increased figure size for better readability
-#         place_counts.sort_values(ascending=False).plot(kind='bar', color='skyblue', ax=ax)
-#         ax.set_title("Place Selection Frequency (50 calls)", fontsize=16)
-#         ax.set_xlabel("Places", fontsize=12)
-#         ax.set_ylabel("Frequency", fontsize=12)
-#
-#         # Rotate the x-axis labels to make them readable
-#         plt.xticks(rotation=90, ha='center', fontsize=12)  # Rotate labels, larger font for readability
-#
-#         # Save the first graph with the rotated labels and truncated names
-#         graph1_path = os.path.join("static", "graphs", "place_frequency_with_rotated_labels.png")
-#         os.makedirs(os.path.dirname(graph1_path), exist_ok=True)
-#         plt.tight_layout()  # Adjust layout to prevent overlap
-#         plt.savefig(graph1_path)
-#         plt.close()  # Free memory
-#
-#         # Plot Fitness Score Distribution using the actual fitness scores
-#         plt.figure(figsize=(10, 6))
-#         sns.histplot(fitness_scores, kde=True, bins=10, color='purple', alpha=0.7)
-#         plt.title("Fitness Score Distribution")
-#         plt.xlabel("Fitness Score")
-#         plt.ylabel("Frequency")
-#
-#         # Save the second graph for fitness scores
-#         graph2_path = os.path.join("static", "graphs", "fitness_score_distribution.png")
-#         plt.savefig(graph2_path)
-#         plt.close()  # Free memory
-#
-#         # Render the template with the paths to the graphs and the table data
-#         return render(request, "cagliaritour/graphs.html", {
-#             "graph1_url": "/" + graph1_path,
-#             "graph2_url": "/" + graph2_path,
-#             "place_counts_dict": place_counts_dict,  # Pass place counts as dictionary
-#         })
-#
-#     except Exception as e:
-#         return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd

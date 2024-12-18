@@ -105,23 +105,23 @@ console.log(`Route Start: ${request.origin}, Route End: ${request.destination}`)
                     // Get route legs and start/end locations
                     const routepath = response.routes[0].legs[0];
 
-                    //Add start marker
-                    const startMarker = new google.maps.Marker({
-                        position: routepath.start_location,
-                        map: map,
-                        label: {
-                            text: 'Start ' + route.poinumber,  // Custom label
-                            fontSize: '14px',  // Increase the font size
-                            color: 'green'  // Optional: Set label color
-                        },
-                        // icon: {
-                        //     path: google.maps.SymbolPath.CIRCLE,
-                        //     scale: 8,
-                        //     fillColor: 'green',
-                        //     fillOpacity: 1,
-                        //     strokeWeight: 0
-                        // }
-                    });
+                    // //Add start marker
+                    // const startMarker = new google.maps.Marker({
+                    //     position: routepath.start_location,
+                    //     map: map,
+                    //     label: {
+                    //         text: 'Start ' + route.poinumber,  // Custom label
+                    //         fontSize: '14px',  // Increase the font size
+                    //         color: 'green'  // Optional: Set label color
+                    //     },
+                    //     // icon: {
+                    //     //     path: google.maps.SymbolPath.CIRCLE,
+                    //     //     scale: 8,
+                    //     //     fillColor: 'green',
+                    //     //     fillOpacity: 1,
+                    //     //     strokeWeight: 0
+                    //     // }
+                    // });
 
 
                     // Add end marker

@@ -5,14 +5,25 @@
         jQuery.noConflict();
 
         function startVideoOnCall() {
+// Get the checkbox element
+let facialAnalysisCheckbox = document.getElementById('facialAnalysis');
 
-            setCookie("requestSent", "false", 1); // Set the cookie to prevent further requests
+// Check if it is checked
+if (facialAnalysisCheckbox.checked) {
+    console.log('The checkbox is checked.');
+      setCookie("requestSent", "false", 1); // Set the cookie to prevent further requests
 
             loadModelsAndStartVideo().then(() => {
                 // Models and video loaded, now start face detection
             }).catch(error => {
                 console.error("Error starting video:", error);
             });
+} else {
+    console.log('The checkbox is not checked.');
+    generateDayButtons();
+}
+
+
         }
 
         function loadModelsAndStartVideo() {

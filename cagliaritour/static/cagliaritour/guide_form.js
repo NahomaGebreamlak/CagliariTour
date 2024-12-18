@@ -122,9 +122,10 @@ async function generateDayButtons() {
     // Clear existing content
     daysContainer.innerHTML = '';
     numDays = calculateDateDifference();
-
     setCookie("numberofdays", numDays, 1);
 
+
+    await fetchData(true);
 
 
     // Create day buttons
@@ -184,9 +185,8 @@ async function generateDayButtons() {
     daysContainer.style.width = `${totalWidth + 50}px`;
     // to hide the form
 
+showForm(false);
 
-    showForm(false);
-    await fetchData(true);
     // jQuery('#infoWindowBox').hide();
 }
 

@@ -143,10 +143,29 @@
                                     <div class="card-body">
                                         <!-- Form fields -->
                                         <div class="form-group">
-                                            <label for="id_departure_date">What is your departure day?</label>
-                                            <input type="date" class="form-control" id="id_departure_date"
-                                                   name="departure_date">
-                                        </div>
+    <label for="id_departure_date">What is your departure day?</label>
+    <input type="date" class="form-control" id="id_departure_date" name="departure_date">
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const dateInput = document.getElementById("id_departure_date");
+
+        // Get today's date
+        const today = new Date();
+
+        // Add one day to today's date
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+
+        // Format the date as YYYY-MM-DD
+        const formattedTomorrow = tomorrow.toISOString().split('T')[0];
+
+        // Set the min attribute of the date input
+        dateInput.min = formattedTomorrow;
+    });
+</script>
+
 
                                         <div class="form-group">
                                             <label for="id_departure_time">What is your departure time?</label>
