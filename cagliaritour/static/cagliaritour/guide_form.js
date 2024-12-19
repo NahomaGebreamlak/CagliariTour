@@ -116,7 +116,7 @@ async function generateDayButtons() {
     // Hide day container
     jQuery('#daysContainerDiv').show();
     jQuery('#infoWindowBox').hide();
-
+    showForm(false);
     const daysContainer = document.getElementById('daysContainer');
 
     // Clear existing content
@@ -185,7 +185,7 @@ async function generateDayButtons() {
     daysContainer.style.width = `${totalWidth + 50}px`;
     // to hide the form
 
-showForm(false);
+
 
     // jQuery('#infoWindowBox').hide();
 }
