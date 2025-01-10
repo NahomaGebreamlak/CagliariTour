@@ -249,10 +249,9 @@ async function fetchData(isFirstTime) {
 // Retrieve and parse the day's travel list from the cookie
 async function populateList(targetListId, bgcolor, date, isFirstTime) {
     const list = document.getElementById(targetListId);
-    var listdata = [];
+    let listdata = [];
 
     try {
-
         const data = await fetchData(isFirstTime);
 
         // Validate that `data` and `data.guide` are defined
@@ -260,8 +259,8 @@ async function populateList(targetListId, bgcolor, date, isFirstTime) {
             console.error("Invalid data format: guide is not available or not an array.");
             return;
         }
-        // Extract guide and optional guide data
 
+        // Extract guide and selected day
         const guide = data.guide;
         selectedDay = date.split(' - ')[1];
         const selectedGuide = guide.find(day => day.day === selectedDay);
@@ -271,7 +270,7 @@ async function populateList(targetListId, bgcolor, date, isFirstTime) {
             for (let i = 0; i < selectedGuide.POIs.length; i++) {
                 const poi = selectedGuide.POIs[i];
                 const visitTime = selectedGuide.visitTime[i];
-                listdata.push({number: i + 1, name: poi, time: visitTime});
+                listdata.push({ number: i + 1, name: poi, time: visitTime });
 
                 if (i + 1 < selectedGuide.POIs.length && targetListId === "list1") {
                     const currentPoi = selectedGuide.POIs[i];
@@ -281,7 +280,7 @@ async function populateList(targetListId, bgcolor, date, isFirstTime) {
                         poinumber: i + 1,
                         start: `${currentPoi}, Cagliari`,
                         end: `${nextPoi}, Cagliari`,
-                        color: randomColor
+                        color: randomColor,
                     });
                 }
             }
@@ -291,7 +290,7 @@ async function populateList(targetListId, bgcolor, date, isFirstTime) {
 
         mainTravelList = [...listdata];
 
-        saveDayToCookie(selectedDay, mainTravelList);  // Save initial data to cookie
+        saveDayToCookie(selectedDay, mainTravelList); // Save initial data to cookie
 
         // Draw routes on the map
         drawRoutesOnMap(routesData);
@@ -307,9 +306,12 @@ async function populateList(targetListId, bgcolor, date, isFirstTime) {
         function updateMainTravelList() {
             const items = Array.from(list.children);
             mainTravelList = items.map((item) => {
-                const itemText = item.textContent.trim().split(',');
-                const poi = itemText[1].replace(/\n/g, '').replace(/\s+/g, ' ').trim();
-                const visitTime = itemText[2].replace(/\n/g, '').replace(/\s+/g, ' ').trim();
+                const nameElement = item.querySelector('.place-name');
+                const timeElement = item.querySelector('.text-muted');
+
+                const poi = nameElement?.textContent.trim() || 'Unknown';
+                const visitTime = timeElement?.textContent.trim() || 'N/A';
+
                 return { name: poi, time: visitTime };
             });
             refreshListView();
@@ -443,8 +445,8 @@ function showRouteSelectionList(dayName, date,isFirstTime) {
     jQuery('#infoWindowBox').height(690);
     jQuery('#infoWindowBox').html(cardContent);
 
-    populateList("list1", "#D9D8D5", dayName,isFirstTime);
-    setUpDragAndDropFunctionality();
+    populateList("list1", "#87CEFA", dayName,isFirstTime);
+    // setUpDragAndDropFunctionality();
 }
 
 
@@ -570,40 +572,22 @@ function setUpDragAndDropFunctionality() {
 //     });
 // }
 
+
 function refreshListView(isNewItem = false) {
     const list = document.getElementById('list1');
     list.innerHTML = ''; // Clear existing list items
 
-    // Safely retrieve and validate `guide`
-    const guide = cachedData?.guide;
-    if (!Array.isArray(guide)) {
-        console.error("Error: `guide` is not an array or missing in `cachedData`.");
+    if (!Array.isArray(mainTravelList)) {
+        console.error("Error: `mainTravelList` is not properly defined or initialized.");
         return;
     }
-
-    // Find the specific day's data
-    const dayData = guide.find(day => day.day === selectedDay);
-    if (!dayData || !Array.isArray(dayData.POIs) || !Array.isArray(dayData.visitTime)) {
-        console.error(`Error: No data found for selected day (${selectedDay}), or POIs/visitTime are not arrays.`);
-        return;
-    }
-
-    // Merge POIs and visitTime for easier processing
-    const mainTravelList = dayData.POIs.map((name, index) => ({
-        name,
-        time: dayData.visitTime[index] || "N/A",
-    }));
-
-    console.log("mainTravelList in refreshListView:", mainTravelList);
 
     // Iterate through the list and build the UI
     mainTravelList.forEach((item, index) => {
         const listItem = document.createElement('li');
 
         // Apply yellow color only to the newly added item (last item in the list)
-       const backgroundColor = (isNewItem && index === mainTravelList.length - 1)
-  ? 'rgba(245, 245, 245, 0.8)' // Light gray with transparency (glassy effect)
-  : 'rgba(0, 123, 255, 0.2)'; // Soft blue with a glassy effect
+        const backgroundColor = (isNewItem && index === mainTravelList.length - 1) ? '#FFFFE0' : '#87CEFA';
 
         listItem.className = 'list-group-item';
         listItem.style.cssText = `
@@ -616,7 +600,6 @@ function refreshListView(isNewItem = false) {
             color: #333;
             font-size: 0.95rem;
         `;
-        listItem.draggable = true;
 
         // First Row: Place name and time
         const textRow = document.createElement("div");
@@ -642,58 +625,58 @@ function refreshListView(isNewItem = false) {
             gap: 10px;
             padding-left: 30px;
         `;
-        buttonRow.innerHTML = `
-            <button class="btn btn-danger btn-sm delete-btn" style="padding: 5px; width: 30px; height: 30px;">
-                <i class="fa fa-trash" style="color: white;"></i>
-            </button>
-            <button class="btn btn-primary btn-sm move-up-btn" style="padding: 5px; width: 30px; height: 30px;">
-                <i class="fa fa-arrow-up"></i>
-            </button>
-            <button class="btn btn-primary btn-sm move-down-btn" style="padding: 5px; width: 30px; height: 30px;">
-                <i class="fa fa-arrow-down"></i>
-            </button>
-        `;
 
-        // Add the delete button functionality
-        buttonRow.querySelector('.delete-btn').addEventListener('click', function () {
-            deleteFromMainTravelList(item.name);
+        // Delete Button
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'btn btn-danger btn-sm delete-btn';
+        deleteButton.style.cssText = 'padding: 5px; width: 30px; height: 30px;';
+        deleteButton.innerHTML = '<i class="fa fa-trash" style="color: white;"></i>';
+        deleteButton.addEventListener('click', function () {
+            mainTravelList.splice(index, 1); // Remove the item from the list
+            saveDayToCookie(selectedDay, mainTravelList); // Save changes to the cookie
+            refreshListView(); // Refresh the list view
         });
 
-        // Add move up button functionality
-        buttonRow.querySelector('.move-up-btn').addEventListener('click', function () {
-            const previousSibling = listItem.previousElementSibling;
-            if (previousSibling) {
-                list.insertBefore(listItem, previousSibling);
-                updateMainTravelList();
+        // Move Up Button
+        const moveUpButton = document.createElement('button');
+        moveUpButton.className = 'btn btn-secondary btn-sm';
+        moveUpButton.style.cssText = 'padding: 5px; width: 30px; height: 30px;';
+        moveUpButton.innerHTML = '<i class="fa fa-arrow-up"></i>';
+        moveUpButton.addEventListener('click', function () {
+            if (index > 0) {
+                [mainTravelList[index - 1], mainTravelList[index]] =
+                    [mainTravelList[index], mainTravelList[index - 1]]; // Swap items
+                saveDayToCookie(selectedDay, mainTravelList); // Save changes
+                refreshListView(); // Refresh the list
             }
         });
 
-        // Add move down button functionality
-        buttonRow.querySelector('.move-down-btn').addEventListener('click', function () {
-            const nextSibling = listItem.nextElementSibling;
-            if (nextSibling) {
-                list.insertBefore(nextSibling, listItem);
-                updateMainTravelList();
+        // Move Down Button
+        const moveDownButton = document.createElement('button');
+        moveDownButton.className = 'btn btn-secondary btn-sm';
+        moveDownButton.style.cssText = 'padding: 5px; width: 30px; height: 30px;';
+        moveDownButton.innerHTML = '<i class="fa fa-arrow-down"></i>';
+        moveDownButton.addEventListener('click', function () {
+            if (index < mainTravelList.length - 1) {
+                [mainTravelList[index], mainTravelList[index + 1]] =
+                    [mainTravelList[index + 1], mainTravelList[index]]; // Swap items
+                saveDayToCookie(selectedDay, mainTravelList); // Save changes
+                refreshListView(); // Refresh the list
             }
         });
 
-        // Append rows to list item
+        // Append Buttons to Row
+        buttonRow.appendChild(deleteButton);
+        buttonRow.appendChild(moveUpButton);
+        buttonRow.appendChild(moveDownButton);
+
+        // Append Rows to List Item
         listItem.appendChild(textRow);
         listItem.appendChild(buttonRow);
         list.appendChild(listItem);
     });
-
-    function updateMainTravelList() {
-        const items = Array.from(list.children);
-        const updatedMainTravelList = items.map((item, idx) => {
-            const name = item.querySelector('.place-name').textContent;
-            const time = mainTravelList[idx]?.time || "N/A";
-            return { name, time };
-        });
-        mainTravelList.splice(0, mainTravelList.length, ...updatedMainTravelList);
-        refreshListView();
-    }
 }
+
 
 
 

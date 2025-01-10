@@ -15,7 +15,7 @@
 
         header {
             background: #0066cc;
-            color: white;
+            color: #ffffff; /* Changed to white for better visibility */
             padding: 1rem 0;
             text-align: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -27,9 +27,9 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 2rem auto;
-            padding: 1rem;
+            padding: 1.5rem;
             background: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
@@ -56,7 +56,7 @@
 
         table thead {
             background-color: #0066cc;
-            color: white;
+            color: #000000; /* Ensures table headers are visible */
         }
 
         th, td {
@@ -72,6 +72,14 @@
 
         tr:nth-child(even) {
             background-color: #f2f2f2;
+        }
+
+        .poi-image {
+            width: 100%;
+            height: auto;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
         }
 
         a {
@@ -101,6 +109,8 @@
                 <thead>
                     <tr>
                         <th>Point of Interest (POI)</th>
+                        <th>Description</th>
+                        <th>Image</th>
                         <th>Visit Time</th>
                         <th>Google Maps Link</th>
                     </tr>
@@ -108,7 +118,18 @@
                 <tbody>
                     {% for poi_data in guide.poi_data %}
                         <tr>
-                            <td>{{ poi_data.poi }}</td>
+                            <td>{{ poi_data.place_data.name }}</td>
+                            <td>{{ poi_data.place_data.description }}</td>
+                            <td>
+
+                                {% if poi_data.place_data.image_url %}
+                                    <img src="{{ poi_data.place_data.image_url}}"
+                                         alt="{{ poi_data.place_data.name }}"
+                                         class="poi-image">
+                                {% else %}
+                                    <span class="no-link">No Image Available</span>
+                                {% endif %}
+                            </td>
                             <td>{{ poi_data.visit_time }}</td>
                             <td>
                                 {% if poi_data.link %}

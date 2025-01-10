@@ -111,8 +111,87 @@ function calculateDateDifference() {
     return differenceInDays;
 }
 
-async function generateDayButtons() {
+// async function generateDayButtons() {
+//
+//     // Hide day container
+//     jQuery('#daysContainerDiv').show();
+//     jQuery('#infoWindowBox').hide();
+//     showForm(false);
+//     const daysContainer = document.getElementById('daysContainer');
+//
+//     // Clear existing content
+//     daysContainer.innerHTML = '';
+//     numDays = calculateDateDifference();
+//     setCookie("numberofdays", numDays, 1);
+//
+//
+//     await fetchData(true);
+//
+//
+//     // Create day buttons
+//     for (let i = 1; i <= numDays; i++) {
+//         const dayButton = document.createElement('button');
+//         const dayName = `Day ${i}`;
+//         const today = new Date();
+//         today.setDate(today.getDate() + i - 1); // Adjust the date based on the loop index
+//
+//         const options = {day: '2-digit', month: '2-digit', year: 'numeric'};
+//         const formattedDate = today.toLocaleDateString('en-GB', options);
+//         const DayNameWithDate = `${dayName} - ${formattedDate}`;
+//         dayButton.innerText = `Day ${i}`;
+//         dayButton.className = 'dayButton';
+//         daysContainer.appendChild(dayButton);
+//
+//         // Add click event listener to each button
+//         dayButton.addEventListener('click', async function () {
+//             // cookie to control which info button is displayed
+//             setCookie('showInfoWindow', true, 1);
+//
+//             jQuery('#infoWindowBox').show();
+//
+//             // Remove 'clicked' class from all buttons
+//             const allButtons = document.querySelectorAll('.dayButton');
+//             allButtons.forEach(button => button.classList.remove('clicked'));
+//
+//             // Add 'clicked' class to the clicked button
+//             dayButton.classList.add('clicked');
+// //clear previous routes  first
+//             clearRoutes();
+//
+//
+//             if (i == 1) {
+//
+//                 console.log("First date");
+//                 showRouteSelectionList(DayNameWithDate, formattedDate, false);
+//             } else {
+//                 showRouteSelectionList(DayNameWithDate, formattedDate, false);
+//                 console.log("Other dates");
+//             }
+//
+//
+//             showRouteInfoDiv();
+//             // show home button
+//             jQuery('#collapseButton').hide();
+//             jQuery('#clear_button_Div').show();
+//
+//         });
+//     }
+//     // Calculate the total width of buttons
+//     const totalWidth = Array.from(daysContainer.children).reduce((acc, button) => {
+//         return acc + button.offsetWidth + parseInt(window.getComputedStyle(button).marginRight, 10);
+//     }, 0);
+//
+//     // Set the width of the container
+//     daysContainer.style.width = `${totalWidth + 50}px`;
+//     // to hide the form
+//
+//
+//
+//     // jQuery('#infoWindowBox').hide();
+// }
 
+
+async function generateDayButtons() {
     // Hide day container
     jQuery('#daysContainerDiv').show();
     jQuery('#infoWindowBox').hide();
@@ -124,9 +203,7 @@ async function generateDayButtons() {
     numDays = calculateDateDifference();
     setCookie("numberofdays", numDays, 1);
 
-
     await fetchData(true);
-
 
     // Create day buttons
     for (let i = 1; i <= numDays; i++) {
@@ -135,7 +212,7 @@ async function generateDayButtons() {
         const today = new Date();
         today.setDate(today.getDate() + i - 1); // Adjust the date based on the loop index
 
-        const options = {day: '2-digit', month: '2-digit', year: 'numeric'};
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
         const formattedDate = today.toLocaleDateString('en-GB', options);
         const DayNameWithDate = `${dayName} - ${formattedDate}`;
         dayButton.innerText = `Day ${i}`;
@@ -155,12 +232,11 @@ async function generateDayButtons() {
 
             // Add 'clicked' class to the clicked button
             dayButton.classList.add('clicked');
-//clear previous routes  first
+
+            // Clear previous routes first
             clearRoutes();
 
-
             if (i == 1) {
-
                 console.log("First date");
                 showRouteSelectionList(DayNameWithDate, formattedDate, false);
             } else {
@@ -168,14 +244,13 @@ async function generateDayButtons() {
                 console.log("Other dates");
             }
 
-
             showRouteInfoDiv();
-            // show home button
+            // Show home button
             jQuery('#collapseButton').hide();
             jQuery('#clear_button_Div').show();
-
         });
     }
+
     // Calculate the total width of buttons
     const totalWidth = Array.from(daysContainer.children).reduce((acc, button) => {
         return acc + button.offsetWidth + parseInt(window.getComputedStyle(button).marginRight, 10);
@@ -183,12 +258,14 @@ async function generateDayButtons() {
 
     // Set the width of the container
     daysContainer.style.width = `${totalWidth + 50}px`;
-    // to hide the form
 
-
-
-    // jQuery('#infoWindowBox').hide();
+    // Automatically trigger the first day's button click
+    const firstDayButton = daysContainer.querySelector('.dayButton');
+    if (firstDayButton) {
+        firstDayButton.click(); // Trigger click event for the first day
+    }
 }
+
 
 // A function to hide route info route
 function showRouteInfoDiv() {

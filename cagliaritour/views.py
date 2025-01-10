@@ -272,10 +272,127 @@ from django.template.loader import get_template
 from django.conf import settings
 from xhtml2pdf import pisa
 from io import BytesIO
-from urllib.parse import urlencode
+from urllib.parse import urlencode, quote
 from django.views.decorators.csrf import csrf_exempt
 import json
 import os
+# @csrf_exempt
+# def send_emailRoute(request):
+#     if request.method == "POST":
+#         try:
+#             # Parse the received JSON data
+#             cached_data = json.loads(request.body)
+#
+#             # Validate data structure
+#             if "guide" not in cached_data["routes"]:
+#                 print("The problem is here")
+#                 return JsonResponse({"success": False, "message": "'guide' key missing in input."}, status=400)
+#
+#             # Process the guides data to add Google Maps links
+#             for guide in cached_data["routes"]["guide"]:
+#                 pois = guide.get("POIs", [])
+#                 visit_times = guide.get("visitTime", [])
+#
+#                 # Create a list of POI, visit_time, and links
+#                 guide["poi_data"] = []
+#                 if len(pois) < 2:
+#                     guide["links"] = []  # No links if not enough POIs
+#                 else:
+#                     for i in range(len(pois)):
+#                         visit_time = visit_times[i] if i < len(visit_times) else ""
+#                         link = ""
+#                         if i < len(pois) - 1:
+#                             link = f"https://www.google.com/maps/dir/?{urlencode({'api': 1, 'origin': pois[i], 'destination': pois[i + 1]})}"
+#                         guide["poi_data"].append({
+#                             "poi": pois[i],
+#                             "visit_time": visit_time,
+#                             "link": link
+#                         })
+#
+#             # Simplified data for template rendering
+#             simple_data = []
+#             for guide in cached_data["routes"]["guide"]:
+#                 day_data = {
+#                     "day": guide.get("day"),
+#                     "poi_data": guide.get("poi_data")
+#                 }
+#                 simple_data.append(day_data)
+#
+#             # Render the data into an HTML table using the simplified data
+#             template = get_template("cagliaritour/email_send_template.html")
+#             html_content = template.render({"guides": simple_data})
+#
+#             # Generate the PDF from the rendered HTML
+#             pdf_buffer = BytesIO()
+#             try:
+#                 pisa_status = pisa.CreatePDF(html_content, dest=pdf_buffer)
+#                 if pisa_status.err:
+#                     print("Error generating PDF:", pisa_status.err)
+#                     return JsonResponse({"success": False, "message": "Failed to generate PDF."}, status=500)
+#             except Exception as e:
+#                 print("Error creating PDF:", str(e))
+#                 return JsonResponse({"success": False, "message": f"Error creating PDF: {str(e)}"}, status=500)
+#
+#             print("PDF generated successfully")
+#
+#             # Save the PDF to a file with proper permissions
+#             pdf_file_path = "static/downloads/Cagliari_tour_route.pdf"
+#             os.makedirs(os.path.dirname(pdf_file_path), exist_ok=True)
+#             os.chmod(os.path.dirname(pdf_file_path), 0o755)  # Set directory permissions
+#             with open(pdf_file_path, "wb") as pdf_file:
+#                 pdf_file.write(pdf_buffer.getvalue())
+#             os.chmod(pdf_file_path, 0o644)  # Set PDF file permissions
+#
+#             print("PDF saved successfully")
+#
+#             # Prepare the email with the PDF as an attachment
+#             subject = "Cagliari Route with Google Maps Links"
+#
+#             # General email body in English and Italian
+#             body = (
+#                 "Dear User,\n\n"
+#                 "Please find below your route, including Google Maps links for your itinerary.\n\n"
+#                 "We hope this information will be helpful to you. Should you require further assistance, feel free to reach out.\n\n"
+#                 "Best regards,\n"
+#                 "CTE MAP Team\n\n"
+#
+#                 # Italian version
+#                 "Gentile Utente,\n\n"
+#                 "In allegato troverete il relativo al vostro percorso, con i link di Google Maps per ogni segmento dell'itinerario.\n\n"
+#                 "Ci auguriamo che queste informazioni possano esservi utili. Per qualsiasi ulteriore necessità, non esitate a contattarci.\n\n"
+#                 "Cordiali saluti,\n"
+#                 "CTE MAP Team"
+#             )
+#
+#             recipient = cached_data["email"]  # Replace with the recipient's email
+#
+#             email = EmailMultiAlternatives(
+#                 subject=subject,
+#                 body=body,
+#                 from_email=settings.DEFAULT_FROM_EMAIL,
+#                 to=[recipient],
+#             )
+#             email.attach_file(pdf_file_path, mimetype="application/pdf")
+#
+#             try:
+#                 email.send()
+#                 print("Email sent successfully")
+#             except Exception as e:
+#                 print("Error sending email:", str(e))
+#                 return JsonResponse({"success": False, "message": "Failed to send email."}, status=500)
+#
+#             return JsonResponse({"success": True, "message": "Feedback email sent successfully!"})
+#
+#         except json.JSONDecodeError:
+#             return JsonResponse({"success": False, "message": "Invalid JSON format."}, status=400)
+#         except KeyError as e:
+#             return JsonResponse({"success": False, "message": f"Missing key: {str(e)}"}, status=400)
+#         except Exception as e:
+#             print("Unexpected error:", str(e))
+#             return JsonResponse({"success": False, "error": str(e)}, status=500)
+#
+#     return JsonResponse({"success": False, "message": "Invalid request method."}, status=400)
+
 @csrf_exempt
 def send_emailRoute(request):
     if request.method == "POST":
@@ -288,12 +405,12 @@ def send_emailRoute(request):
                 print("The problem is here")
                 return JsonResponse({"success": False, "message": "'guide' key missing in input."}, status=400)
 
-            # Process the guides data to add Google Maps links
+            # Process the guides data to add Google Maps links and Place details
             for guide in cached_data["routes"]["guide"]:
                 pois = guide.get("POIs", [])
                 visit_times = guide.get("visitTime", [])
 
-                # Create a list of POI, visit_time, and links
+                # Create a list of POI, visit_time, links, and Place details
                 guide["poi_data"] = []
                 if len(pois) < 2:
                     guide["links"] = []  # No links if not enough POIs
@@ -302,11 +419,30 @@ def send_emailRoute(request):
                         visit_time = visit_times[i] if i < len(visit_times) else ""
                         link = ""
                         if i < len(pois) - 1:
-                            link = f"https://www.google.com/maps/dir/?{urlencode({'api': 1, 'origin': pois[i], 'destination': pois[i + 1]})}"
+                            link = f"https://www.google.com/maps/dir/?{urlencode({'api': 1, 'origin': pois[i] + 'Cagliari' , 'destination': pois[i + 1] + 'Cagliari'})}"
+
+                        # Fetch place details
+                        place = Place.objects.filter(Name__iexact=pois[i]).first()
+                        if place:
+                            place_data = {
+                                "name": place.Name,
+                                "description": place.Description,
+                                "image_url":f"http://127.0.0.1:8000/static/images/{quote(place.Image)}" if place.Image else None
+                                # "image_url": "http://127.0.0.1:8000/static/images/"+place.Image if place.Image else None
+
+                            }
+                        else:
+                            place_data = {
+                                "name": pois[i],
+                                "description": "Description not available.",
+                                "image_url": None
+                            }
+
                         guide["poi_data"].append({
                             "poi": pois[i],
                             "visit_time": visit_time,
-                            "link": link
+                            "link": link,
+                            "place_data": place_data
                         })
 
             # Simplified data for template rendering
