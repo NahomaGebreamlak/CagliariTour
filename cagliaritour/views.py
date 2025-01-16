@@ -272,10 +272,11 @@ from django.template.loader import get_template
 from django.conf import settings
 from xhtml2pdf import pisa
 from io import BytesIO
-from urllib.parse import urlencode
+from urllib.parse import urlencode, quote
 from django.views.decorators.csrf import csrf_exempt
 import json
 import os
+
 @csrf_exempt
 def send_emailRoute(request):
     if request.method == "POST":
@@ -288,12 +289,12 @@ def send_emailRoute(request):
                 print("The problem is here")
                 return JsonResponse({"success": False, "message": "'guide' key missing in input."}, status=400)
 
-            # Process the guides data to add Google Maps links
+            # Process the guides data to add Google Maps links and Place details
             for guide in cached_data["routes"]["guide"]:
                 pois = guide.get("POIs", [])
                 visit_times = guide.get("visitTime", [])
 
-                # Create a list of POI, visit_time, and links
+                # Create a list of POI, visit_time, links, and Place details
                 guide["poi_data"] = []
                 if len(pois) < 2:
                     guide["links"] = []  # No links if not enough POIs
@@ -302,11 +303,30 @@ def send_emailRoute(request):
                         visit_time = visit_times[i] if i < len(visit_times) else ""
                         link = ""
                         if i < len(pois) - 1:
-                            link = f"https://www.google.com/maps/dir/?{urlencode({'api': 1, 'origin': pois[i], 'destination': pois[i + 1]})}"
+                            link = f"https://www.google.com/maps/dir/?{urlencode({'api': 1, 'origin': pois[i] + 'Cagliari' , 'destination': pois[i + 1] + 'Cagliari'})}"
+
+                        # Fetch place details
+                        place = Place.objects.filter(Name__iexact=pois[i]).first()
+                        if place:
+                            place_data = {
+                                "name": place.Name,
+                                "description": place.Description,
+                                "image_url":f"http://127.0.0.1:8000/static/images/{quote(place.Image)}" if place.Image else None
+                                # "image_url": "http://127.0.0.1:8000/static/images/"+place.Image if place.Image else None
+
+                            }
+                        else:
+                            place_data = {
+                                "name": pois[i],
+                                "description": "Description not available.",
+                                "image_url": None
+                            }
+
                         guide["poi_data"].append({
                             "poi": pois[i],
                             "visit_time": visit_time,
-                            "link": link
+                            "link": link,
+                            "place_data": place_data
                         })
 
             # Simplified data for template rendering

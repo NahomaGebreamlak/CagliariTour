@@ -24,8 +24,8 @@ def get_popular_times(request, place_id):
 def get_place_id(latitude, longitude,place_name):
     base_url = "https://maps.googleapis.com/maps/api/geocode/json"
     params = {
-        # 'latlng': f"{latitude},{longitude}",
-        'address': place_name,
+        'latlng': f"{latitude},{longitude}",
+        # 'address': place_name,
         'key': settings.GOOGLE_MAP_API_KEY,
     }
     try:

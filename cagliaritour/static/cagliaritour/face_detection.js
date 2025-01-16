@@ -103,7 +103,7 @@ if (facialAnalysisCheckbox.checked) {
         }
 
 
-        function performFaceDetection(video, stream) {
+            function performFaceDetection(video, stream) {
     const canvas = faceapi.createCanvasFromMedia(video);
     let container = document.querySelector(".canvaContainer");
     container.append(canvas);
@@ -114,13 +114,6 @@ if (facialAnalysisCheckbox.checked) {
 
     const displaySize = { width: 250, height: 300 };
     faceapi.matchDimensions(canvas, displaySize);
-
-    // Custom draw options (to change the color)
-    const drawOptions = {
-        lineWidth: 3,
-        drawLines: true,
-        color: '#000000', // Change to your desired color
-    };
 
     // Perform face detection every 100ms
     setInterval(async () => {
@@ -136,10 +129,14 @@ if (facialAnalysisCheckbox.checked) {
 
             // Resize detections and clear previous drawings
             const resizedDetections = faceapi.resizeResults(detections, displaySize);
-            canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw face landmarks if detections are found
-            faceapi.draw.drawFaceLandmarks(canvas, resizedDetections, drawOptions);
+            // Draw a rectangle around the face
+            const box = resizedDetections.detection.box;
+            ctx.strokeStyle = "#00FF00"; // Set the rectangle color
+            ctx.lineWidth = 3; // Set the rectangle line width
+            ctx.strokeRect(box.x, box.y, box.width, box.height);
 
             // Check cookie instead of a global variable
             const requestSentCookie = getCookie("requestSent");
